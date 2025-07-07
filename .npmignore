@@ -1,0 +1,10 @@
+# 除外するべきもの
+src/
+test/
+.vscode/
+node_modules/
+webpack.config.js
+tsconfig.json
+README_cleaned.md
+*.log
+package-lock.json
