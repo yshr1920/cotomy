@@ -1,7 +1,9 @@
 {
   "name": "cotomy",
   "version": "0.1.0",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
   "scripts": {
     "build": "webpack --mode=production",
     "dev": "webpack --watch",
@@ -13,9 +15,12 @@
     "lint": "eslint src --ext .ts",
     "format": "prettier --write src"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [],
   "author": "",
-  "license": "Python-2.0",
+  "license": "MIT",
   "description": "",
   "devDependencies": {
     "ts-loader": "^9.5.2",
