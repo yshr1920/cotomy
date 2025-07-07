@@ -2,7 +2,7 @@ import cuid from "cuid";
 import dayjs from 'dayjs';
 
 
-export class CotomyElementWrap {
+export class CotomyElement {
     
     //#region Factory and Finder
 
@@ -15,30 +15,30 @@ export class CotomyElementWrap {
         return (doc.body.firstChild as HTMLElement)!;
     }
 
-    public static create<T extends CotomyElementWrap = CotomyElementWrap>(html: string, type: typeof CotomyElementWrap = CotomyElementWrap): T {
-        const element = CotomyElementWrap.createHTMLElement(html);
+    public static create<T extends CotomyElement = CotomyElement>(html: string, type: typeof CotomyElement = CotomyElement): T {
+        const element = CotomyElement.createHTMLElement(html);
         return <T>new type(element);
     }
 
-    public static first<T extends CotomyElementWrap = CotomyElementWrap>(selector: string, type: typeof CotomyElementWrap = CotomyElementWrap): T {
+    public static first<T extends CotomyElement = CotomyElement>(selector: string, type: typeof CotomyElement = CotomyElement): T {
         const element = document.querySelector(selector);
-        return <T>(element ? new type(<HTMLElement>element) : CotomyElementWrap.empty(type));
+        return <T>(element ? new type(<HTMLElement>element) : CotomyElement.empty(type));
     }
 
-    public static find<T extends CotomyElementWrap = CotomyElementWrap>(selector: string, type: typeof CotomyElementWrap = CotomyElementWrap): T[] {
+    public static find<T extends CotomyElement = CotomyElement>(selector: string, type: typeof CotomyElement = CotomyElement): T[] {
         const elements = document.querySelectorAll(selector);
         return <T[]>Array.from(elements).map(e => new type(<HTMLElement>e));
     }
 
-    public static byId<T extends CotomyElementWrap = CotomyElementWrap>(id: string, type: typeof CotomyElementWrap = CotomyElementWrap): T {
-        return CotomyElementWrap.first<T>(`#${id}`, type);
+    public static byId<T extends CotomyElement = CotomyElement>(id: string, type: typeof CotomyElement = CotomyElement): T {
+        return CotomyElement.first<T>(`#${id}`, type);
     }
 
     public static contains(selector: string): boolean {
         return document.querySelector(selector) !== null;
     }
 
-    static empty<T extends CotomyElementWrap = CotomyElementWrap>(type: typeof CotomyElementWrap = CotomyElementWrap): T {
+    static empty<T extends CotomyElement = CotomyElement>(type: typeof CotomyElement = CotomyElement): T {
         return <T>new type(document.createElement("div")).setAttribute("data-empty", "").setElementStyle("display", "none");
     }
 
@@ -47,11 +47,11 @@ export class CotomyElementWrap {
 
 
     private _element: HTMLElement;
-    private _parentElement: CotomyElementWrap | null = null;
+    private _parentElement: CotomyElement | null = null;
     private _removed: boolean = false;
 
     public constructor(element: string | HTMLElement, css: string | null = null) {
-        this._element = element instanceof HTMLElement ? <HTMLElement>element : CotomyElementWrap.createHTMLElement(element);
+        this._element = element instanceof HTMLElement ? <HTMLElement>element : CotomyElement.createHTMLElement(element);
         this.removed(() => {
             this._element = document.createElement("div");
         });
@@ -91,17 +91,17 @@ export class CotomyElementWrap {
     public useScopedCss(css: string): this {
         if (css && this.stylable) {
             const cssid = `css-${this.scopeId}`;
-            CotomyElementWrap.find(`#${cssid}`).forEach(e => e.remove());
+            CotomyElement.find(`#${cssid}`).forEach(e => e.remove());
             const element = document.createElement("style");
             const writeCss = css.replace(/\[scope\]/g, `[${this.scopeId}]`);
             const node = document.createTextNode(writeCss);
             element.appendChild(node);
             element.id = cssid;
-            const head = CotomyElementWrap.first("head");
-            head.append(new CotomyElementWrap(element));
+            const head = CotomyElement.first("head");
+            head.append(new CotomyElement(element));
 
             this.removed(() => {
-                CotomyElementWrap.find(`#${cssid}`).forEach(e => e.remove());
+                CotomyElement.find(`#${cssid}`).forEach(e => e.remove());
             });
         }
         return this;
@@ -116,7 +116,7 @@ export class CotomyElementWrap {
     public static readonly LISTEN_LAYOUT_EVENTS_ATTRIBUTE: string = "data-layout";
 
     public listenLayoutEvents(): this {
-        this.setAttribute(CotomyElementWrap.LISTEN_LAYOUT_EVENTS_ATTRIBUTE, "");
+        this.setAttribute(CotomyElement.LISTEN_LAYOUT_EVENTS_ATTRIBUTE, "");
         return this;
     }
 
@@ -319,8 +319,8 @@ export class CotomyElementWrap {
         }
     }
 
-    public clone(): CotomyElementWrap {
-        let e = new CotomyElementWrap(document.createElement(this.tagname));
+    public clone(): CotomyElement {
+        let e = new CotomyElement(document.createElement(this.tagname));
         return e;
     }
 
@@ -539,18 +539,18 @@ export class CotomyElementWrap {
 
     //#region Elementの親子関係
 
-    public get parent(): CotomyElementWrap {
+    public get parent(): CotomyElement {
         if (this._parentElement == null && this.element.parentElement !== null) {
-            this._parentElement = new CotomyElementWrap(this.element.parentElement);
+            this._parentElement = new CotomyElement(this.element.parentElement);
         }
-        return this._parentElement ?? CotomyElementWrap.empty();
+        return this._parentElement ?? CotomyElement.empty();
     }
 
-    public get parents(): CotomyElementWrap[] {
+    public get parents(): CotomyElement[] {
         let parents = [];
         let currentElement = this.element.parentElement;
         while (currentElement !== null) {
-            parents.push(new CotomyElementWrap(currentElement));
+            parents.push(new CotomyElement(currentElement));
             currentElement = currentElement.parentElement;
         }
         return parents;
@@ -560,28 +560,28 @@ export class CotomyElementWrap {
         return this.element.querySelector(selector) !== null;
     }
 
-    public children<T extends CotomyElementWrap = CotomyElementWrap>(selector: string = "*", type: typeof CotomyElementWrap = CotomyElementWrap): T[] {
+    public children<T extends CotomyElement = CotomyElement>(selector: string = "*", type: typeof CotomyElement = CotomyElement): T[] {
         const children = Array.from(this.element.querySelectorAll(selector));
         const directChildren = children.filter(child => child.parentElement === this.element);
         return <T[]>directChildren.filter(e => e instanceof HTMLElement).map(e => new type(<HTMLElement>e));
     }
 
-    public firstChild<T extends CotomyElementWrap = CotomyElementWrap>(selector: string = "*", type: typeof CotomyElementWrap = CotomyElementWrap): T {
+    public firstChild<T extends CotomyElement = CotomyElement>(selector: string = "*", type: typeof CotomyElement = CotomyElement): T {
         const elements = this.children<T>(selector, type);
-        return elements.shift() ?? CotomyElementWrap.empty<T>(type);
+        return elements.shift() ?? CotomyElement.empty<T>(type);
     }
 
-    public lastChild<T extends CotomyElementWrap = CotomyElementWrap>(selector: string = "*", type: typeof CotomyElementWrap = CotomyElementWrap): T {
+    public lastChild<T extends CotomyElement = CotomyElement>(selector: string = "*", type: typeof CotomyElement = CotomyElement): T {
         const elements = this.children<T>(selector, type);
-        return elements.pop() ?? CotomyElementWrap.empty<T>(type);
+        return elements.pop() ?? CotomyElement.empty<T>(type);
     }
 
-    public closest<T extends CotomyElementWrap = CotomyElementWrap>(selector: string, type: typeof CotomyElementWrap = CotomyElementWrap): T {
+    public closest<T extends CotomyElement = CotomyElement>(selector: string, type: typeof CotomyElement = CotomyElement): T {
         const closestElement = this.element.closest(selector);
         if (closestElement !== null && closestElement instanceof HTMLElement) {
             return <T>new type(closestElement);
         } else {
-            return CotomyElementWrap.empty<T>(type);
+            return CotomyElement.empty<T>(type);
         }
     }
 
@@ -591,42 +591,42 @@ export class CotomyElementWrap {
 
     //#region 内包するElement
 
-    public find<T extends CotomyElementWrap = CotomyElementWrap>(selector: string, type: typeof CotomyElementWrap = CotomyElementWrap): T[] {
+    public find<T extends CotomyElement = CotomyElement>(selector: string, type: typeof CotomyElement = CotomyElement): T[] {
         const elements = Array.from(this.element.querySelectorAll(selector)) as HTMLElement[];
         return <T[]>elements.map(e => new type(e));
     }
 
-    public first<T extends CotomyElementWrap = CotomyElementWrap>(selector: string = "*", type: typeof CotomyElementWrap = CotomyElementWrap): T {
+    public first<T extends CotomyElement = CotomyElement>(selector: string = "*", type: typeof CotomyElement = CotomyElement): T {
         const elements = this.find(selector, type);
-        return <T>elements.shift() ?? CotomyElementWrap.empty<T>(type);
+        return <T>elements.shift() ?? CotomyElement.empty<T>(type);
     }
 
-    public prepend(prepend: CotomyElementWrap): this {
+    public prepend(prepend: CotomyElement): this {
         this._element.prepend(prepend.element);
         return this;
     }
 
-    public append(target: CotomyElementWrap): this {
+    public append(target: CotomyElement): this {
         this.element.append(target.element);
         return this;
     }
 
-    public appends(targets: CotomyElementWrap[]): this {
+    public appends(targets: CotomyElement[]): this {
         targets.forEach(e => this.append(e));
         return this;
     }
 
-    public appendTo(target: CotomyElementWrap): this {
+    public appendTo(target: CotomyElement): this {
         target.element.append(this.element);
         return this;
     }
 
-    public appendBefore(append: CotomyElementWrap): this {
+    public appendBefore(append: CotomyElement): this {
         this.element.before(append.element);
         return this;
     }
 
-    public appendAfter(append: CotomyElementWrap): this {
+    public appendAfter(append: CotomyElement): this {
         this.element.after(append.element);
         return this;
     }
@@ -873,7 +873,7 @@ export class CotomyElementWrap {
 
     private static _intersectionObserver: IntersectionObserver | null = null;
     public static get intersectionObserver(): IntersectionObserver {
-        return CotomyElementWrap._intersectionObserver = CotomyElementWrap._intersectionObserver
+        return CotomyElement._intersectionObserver = CotomyElement._intersectionObserver
                 ?? new IntersectionObserver(entries => {
                     entries.filter(entry => entry.isIntersecting).forEach(
                             entry => entry.target.dispatchEvent(new Event("inview")));
@@ -884,7 +884,7 @@ export class CotomyElementWrap {
 
     public inview(handle: ((e: Event) => void | Promise<void>) | null = null): this {
         if (handle) {
-            CotomyElementWrap.intersectionObserver.observe(this.element);
+            CotomyElement.intersectionObserver.observe(this.element);
             this.element.addEventListener("inview", async e => await handle(e));
         } else {
             this.trigger("inview");
@@ -894,7 +894,7 @@ export class CotomyElementWrap {
 
     public outview(handle: ((e: Event) => void | Promise<void>) | null = null): this {
         if (handle) {
-            CotomyElementWrap.intersectionObserver.observe(this.element);
+            CotomyElement.intersectionObserver.observe(this.element);
             this.element.addEventListener("outview", async e => await handle(e));
         } else {
             this.trigger("outview");
@@ -987,9 +987,9 @@ export class CotomyElementWrap {
     //#endregion
 }
 
-export class CotomyMetaElement extends CotomyElementWrap {
+export class CotomyMetaElement extends CotomyElement {
     public static get(name: string): CotomyMetaElement {
-        return CotomyElementWrap.first<CotomyMetaElement>(`meta[name="${name}" i]`, CotomyMetaElement);
+        return CotomyElement.first<CotomyMetaElement>(`meta[name="${name}" i]`, CotomyMetaElement);
     }
 
     public get content(): string {
@@ -1008,12 +1008,12 @@ export class CotomyWindow {
     }
 
 
-    private _body: CotomyElementWrap = CotomyElementWrap.empty();
+    private _body: CotomyElement = CotomyElement.empty();
     private _mutationObserver: MutationObserver | null = null;
 
     public initialize() {
         if (!this.initialized) {
-            this._body = CotomyElementWrap.first("body");
+            this._body = CotomyElement.first("body");
 
             const changeLayoutEvents = ["resize", "scroll", "orientationchange", "fullscreenchange", "app:ready"];
             changeLayoutEvents.forEach(e => {
@@ -1035,19 +1035,19 @@ export class CotomyWindow {
             });
 
             this.resize(() => {
-                document.querySelectorAll(`[${CotomyElementWrap.LISTEN_LAYOUT_EVENTS_ATTRIBUTE}]`).forEach(e => {
+                document.querySelectorAll(`[${CotomyElement.LISTEN_LAYOUT_EVENTS_ATTRIBUTE}]`).forEach(e => {
                     e.dispatchEvent(new CustomEvent("app:resize"));
                 });
             });
 
             this.scroll(() => {
-                document.querySelectorAll(`[${CotomyElementWrap.LISTEN_LAYOUT_EVENTS_ATTRIBUTE}]`).forEach(e => {
+                document.querySelectorAll(`[${CotomyElement.LISTEN_LAYOUT_EVENTS_ATTRIBUTE}]`).forEach(e => {
                     e.dispatchEvent(new CustomEvent("app:scroll"));
                 });
             });
 
             this.changeLayout(() => {
-                document.querySelectorAll(`[${CotomyElementWrap.LISTEN_LAYOUT_EVENTS_ATTRIBUTE}]`).forEach(e => {
+                document.querySelectorAll(`[${CotomyElement.LISTEN_LAYOUT_EVENTS_ATTRIBUTE}]`).forEach(e => {
                     e.dispatchEvent(new CustomEvent("app:changelayout"));
                 });
             });
@@ -1058,7 +1058,7 @@ export class CotomyWindow {
                 mutations.forEach(mutation => {
                     mutation.removedNodes.forEach(node => {
                         if (node instanceof HTMLElement) {
-                            const element = new CotomyElementWrap(node);
+                            const element = new CotomyElement(node);
                             element.trigger("removed");
                         }
                     });
@@ -1075,18 +1075,18 @@ export class CotomyWindow {
         return this._body.attached;
     }
 
-    public get body(): CotomyElementWrap {
+    public get body(): CotomyElement {
         return this._body;
     }
 
-    public append(e: CotomyElementWrap) {
+    public append(e: CotomyElement) {
         this._body.append(e);
     }
 
-    public moveNext(focused: CotomyElementWrap, shift: boolean = false) {
+    public moveNext(focused: CotomyElement, shift: boolean = false) {
         const selector = "input, a, select, button, textarea";
         const focusableElements = Array.from(this.body.element.querySelectorAll(selector))
-                .map(e => new CotomyElementWrap(<HTMLElement>e))
+                .map(e => new CotomyElement(<HTMLElement>e))
                 .filter(e => e.width > 0 && e.height > 0 && e.visible && e.enabled && !e.hasAttribute("readonly"));
 
         const focusedIndex = focusableElements.map(e => e.element).indexOf(focused.element);

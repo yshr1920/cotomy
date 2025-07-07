@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { StatusCodes } from "http-status-codes";
 import { CotomyRestApi, CotomyRestApiResponse, CotomyViewRenderer } from "./api";
-import { CotomyElementWrap, CotomyWindow } from "./view";
+import { CotomyElement, CotomyWindow } from "./view";
 
 
 
@@ -15,7 +15,7 @@ export class CotomyActionEvent extends Event {
 }
 
 
-export abstract class CotomyFormBase extends CotomyElementWrap {
+export abstract class CotomyFormBase extends CotomyElement {
     public constructor(element: HTMLFormElement | string, css: string | null = null) {
         super(element, css);
     }
@@ -217,7 +217,7 @@ export class CotomyApiForm extends CotomyFormBase {
         this.setAttribute("data-id", id);
     }
 
-    public get identifierInputs(): CotomyElementWrap[] {
+    public get identifierInputs(): CotomyElement[] {
         return this.find("[data-keyindex]").sort((a, b) => {
             const aIndex = parseInt(a.attribute("data-keyindex") ?? "0");
             const bIndex = parseInt(b.attribute("data-keyindex") ?? "0");
@@ -312,13 +312,13 @@ export class CotomyApiForm extends CotomyFormBase {
 
 
 export class CotomyFillApiForm extends CotomyApiForm {
-    private _fillers: { [key: string]: (input: CotomyElementWrap, value: any) => void } = {};
+    private _fillers: { [key: string]: (input: CotomyElement, value: any) => void } = {};
 
     public constructor(element: HTMLFormElement | string, css: string | null = null) {
         super(element, css);
     }
 
-    public filler(type: string, callback: (input: CotomyElementWrap, value: any) => void): this {
+    public filler(type: string, callback: (input: CotomyElement, value: any) => void): this {
         this._fillers[type] = callback;
         return this;
     }

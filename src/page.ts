@@ -1,5 +1,5 @@
 import { CotomyFormBase } from "./form";
-import { CotomyElementWrap, CotomyWindow } from "./view";
+import { CotomyElement, CotomyWindow } from "./view";
 
 
 export class CotomyUrl {
@@ -82,7 +82,7 @@ export class CotomyPageController {
         this.body.convertUtcToLocal();
     }
 
-    public get body(): CotomyElementWrap {
+    public get body(): CotomyElement {
         return CotomyWindow.instance.body;
     }
 

@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { StatusCodes } from "http-status-codes";
 import LocaleCurrency from 'locale-currency';
-import { CotomyElementWrap } from "./view";
+import { CotomyElement } from "./view";
 
 
 //#region 例外処理
@@ -158,12 +158,12 @@ export class CotomyViewRenderer {
     private _locale: string | null = null;
     private _currency: string | null = null;
 
-    private _renderers: { [key: string]: (element: CotomyElementWrap, value: any) => void } = {};
+    private _renderers: { [key: string]: (element: CotomyElement, value: any) => void } = {};
 
     private _builded: boolean = false;
     
 
-    public constructor(private readonly element: CotomyElementWrap) {
+    public constructor(private readonly element: CotomyElement) {
     }
 
     protected get locale(): string {
@@ -174,7 +174,7 @@ export class CotomyViewRenderer {
         return this._currency = this._currency || LocaleCurrency.getCurrency(this.locale) || 'USD';
     }
 
-    public renderer(type: string, callback: (element: CotomyElementWrap, value: any) => void): this {
+    public renderer(type: string, callback: (element: CotomyElement, value: any) => void): this {
         this._renderers[type] = callback;
         return this;
     }
@@ -186,15 +186,15 @@ export class CotomyViewRenderer {
     public build(): this {
         if (!this.builded) {
             this.renderer("mail", (element, value) => {
-                CotomyElementWrap.create(/* html */`<a href="mailto:${value}">${value}</a>`).appendTo(element);
+                CotomyElement.create(/* html */`<a href="mailto:${value}">${value}</a>`).appendTo(element);
             });
 
             this.renderer("tel", (element, value) => {
-                CotomyElementWrap.create(/* html */`<a href="tel:${value}">${value}</a>`).appendTo(element);
+                CotomyElement.create(/* html */`<a href="tel:${value}">${value}</a>`).appendTo(element);
             });
 
             this.renderer("url", (element, value) => {
-                CotomyElementWrap.create(/* html */`<a href="${value}" target="_blank">${value}</a>`).appendTo(element);
+                CotomyElement.create(/* html */`<a href="${value}" target="_blank">${value}</a>`).appendTo(element);
             });
 
             this.renderer("number", (element, value) => {
