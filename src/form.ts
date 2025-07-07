@@ -1,0 +1,429 @@
+import dayjs from "dayjs";
+import { StatusCodes } from "http-status-codes";
+import { CotomyRestApi, CotomyRestApiResponse, CotomyViewRenderer } from "./api";
+import { CotomyElementWrap, CotomyWindow } from "./view";
+
+
+
+export class CotomyActionEvent extends Event {
+    public action: string;
+
+    constructor(action: string) {
+        super('app:action', { bubbles: true, cancelable: true });
+        this.action = action;
+    }
+}
+
+
+export abstract class CotomyFormBase extends CotomyElementWrap {
+    public constructor(element: HTMLFormElement | string, css: string | null = null) {
+        super(element, css);
+    }
+
+
+    //#region フォーム識別
+    
+    public get formId(): string {
+        if (!this.hasAttribute("id")) {
+            this.setAttribute("id", this.scopeId);
+        }
+        return this.attribute("id")!;
+    }
+
+    //#endregion
+
+
+
+    //#region フォームの基本情報
+
+    public method(): string {
+        return this.attribute("method") ?? "get";
+    }
+
+    public actionUri(): string {
+        return this.attribute("action") ?? location.pathname + location.search;
+    }
+
+    public get autoComplete(): boolean {
+        return this.attribute("autocomplete") === "on";
+    }
+
+    public set autoComplete(value: boolean) {
+        this.setAttribute("autocomplete", value ? "on" : "off");
+    }
+
+    //#endregion
+    
+
+
+    //#region フォームの再読み込み
+
+    public reload(): void {
+        location.reload();
+    }
+
+    //#endregion
+
+
+
+    //#region フォームの構築
+
+    public get builded(): boolean {
+        return this.hasAttribute("data-builded");
+    }
+    
+    public build(): this {
+        if (!this.builded) {
+            this.on("submit", async e => {
+                await this.submitAsync(e);
+            });
+            
+            CotomyWindow.instance.pageshow(e => {
+                if (e.persisted) {
+                    this.reload();
+                }
+            });
+
+            this.find("button[type=button][data-action]").forEach(e => {
+                e.click(() => {
+                    this.trigger("app:action", new CotomyActionEvent(e.attribute("data-action")!));
+                })
+            });
+
+            this.setAttribute("data-builded");
+        }
+        return this;
+    }
+
+    //#endregion
+
+
+
+    //#region Submit
+
+    public submit(): void {
+        this.trigger("submit");
+    }
+
+    protected abstract submitAsync(e: Event): Promise<void>;
+
+    //#endregion
+
+
+
+    //#region Form Operations
+
+    public action(handle: ((event: CotomyActionEvent) => void | Promise<void>) | string): this {
+        if (typeof handle === "string") {
+            this.trigger("app:action", new CotomyActionEvent(handle));
+        } else {
+            this.element.addEventListener("app:action", async e => {
+                await handle(e as CotomyActionEvent);
+            });
+        }
+        return this;
+    }
+    
+    //#endregion
+}
+
+
+
+export class CotomyQueryForm extends CotomyFormBase {
+    public constructor(element: HTMLFormElement | string, css: string | null = null) {
+        super(element, css);
+        this.autoComplete = true;
+    }
+
+    public method(): string {
+        return "get";   // QueryFormはGETメソッドを使用することが前提
+    }
+
+
+    protected async submitAsync(e: Event): Promise<void> {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const uri = this.actionUri();
+
+        // クエリパラメータを連想配列にする
+        const queryParams: { [key: string]: string } = {};
+        const queryString = uri.split("?")[1];
+        if (queryString) {
+            queryString.split("&").forEach(param => {
+                const [key, value] = param.split("=");
+                if (key && value) {
+                    queryParams[key] = decodeURIComponent(value);
+                }
+            });
+        }
+
+        // フォームの入力値をクエリパラメータに追加
+        this.find("[name]").forEach(input => {
+            const name = input.attribute("name");
+            if (name) {
+                const value = input.value;
+                if (value) {
+                    queryParams[name] = encodeURIComponent(value);
+                } else {
+                    delete queryParams[name]; // 空の値は削除
+                }
+            }
+        });
+
+        // クエリパラメータを再構築
+        const newQueryString = Object.entries(queryParams)
+            .map(([key, value]) => `${key}=${value}`)
+            .join("&");
+
+        location.href = `${uri.split("?")[0]}?${newQueryString}`;
+    }
+}
+
+
+
+export class CotomyApiForm extends CotomyFormBase {
+    private _apiClient: CotomyRestApi | null = null;
+    private _unauthorizedHandler: ((response: CotomyRestApiResponse) => void) | null = null;
+
+    public constructor(element: HTMLFormElement | string, css: string | null = null) {
+        super(element, css);
+    }
+
+    public apiClient(): CotomyRestApi {
+        return this._apiClient ?? (this._apiClient = new CotomyRestApi({
+            unauthorizedHandler: response => {
+                if (this._unauthorizedHandler) {
+                    this._unauthorizedHandler(response);
+                } else {
+                    this._apiClient?.unauthorizedHandler(response);
+                }
+            }
+        }));
+    }
+
+    public actionUri(): string {
+        return `${this.attribute("action")!}/${this.autoIncrement ? (this.attribute("data-id") || "") : this.identifierString}`;
+    }
+
+    //#region データ識別
+
+    public get identifier(): string | undefined {
+        return this.attribute("data-id") || undefined;
+    }
+
+    protected setIncrementedId(response: CotomyRestApiResponse) {
+        const id = response.headers.get("Location")?.split("/").pop();
+        this.setAttribute("data-id", id);
+    }
+
+    public get identifierInputs(): CotomyElementWrap[] {
+        return this.find("[data-keyindex]").sort((a, b) => {
+            const aIndex = parseInt(a.attribute("data-keyindex") ?? "0");
+            const bIndex = parseInt(b.attribute("data-keyindex") ?? "0");
+            return aIndex - bIndex;
+        });
+    }
+
+    public get identifierString(): string {
+        return this.identifier ?? this.identifierInputs.map(e => e.value).join("/");
+    }
+
+    public get autoIncrement(): boolean {
+        return !this.identifier && this.identifierInputs.length == 0;
+    }
+
+    //#endregion
+
+
+
+    //#region API Submit
+
+    public method(): string {
+        return this.autoIncrement || !this.identifierInputs.every(e => e.readonly) ? "post" : "put";
+    }
+
+    public formData(): globalThis.FormData {
+        const formElement = <HTMLFormElement>this.element;
+        const formData = new globalThis.FormData(formElement);
+
+        this.find("input[type=datetime-local][name]:not([disabled]):not([readonly])").forEach(input => {
+            const localDateTime = input.value;
+            if (localDateTime) {
+                const date = new Date(localDateTime);
+                if (!isNaN(date.getTime())) {
+                    formData.set(input.attribute("name")!, dayjs(date).format("YYYY-MM-DDTHH:mmZ"));
+                }
+            }
+        });
+
+        return formData;
+    };
+
+    protected async submitAsync(e: Event): Promise<void> {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const formData = this.formData();
+        await this.submitToApiAsync(formData);
+    }
+
+    protected async submitToApiAsync(formData: globalThis.FormData): Promise<CotomyRestApiResponse> {
+        const api = this.apiClient();
+
+        //formDataの内容をデバッグ出力
+        for (const [key, value] of (<any>formData).entries()) {
+            console.log(key, value);
+        }
+
+        const response = await api.submitAsync({
+            method: this.method(),
+            action: this.actionUri(),
+            body: formData,
+        });
+
+        // APIのレスポンスからidを設定
+        if (this.autoIncrement && response.status === StatusCodes.CREATED) {
+            this.setIncrementedId(response);
+        }
+
+        // レスポンスのLocationヘッダーがあれば、リダイレクト
+        const redirect = response.headers.get("Location");
+        if (redirect) {
+            location.href = redirect;
+            return response;
+        }
+
+        return response;
+    }
+
+    //#endregion
+
+
+    //#region 認証エラー時の処理
+
+    public unauthorized(handle: (response: CotomyRestApiResponse) => void): this {
+        this._unauthorizedHandler = handle;
+        return this;
+    }
+
+    //#endregion
+}
+
+
+export class CotomyFillApiForm extends CotomyApiForm {
+    private _fillers: { [key: string]: (input: CotomyElementWrap, value: any) => void } = {};
+
+    public constructor(element: HTMLFormElement | string, css: string | null = null) {
+        super(element, css);
+    }
+
+    public filler(type: string, callback: (input: CotomyElementWrap, value: any) => void): this {
+        this._fillers[type] = callback;
+        return this;
+    }
+
+    public build(): this {
+        if (!this.builded) {
+            super.build();
+
+            this.filler("datetime-local", (input, value) => {
+                const hasOffset = /[+-]\d{2}:\d{2}$/.test(value);
+                const date = hasOffset ? new Date(value) : new Date(`${value}Z`);
+                if (!isNaN(date.getTime())) {
+                    input.value = dayjs(date).format("YYYY-MM-DDTHH:mm");
+                } else {
+                    input.value = "";
+                }
+            });
+
+            this.filler("checkbox", (input, value) => {
+                input.removeAttribute("checked");
+                if (value) {
+                    input.setAttribute("checked");
+                }
+            });
+
+            this.filler("radio", (input, value) => {
+                input.removeAttribute("checked");
+                if (input.value === value) {
+                    input.setAttribute("checked");
+                }
+            });
+
+            CotomyWindow.instance.ready(async () => {
+                await this.loadAsync();
+            });
+        }
+        return this;
+    }
+
+
+    protected async submitToApiAsync(formData: globalThis.FormData): Promise<CotomyRestApiResponse> {
+        const response = await super.submitToApiAsync(formData);
+        if (response.ok) {
+            this.renderer().applyAsync(response);
+        }
+        return response;
+    }
+
+
+
+
+    public reload(): void {
+        this.loadAsync();
+    }
+
+    public loadActionUri(): string {
+        return this.actionUri();
+    }
+
+    public renderer(): CotomyViewRenderer {
+        return new CotomyViewRenderer(this).build();
+    }
+
+    public async loadAsync(): Promise<CotomyRestApiResponse> {
+        if (this.autoIncrement || !this.identifierInputs.every(e => e.value)) return new CotomyRestApiResponse();
+        const api = this.apiClient();
+        const response = await api.getAsync(this.loadActionUri());
+        if (response.ok) {
+            await this.fillAsync(response);
+        } else if (response.status === StatusCodes.NOT_FOUND) {
+            return response;
+        } else {
+            throw new Error(`Failed to load data: ${response.status} ${response.statusText}`);
+        }
+        return response;
+    }
+
+    protected async fillAsync(response: CotomyRestApiResponse): Promise<void> {
+        if (response.ok && response.available) {
+            for (const [key, value] of Object.entries(await response.objectAsync())) {
+                if (key.endsWith('[]')) {
+                    continue;
+                }
+
+                this.find(`input[name="${key}" i]:not([data-fill="false"]):not([multiple]),
+                        textarea[name="${key}" i]:not([data-fill="false"]), 
+                        select[name="${key}" i]:not([data-fill="false"]):not([multiple])`).forEach(input => {
+                    const type = input.attribute("type")?.toLowerCase();
+                    if (type && this._fillers[type]) {
+                        this._fillers[type](input, value);
+                    } else {
+                        input.value = String(value);
+                    }
+                });
+            }
+            
+            await this.renderer().applyAsync(response);
+        }
+
+        // 識別子の要素をreadonlyにする
+        this.identifierInputs.forEach(e => e.setElementStyle("background-color", "#f0f0f0"));
+        this.identifierInputs.forEach(e => e.setAttribute("readonly"));
+
+        // textareaを自動リサイズ
+        this.find("textarea").forEach(e => e.input());
+    }
+}
+

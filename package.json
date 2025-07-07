@@ -1,0 +1,31 @@
+{
+  "name": "cotomy",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack --mode=production",
+    "dev": "webpack --watch",
+    "clean": "rm -rf dist",
+    "test": "echo \"(optional) add test runner like vitest or jest\"",
+    "prepare": "npm run build",
+    "release": "npm run clean && npm run build && npm version patch && npm publish",
+    "check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write src"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "webpack": "^5.99.9",
+    "webpack-cli": "^6.0.1"
+  },
+  "dependencies": {
+    "cuid": "^3.0.0",
+    "dayjs": "^1.11.13",
+    "http-status-codes": "^2.3.0",
+    "locale-currency": "^0.0.4"
+  }
+}
