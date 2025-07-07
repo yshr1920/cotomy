@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "build": "webpack --mode=production",
-    "dev": "webpack --watch",
+    "dev": "webpack --mode=development",
     "clean": "rm -rf dist",
     "test": "echo \"(optional) add test runner like vitest or jest\"",
     "prepare": "npm run build",

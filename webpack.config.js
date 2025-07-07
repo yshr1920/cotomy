@@ -1,9 +1,8 @@
 const path = require('path');
-const { config } = require('process');
 
 module.exports = {
   entry: './src/index.ts',
-  target: ['web', 'es2020'], // または 'browserslist'
+  target: ['web', 'es2020'],
   output: {
     filename: 'index.js',
     path: path.resolve(__dirname, 'dist'),
@@ -23,10 +22,10 @@ module.exports = {
         test: /\.ts$/,
         loader: 'ts-loader',
         options: {
-            configFile: 'tsconfig.json'
+          configFile: 'tsconfig.json'
         },
         exclude: /node_modules/
       }
     ]
-  }
+  },
 };

@@ -4,6 +4,7 @@ import LocaleCurrency from 'locale-currency';
 import { CotomyElement } from "./view";
 
 
+
 //#region 例外処理
 
 export class CotomyResponseJsonParseException extends Error {
@@ -410,6 +411,7 @@ export class CotomyRestApi {
             parameters.forEach((value, key) => {
                 params.append(key, String(value));
             });
+            queryString = params.toString();
         } else if (parameters) {
             queryString = new URLSearchParams(
                 Object.fromEntries(
@@ -418,38 +420,65 @@ export class CotomyRestApi {
             ).toString();
         }
         const fullUrl = queryString ? `${path}?${queryString}` : path;
+        if (localStorage.getItem('cotomy:debug') === 'true') {
+            console.debug(`GET request to: ${fullUrl}`);
+        }
         return this.requestAsync(Methods.GET, fullUrl);
     }
 
     public async postAsync(path: string, body: globalThis.FormData | Record<string, string | number> | any): Promise<CotomyRestApiResponse> {
+        if (localStorage.getItem('cotomy:debug') === 'true') {
+            console.debug(`POST request to: ${path}`);
+        }
         return this.requestAsync(Methods.POST, path, body);
     }
 
     public async putAsync(path: string, body: globalThis.FormData | Record<string, string | number> | any): Promise<CotomyRestApiResponse> {
+        if (localStorage.getItem('cotomy:debug') === 'true') {
+            console.debug(`PUT request to: ${path}`);
+        }
         return this.requestAsync(Methods.PUT, path, body);
     }
 
     public async patchAsync(path: string, body: globalThis.FormData | Record<string, string | number> | any): Promise<CotomyRestApiResponse> {
+        if (localStorage.getItem('cotomy:debug') === 'true') {
+            console.debug(`PATCH request to: ${path}`);
+        }
         return this.requestAsync(Methods.PATCH, path, body);
     }
 
     public async deleteAsync(path: string): Promise<CotomyRestApiResponse> {
+        if (localStorage.getItem('cotomy:debug') === 'true') {
+            console.debug(`DELETE request to: ${path}`);
+        }
         return this.requestAsync(Methods.DELETE, path);
     }
 
     public async headAsync(path: string): Promise<CotomyRestApiResponse> {
+        if (localStorage.getItem('cotomy:debug') === 'true') {
+            console.debug(`HEAD request to: ${path}`);
+        }
         return this.requestAsync(Methods.HEAD, path);
     }
 
     public async optionsAsync(path: string): Promise<CotomyRestApiResponse> {
+        if (localStorage.getItem('cotomy:debug') === 'true') {
+            console.debug(`OPTIONS request to: ${path}`);
+        }
         return this.requestAsync(Methods.OPTIONS, path);
     }
 
     public async traceAsync(path: string): Promise<CotomyRestApiResponse> {
+        if (localStorage.getItem('cotomy:debug') === 'true') {
+            console.debug(`TRACE request to: ${path}`);
+        }
         return this.requestAsync(Methods.TRACE, path);
     }
 
     public async connectAsync(path: string): Promise<CotomyRestApiResponse> {
+        if (localStorage.getItem('cotomy:debug') === 'true') {
+            console.debug(`CONNECT request to: ${path}`);
+        }
         return this.requestAsync(Methods.CONNECT, path);
     }
 

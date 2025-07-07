@@ -271,11 +271,6 @@ export class CotomyApiForm extends CotomyFormBase {
     protected async submitToApiAsync(formData: globalThis.FormData): Promise<CotomyRestApiResponse> {
         const api = this.apiClient();
 
-        //formDataの内容をデバッグ出力
-        for (const [key, value] of (<any>formData).entries()) {
-            console.log(key, value);
-        }
-
         const response = await api.submitAsync({
             method: this.method(),
             action: this.actionUri(),
