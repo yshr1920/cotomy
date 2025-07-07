@@ -1,2 +1,15 @@
+# build output
 dist/
+
+# dependencies
 node_modules/
+
+# npm lockfile (for libraries, optional)
+package-lock.json
+
+# macOS
+.DS_Store
+
+# VSCode (optional)
+.vscode/
+
