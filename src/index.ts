@@ -1,5 +1,5 @@
 export type { CotomyInvalidFormDataBodyException, CotomyResponseJsonParseException, CotomyRestApi, CotomyRestApiResponse, CotomyViewRenderer } from "./api";
 export type { CotomyActionEvent, CotomyApiForm, CotomyFillApiForm, CotomyFormBase, CotomyQueryForm } from "./form";
 export type { CotomyPageController, CotomyUrl } from "./page";
-export type { CotomyElement as CotomyElementWrap, CotomyMetaElement, CotomyWindow } from "./view";
+export type { CotomyElement, CotomyMetaElement, CotomyWindow } from "./view";
 
