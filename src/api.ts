@@ -330,7 +330,7 @@ export class CotomyRestApi {
         const bodyTransformers: { [key: string]: (body: globalThis.FormData | Record<string, string> | any) => any } = {
             "application/json": (body) => JSON.stringify(body),
             "application/x-www-form-urlencoded": (body) => {
-                if (body instanceof FormData) {
+                if (body instanceof globalThis.FormData) {
                     let params = new URLSearchParams();
                     body.forEach((value, key) => {
                         params.append(key, String(value));
@@ -341,7 +341,7 @@ export class CotomyRestApi {
                 }
             },
             "multipart/form-data": (body) => {
-                if (!(body instanceof FormData)) {
+                if (!(body instanceof globalThis.FormData)) {
                     throw new CotomyInvalidFormDataBodyException("Body must be an instance of FormData for multipart/form-data.");
                 }
                 return body;
@@ -403,9 +403,9 @@ export class CotomyRestApi {
 
     //#region HTTPメソッド
 
-    public async getAsync(path: string, parameters: globalThis.FormData | Record<string, string | number> | null = null): Promise<CotomyRestApiResponse> {
+    public async getAsync(path: string, parameters?: globalThis.FormData | Record<string, string | number>): Promise<CotomyRestApiResponse> {
         let queryString = '';
-        if (parameters instanceof FormData) {
+        if (parameters instanceof globalThis.FormData) {
             let params = new URLSearchParams();
             parameters.forEach((value, key) => {
                 params.append(key, String(value));
@@ -453,13 +453,10 @@ export class CotomyRestApi {
         return this.requestAsync(Methods.CONNECT, path);
     }
 
-    //#endregion HTTPメソッド
-
-
     public async submitAsync(form: ICotomyRestSubmitForm): Promise<CotomyRestApiResponse> {
-        if (!(form.body instanceof FormData)) {
-            throw new CotomyInvalidFormDataBodyException();
-        }
-        return this.requestAsync(form.method, form.action, form.body);
+        return form.method.toUpperCase() === Methods.GET ? this.getAsync(form.action, form.body)
+                : this.requestAsync(form.method.toUpperCase(), form.action, form.body);
     }
+
+    //#endregion HTTPメソッド
 }
