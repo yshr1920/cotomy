@@ -29,7 +29,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Warning
 
-This project is in its early stages, and the API may change. The current version is `0.x.x`, which means breaking changes may occur without notice.
+This project is in its early stages, and the API is still evolving. Since the version is below `1.0.0`, breaking changes may occur without prior notice.
 
 
 ## Contact
