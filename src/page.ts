@@ -66,7 +66,7 @@ export class CotomyPageController {
         CotomyWindow.instance.load(async () => {
             CotomyWindow.instance.initialize();
             await CotomyPageController._instance!.initializeAsync();
-            CotomyWindow.instance.trigger("app:ready");
+            CotomyWindow.instance.trigger("cotomy:ready");
         });
         return this._instance as T;
     }

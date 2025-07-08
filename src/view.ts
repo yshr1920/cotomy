@@ -957,9 +957,9 @@ export class CotomyElement {
     public resize(handle: ((e: Event) => void | Promise<void>) | null = null): this {
         this.listenLayoutEvents();
         if (handle) {
-            this.element.addEventListener("app:resize", async e => await handle(e));
+            this.element.addEventListener("cotomy:resize", async e => await handle(e));
         } else {
-            this.trigger("app:resize");
+            this.trigger("cotomy:resize");
         }
         return this;
     }
@@ -967,9 +967,9 @@ export class CotomyElement {
     public scroll(handle: ((e: Event) => void | Promise<void>) | null = null): this {
         this.listenLayoutEvents();
         if (handle) {
-            this.element.addEventListener("app:scroll", async e => await handle(e));
+            this.element.addEventListener("cotomy:scroll", async e => await handle(e));
         } else {
-            this.trigger("app:scroll");
+            this.trigger("cotomy:scroll");
         }
         return this;
     }
@@ -977,9 +977,9 @@ export class CotomyElement {
     public changelayout(handle: ((e: Event) => void | Promise<void>) | null = null): this {
         this.listenLayoutEvents();
         if (handle) {
-            this.element.addEventListener("app:changelayout", async e => await handle(e));
+            this.element.addEventListener("cotomy:changelayout", async e => await handle(e));
         } else {
-            this.trigger("app:changelayout");
+            this.trigger("cotomy:changelayout");
         }
         return this;
     }
@@ -1015,10 +1015,10 @@ export class CotomyWindow {
         if (!this.initialized) {
             this._body = CotomyElement.first("body");
 
-            const changeLayoutEvents = ["resize", "scroll", "orientationchange", "fullscreenchange", "app:ready"];
+            const changeLayoutEvents = ["resize", "scroll", "orientationchange", "fullscreenchange", "cotomy:ready"];
             changeLayoutEvents.forEach(e => {
                 window.addEventListener(e, () => {
-                    const changeLayoutEvent = new CustomEvent("app:changelayout");
+                    const changeLayoutEvent = new CustomEvent("cotomy:changelayout");
                     window.dispatchEvent(changeLayoutEvent);
                 }, { passive: true });
             });
@@ -1036,19 +1036,19 @@ export class CotomyWindow {
 
             this.resize(() => {
                 document.querySelectorAll(`[${CotomyElement.LISTEN_LAYOUT_EVENTS_ATTRIBUTE}]`).forEach(e => {
-                    e.dispatchEvent(new CustomEvent("app:resize"));
+                    e.dispatchEvent(new CustomEvent("cotomy:resize"));
                 });
             });
 
             this.scroll(() => {
                 document.querySelectorAll(`[${CotomyElement.LISTEN_LAYOUT_EVENTS_ATTRIBUTE}]`).forEach(e => {
-                    e.dispatchEvent(new CustomEvent("app:scroll"));
+                    e.dispatchEvent(new CustomEvent("cotomy:scroll"));
                 });
             });
 
             this.changeLayout(() => {
                 document.querySelectorAll(`[${CotomyElement.LISTEN_LAYOUT_EVENTS_ATTRIBUTE}]`).forEach(e => {
-                    e.dispatchEvent(new CustomEvent("app:changelayout"));
+                    e.dispatchEvent(new CustomEvent("cotomy:changelayout"));
                 });
             });
 
@@ -1113,7 +1113,7 @@ export class CotomyWindow {
     }
 
     public ready(handle: ((e: Event) => void | Promise<void>)) {
-        window.addEventListener("app:ready", async e => await handle(e));
+        window.addEventListener("cotomy:ready", async e => await handle(e));
     }
 
     public on(event: string, handle: (e: Event) => void | Promise<void>) {
@@ -1138,9 +1138,9 @@ export class CotomyWindow {
 
     public changeLayout(handle: ((event: Event) => void | Promise<void>) | null = null) {
         if (handle) {
-            window.addEventListener("app:changelayout", async e => await handle(e));
+            window.addEventListener("cotomy:changelayout", async e => await handle(e));
         } else {
-            this.trigger("app:changelayout");
+            this.trigger("cotomy:changelayout");
         }
     }
 

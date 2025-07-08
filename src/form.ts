@@ -9,7 +9,7 @@ export class CotomyActionEvent extends Event {
     public action: string;
 
     constructor(action: string) {
-        super('app:action', { bubbles: true, cancelable: true });
+        super('cotomy:action', { bubbles: true, cancelable: true });
         this.action = action;
     }
 }
@@ -86,7 +86,7 @@ export abstract class CotomyFormBase extends CotomyElement {
 
             this.find("button[type=button][data-action]").forEach(e => {
                 e.click(() => {
-                    this.trigger("app:action", new CotomyActionEvent(e.attribute("data-action")!));
+                    this.trigger("cotomy:action", new CotomyActionEvent(e.attribute("data-action")!));
                 })
             });
 
@@ -115,9 +115,9 @@ export abstract class CotomyFormBase extends CotomyElement {
 
     public action(handle: ((event: CotomyActionEvent) => void | Promise<void>) | string): this {
         if (typeof handle === "string") {
-            this.trigger("app:action", new CotomyActionEvent(handle));
+            this.trigger("cotomy:action", new CotomyActionEvent(handle));
         } else {
-            this.element.addEventListener("app:action", async e => {
+            this.element.addEventListener("cotomy:action", async e => {
                 await handle(e as CotomyActionEvent);
             });
         }
