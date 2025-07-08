@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import { StatusCodes } from "http-status-codes";
 import { CotomyRestApi, CotomyRestApiResponse, CotomyViewRenderer } from "./api";
+import { CotomyDebugFeature, CotomyDebugSettings } from "./debug";
 import { CotomyElement, CotomyWindow } from "./view";
 
 
@@ -257,6 +258,10 @@ export class CotomyApiForm extends CotomyFormBase {
             }
         });
 
+        if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.FormData)) {
+            console.debug("FormData:", Array.from(formData.entries()));
+        }
+
         return formData;
     };
 
@@ -374,7 +379,7 @@ export class CotomyFillApiForm extends CotomyApiForm {
     }
 
     public renderer(): CotomyViewRenderer {
-        return new CotomyViewRenderer(this).build();
+        return new CotomyViewRenderer(this);
     }
 
     public async loadAsync(): Promise<CotomyRestApiResponse> {
@@ -401,11 +406,14 @@ export class CotomyFillApiForm extends CotomyApiForm {
                 this.find(`input[name="${key}" i]:not([data-fill="false"]):not([multiple]),
                         textarea[name="${key}" i]:not([data-fill="false"]), 
                         select[name="${key}" i]:not([data-fill="false"]):not([multiple])`).forEach(input => {
+                    if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Fill)) {
+                        console.debug(`Filling input[name="${key}"] with value:`, value);
+                    }
                     const type = input.attribute("type")?.toLowerCase();
                     if (type && this._fillers[type]) {
                         this._fillers[type](input, value);
                     } else {
-                        input.value = String(value);
+                        input.value = String(value || "");
                     }
                 });
             }
