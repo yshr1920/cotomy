@@ -17,7 +17,7 @@ export class CotomyActionEvent extends Event {
 
 
 export abstract class CotomyFormBase extends CotomyElement {
-    public constructor(element: HTMLElement | { html: string; css?: string | null; }) {
+    public constructor(element: HTMLElement | { html: string; css?: string | null; } | string) {
         super(element);
     }
 
@@ -131,7 +131,7 @@ export abstract class CotomyFormBase extends CotomyElement {
 
 
 export class CotomyQueryForm extends CotomyFormBase {
-    public constructor(element: HTMLElement | { html: string; css?: string | null; }) {
+    public constructor(element: HTMLElement | { html: string; css?: string | null; } | string | string) {
         super(element);
         this.autoComplete = true;
     }
@@ -187,7 +187,7 @@ export class CotomyApiForm extends CotomyFormBase {
     private _apiClient: CotomyRestApi | null = null;
     private _unauthorizedHandler: ((response: CotomyRestApiResponse) => void) | null = null;
 
-    public constructor(element: HTMLElement | { html: string; css?: string | null; }) {
+    public constructor(element: HTMLElement | { html: string; css?: string | null; } | string) {
         super(element);
     }
 
@@ -314,7 +314,7 @@ export class CotomyApiForm extends CotomyFormBase {
 export class CotomyFillApiForm extends CotomyApiForm {
     private _fillers: { [key: string]: (input: CotomyElement, value: any) => void } = {};
 
-    public constructor(element: HTMLElement | { html: string; css?: string | null; }) {
+    public constructor(element: HTMLElement | { html: string; css?: string | null; } | string) {
         super(element);
     }
 
