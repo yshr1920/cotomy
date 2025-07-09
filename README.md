@@ -20,18 +20,21 @@ The core of Cotomy is `CotomyElement`, which is constructed as a wrapper for `El
 By passing HTML and CSS strings to the constructor, it is possible to generate Element designs with a limited scope.
 
 ```typescript
-const element = new CotomyElement(/* html */\`
-  <div>
-    <p>Text</p>
-  </div>
-\`, /* css */\`
-  [scope] {
-    display: block;
-  }
-  [scope] > p {
-    text-align: center;
-  }
-\`);
+    const ce = new CotomyElement({
+        html: /* html */`
+              <div>
+                <p>Text</p>
+              </div>
+            `,
+        css: /* css */`
+            [scope] {
+              display: block;
+            }
+            [scope] > p {
+              text-align: center;
+            }
+          `
+    });
 ```
 
 ## License

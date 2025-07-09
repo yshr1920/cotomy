@@ -50,14 +50,20 @@ export class CotomyElement {
     private _parentElement: CotomyElement | null = null;
     private _removed: boolean = false;
 
-    public constructor(element: string | HTMLElement, css: string | null = null) {
-        this._element = element instanceof HTMLElement ? <HTMLElement>element : CotomyElement.createHTMLElement(element);
+    public constructor(element: HTMLElement | { html: string; css?: string | null; } | string) {
+        if (element instanceof HTMLElement) {
+            this._element = element;
+        } else if (typeof element === "string") {
+            this._element = CotomyElement.createHTMLElement(element);
+        } else {
+            this._element = CotomyElement.createHTMLElement(element.html);
+            if (element.css) {
+                this.useScopedCss(element.css);
+            }
+        }
         this.removed(() => {
             this._element = document.createElement("div");
         });
-        if (css) {
-            this.useScopedCss(css);
-        }
     }
 
 
@@ -88,7 +94,7 @@ export class CotomyElement {
         return !["script", "style", "link", "meta"].includes(this.tagname);
     }
 
-    public useScopedCss(css: string): this {
+    private useScopedCss(css: string): this {
         if (css && this.stylable) {
             const cssid = `css-${this.scopeId}`;
             CotomyElement.find(`#${cssid}`).forEach(e => e.remove());
