@@ -332,7 +332,7 @@ export class CotomyRestApi {
     }
 
 
-    private async requestAsync(method: string, path: string, body?: globalThis.FormData | Record<string, string> | any, signal?: AbortSignal): Promise<CotomyRestApiResponse> {
+    private async requestAsync<T extends CotomyRestApiResponse = CotomyRestApiResponse>(method: string, path: string, body?: globalThis.FormData | Record<string, string> | any, signal?: AbortSignal, responseType?: new (response?: Response | null) => T): Promise<T> {
 
         //#region Content-Type毎のbody変換処理
 
@@ -372,7 +372,8 @@ export class CotomyRestApi {
         }
 
         const ct = headers.get('Content-Type') || "multipart/form-data";
-        const response = new CotomyRestApiResponse(await fetch(url, {
+        const responseClass = responseType ?? CotomyRestApiResponse as new (response?: Response | null) => T;
+        const response = new responseClass(await fetch(url, {
             method,
             headers,
             credentials: this.credentials,
@@ -406,7 +407,7 @@ export class CotomyRestApi {
                 }
         }
 
-        return response;
+        return response as T;
     }
 
 
