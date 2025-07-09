@@ -188,15 +188,15 @@ export class CotomyViewRenderer {
     protected build(): this {
         if (!this.builded) {
             this.renderer("mail", (element, value) => {
-                CotomyElement.create(/* html */`<a href="mailto:${value}">${value}</a>`).appendTo(element);
+                new CotomyElement(/* html */`<a href="mailto:${value}">${value}</a>`).appendTo(element);
             });
 
             this.renderer("tel", (element, value) => {
-                CotomyElement.create(/* html */`<a href="tel:${value}">${value}</a>`).appendTo(element);
+                new CotomyElement(/* html */`<a href="tel:${value}">${value}</a>`).appendTo(element);
             });
 
             this.renderer("url", (element, value) => {
-                CotomyElement.create(/* html */`<a href="${value}" target="_blank">${value}</a>`).appendTo(element);
+                new CotomyElement(/* html */`<a href="${value}" target="_blank">${value}</a>`).appendTo(element);
             });
 
             this.renderer("number", (element, value) => {

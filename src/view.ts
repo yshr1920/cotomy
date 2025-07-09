@@ -15,11 +15,6 @@ export class CotomyElement {
         return (doc.body.firstChild as HTMLElement)!;
     }
 
-    public static create<T extends CotomyElement = CotomyElement>(html: string, type: typeof CotomyElement = CotomyElement): T {
-        const element = CotomyElement.createHTMLElement(html);
-        return <T>new type(element);
-    }
-
     public static first<T extends CotomyElement = CotomyElement>(selector: string, type: typeof CotomyElement = CotomyElement): T {
         const element = document.querySelector(selector);
         return <T>(element ? new type(<HTMLElement>element) : CotomyElement.empty(type));
