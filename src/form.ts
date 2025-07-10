@@ -248,7 +248,7 @@ export class CotomyApiForm extends CotomyFormBase {
         const formElement = <HTMLFormElement>this.element;
         const formData = new globalThis.FormData(formElement);
 
-        this.find("input[type=datetime-local][name]:not([disabled]):not([readonly])").forEach(input => {
+        this.find("input[type=datetime-local][name]:not([disabled])").forEach(input => {
             const localDateTime = input.value;
             if (localDateTime) {
                 const date = new Date(localDateTime);
