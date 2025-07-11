@@ -5,6 +5,8 @@ export enum CotomyDebugFeature {
     Fill = "fill",
     Bind = "bind",
     FormData = "formdata",
+    Html = "html",
+    Page = "page",
 }
 
 export class CotomyDebugSettings {

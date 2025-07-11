@@ -1,3 +1,4 @@
+import { CotomyDebugFeature, CotomyDebugSettings } from "./debug";
 import { CotomyFormBase } from "./form";
 import { CotomyElement, CotomyWindow } from "./view";
 
@@ -64,6 +65,9 @@ export class CotomyPageController {
         }
         this._instance = new type();
         CotomyWindow.instance.load(async () => {
+            if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Page)) {
+                console.debug("CotomyPageController initialize.");
+            }
             CotomyWindow.instance.initialize();
             await CotomyPageController._instance!.initializeAsync();
             CotomyWindow.instance.trigger("cotomy:ready");

@@ -1,5 +1,6 @@
 import cuid from "cuid";
 import dayjs from 'dayjs';
+import { CotomyDebugFeature, CotomyDebugSettings } from "./debug";
 
 
 export class CotomyElement {
@@ -54,6 +55,12 @@ export class CotomyElement {
             this._element = CotomyElement.createHTMLElement(element.html);
             if (element.css) {
                 this.useScopedCss(element.css);
+            }
+            if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Html)) {
+                console.debug(`CotomyElement {html: "${element.html}" } is created`);
+                if (element.css) {
+                    console.debug(`CotomyElement {css: "${element.css}" } is applied`);
+                }
             }
         }
         this.removed(() => {
@@ -1012,6 +1019,10 @@ export class CotomyWindow {
     private _body: CotomyElement = CotomyElement.empty();
     private _mutationObserver: MutationObserver | null = null;
 
+    public get initialized(): boolean {
+        return this._body.attached;
+    }
+
     public initialize() {
         if (!this.initialized) {
             this._body = CotomyElement.first("body");
@@ -1071,10 +1082,6 @@ export class CotomyWindow {
 
 
 
-
-    public get initialized(): boolean {
-        return this._body.attached;
-    }
 
     public get body(): CotomyElement {
         return this._body;
