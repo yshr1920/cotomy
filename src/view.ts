@@ -48,7 +48,6 @@ export class CotomyElement {
 
     private _element: HTMLElement;
     private _parentElement: CotomyElement | null = null;
-    private _removed: boolean = false;
 
     public constructor(element: HTMLElement | { html: string; css?: string | null; } | string) {
         if (element instanceof HTMLElement) {
@@ -68,7 +67,9 @@ export class CotomyElement {
             }
         }
         this.removed(() => {
-            this._element = document.createElement("div");
+            if (!this.empty) {
+                this._element = document.createElement("div");
+            }
         });
     }
 
@@ -326,9 +327,8 @@ export class CotomyElement {
     }
 
     public remove() {
-        if (!this._removed) {
+        if (this.attached) {
             this._element.remove();
-            this._element = document.createElement("div");  // 再利用禁止のため、空要素にする
         }
     }
 
@@ -664,6 +664,19 @@ export class CotomyElement {
 
     public on(event: string, handle: (e: Event) => void | Promise<void>): this {
         this.element.addEventListener(event, handle);
+        return this;
+    }
+
+    public onChild(event: string, selector: string, handle: (e: Event, matched: HTMLElement) => void | Promise<void>): this {
+        this.element.addEventListener(event, (e: Event) => {
+            if (e.target instanceof HTMLElement) {
+                const target = new CotomyElement(e.target as HTMLElement);
+                const matched = target.closest(selector);
+                if (matched) {
+                    handle(e, matched.element);
+                }
+            }
+        });
         return this;
     }
 
