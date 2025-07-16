@@ -16,7 +16,7 @@ export class CotomyActionEvent extends Event {
 }
 
 
-export abstract class CotomyFormBase extends CotomyElement {
+export abstract class CotomyForm extends CotomyElement {
     public constructor(element: HTMLElement | { html: string; css?: string | null; } | string) {
         super(element);
     }
@@ -69,12 +69,12 @@ export abstract class CotomyFormBase extends CotomyElement {
 
     //#region フォームの構築
 
-    public get builded(): boolean {
+    public get initialized(): boolean {
         return this.hasAttribute("data-builded");
     }
     
-    public build(): this {
-        if (!this.builded) {
+    public initialize(): this {
+        if (!this.initialized) {
             this.on("submit", async e => {
                 await this.submitAsync(e);
             });
@@ -130,7 +130,7 @@ export abstract class CotomyFormBase extends CotomyElement {
 
 
 
-export class CotomyQueryForm extends CotomyFormBase {
+export class CotomyQueryForm extends CotomyForm {
     public constructor(element: HTMLElement | { html: string; css?: string | null; } | string | string) {
         super(element);
         this.autoComplete = true;
@@ -183,7 +183,7 @@ export class CotomyQueryForm extends CotomyFormBase {
 
 
 
-export class CotomyApiForm extends CotomyFormBase {
+export class CotomyApiForm extends CotomyForm {
     private _apiClient: CotomyRestApi | null = null;
     private _unauthorizedHandler: ((response: CotomyRestApiResponse) => void) | null = null;
 
@@ -323,9 +323,9 @@ export class CotomyFillApiForm extends CotomyApiForm {
         return this;
     }
 
-    public build(): this {
-        if (!this.builded) {
-            super.build();
+    public initialize(): this {
+        if (!this.initialized) {
+            super.initialize();
 
             this.filler("datetime-local", (input, value) => {
                 const hasOffset = /[+-]\d{2}:\d{2}$/.test(value);

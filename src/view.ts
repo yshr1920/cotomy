@@ -16,26 +16,30 @@ export class CotomyElement {
         return (doc.body.firstChild as HTMLElement)!;
     }
 
-    public static first<T extends CotomyElement = CotomyElement>(selector: string, type: typeof CotomyElement = CotomyElement): T {
+    public static first<T extends CotomyElement = CotomyElement>(selector: string, type?: new (el: HTMLElement) => T): T | undefined {
         const element = document.querySelector(selector);
-        return <T>(element ? new type(<HTMLElement>element) : CotomyElement.empty(type));
+        if (!element) return undefined;
+        const ctor = (type ?? CotomyElement) as new (el: HTMLElement) => T;
+        return new ctor(<HTMLElement>element);
     }
 
-    public static find<T extends CotomyElement = CotomyElement>(selector: string, type: typeof CotomyElement = CotomyElement): T[] {
+    public static find<T extends CotomyElement = CotomyElement>(selector: string, type?: new (el: HTMLElement) => T): T[] {
         const elements = document.querySelectorAll(selector);
-        return <T[]>Array.from(elements).map(e => new type(<HTMLElement>e));
+        const ctor = (type ?? CotomyElement) as new (el: HTMLElement) => T;
+        return Array.from(elements).map(e => new ctor(<HTMLElement>e));
     }
 
-    public static byId<T extends CotomyElement = CotomyElement>(id: string, type: typeof CotomyElement = CotomyElement): T {
-        return CotomyElement.first<T>(`#${id}`, type);
+    public static byId<T extends CotomyElement = CotomyElement>(id: string, type?: new (el: HTMLElement) => T): T | undefined {
+        return this.first<T>(`#${id}`, type);
     }
 
     public static contains(selector: string): boolean {
         return document.querySelector(selector) !== null;
     }
 
-    static empty<T extends CotomyElement = CotomyElement>(type: typeof CotomyElement = CotomyElement): T {
-        return <T>new type(document.createElement("div")).setAttribute("data-empty", "").setElementStyle("display", "none");
+    public static empty<T extends CotomyElement = CotomyElement>(type?: new (el: HTMLElement) => T): T {
+        const ctor = (type ?? CotomyElement) as new (el: HTMLElement) => T;
+        return new ctor(document.createElement("div")).setAttribute("data-empty", "").setElementStyle("display", "none");
     }
 
     //#endregion
@@ -105,7 +109,8 @@ export class CotomyElement {
             const node = document.createTextNode(writeCss);
             element.appendChild(node);
             element.id = cssid;
-            const head = CotomyElement.first("head");
+            const head = CotomyElement.first("head")
+                    || new CotomyElement({ html: /* html */ `<head></head>` }).prependTo(new CotomyElement(document.documentElement));
             head.append(new CotomyElement(element));
 
             this.removed(() => {
@@ -144,7 +149,7 @@ export class CotomyElement {
     }
 
     public get element(): HTMLElement {
-        return this._element;
+        return this.empty ? CotomyElement.createHTMLElement(/* html */ `<div data-empty style="display: none;"></div>`) : this._element;
     }
 
     public get tagname(): string {
@@ -567,29 +572,30 @@ export class CotomyElement {
     public hasChildren(selector: string = "*"): boolean {
         return this.element.querySelector(selector) !== null;
     }
-
-    public children<T extends CotomyElement = CotomyElement>(selector: string = "*", type: typeof CotomyElement = CotomyElement): T[] {
+    public children<T extends CotomyElement = CotomyElement>(selector: string = "*", type?: new (el: HTMLElement) => T): T[] {
         const children = Array.from(this.element.querySelectorAll(selector));
         const directChildren = children.filter(child => child.parentElement === this.element);
-        return <T[]>directChildren.filter(e => e instanceof HTMLElement).map(e => new type(<HTMLElement>e));
+        const ctor = (type ?? CotomyElement) as new (el: HTMLElement) => T;
+        return directChildren.filter((e): e is HTMLElement => e instanceof HTMLElement).map(e => new ctor(e));
     }
 
-    public firstChild<T extends CotomyElement = CotomyElement>(selector: string = "*", type: typeof CotomyElement = CotomyElement): T {
+    public firstChild<T extends CotomyElement = CotomyElement>(selector: string = "*", type?: new (el: HTMLElement) => T): T | undefined {
         const elements = this.children<T>(selector, type);
-        return elements.shift() ?? CotomyElement.empty<T>(type);
+        return elements.shift() ?? undefined;
     }
 
-    public lastChild<T extends CotomyElement = CotomyElement>(selector: string = "*", type: typeof CotomyElement = CotomyElement): T {
+    public lastChild<T extends CotomyElement = CotomyElement>(selector: string = "*", type?: new (el: HTMLElement) => T): T | undefined {
         const elements = this.children<T>(selector, type);
-        return elements.pop() ?? CotomyElement.empty<T>(type);
+        return elements.pop() ?? undefined;
     }
 
-    public closest<T extends CotomyElement = CotomyElement>(selector: string, type: typeof CotomyElement = CotomyElement): T {
+    public closest<T extends CotomyElement = CotomyElement>(selector: string, type?: new (el: HTMLElement) => T): T | undefined {
         const closestElement = this.element.closest(selector);
         if (closestElement !== null && closestElement instanceof HTMLElement) {
-            return <T>new type(closestElement);
+            const ctor = (type ?? CotomyElement) as new (el: HTMLElement) => T;
+            return new ctor(closestElement);
         } else {
-            return CotomyElement.empty<T>(type);
+            return undefined;
         }
     }
 
@@ -599,14 +605,14 @@ export class CotomyElement {
 
     //#region 内包するElement
 
-    public find<T extends CotomyElement = CotomyElement>(selector: string, type: typeof CotomyElement = CotomyElement): T[] {
+    public find<T extends CotomyElement = CotomyElement>(selector: string, type?: new (el: HTMLElement) => T): T[] {
         const elements = Array.from(this.element.querySelectorAll(selector)) as HTMLElement[];
-        return <T[]>elements.map(e => new type(e));
+        return <T[]>elements.map(e => new (type ?? CotomyElement)(e));
     }
 
-    public first<T extends CotomyElement = CotomyElement>(selector: string = "*", type: typeof CotomyElement = CotomyElement): T {
+    public first<T extends CotomyElement = CotomyElement>(selector: string = "*", type?: new (el: HTMLElement) => T): T | undefined {
         const elements = this.find(selector, type);
-        return <T>elements.shift() ?? CotomyElement.empty<T>(type);
+        return <T>elements.shift() ?? undefined;
     }
 
     public prepend(prepend: CotomyElement): this {
@@ -619,8 +625,18 @@ export class CotomyElement {
         return this;
     }
 
-    public appends(targets: CotomyElement[]): this {
+    public appendAll(targets: CotomyElement[]): this {
         targets.forEach(e => this.append(e));
+        return this;
+    }
+
+    public insertBefore(append: CotomyElement): this {
+        this.element.before(append.element);
+        return this;
+    }
+
+    public insertAfter(append: CotomyElement): this {
+        this.element.after(append.element);
         return this;
     }
 
@@ -629,13 +645,8 @@ export class CotomyElement {
         return this;
     }
 
-    public appendBefore(append: CotomyElement): this {
-        this.element.before(append.element);
-        return this;
-    }
-
-    public appendAfter(append: CotomyElement): this {
-        this.element.after(append.element);
+    public prependTo(target: CotomyElement): this {
+        target.element.prepend(this.element);
         return this;
     }
 
@@ -997,7 +1008,7 @@ export class CotomyElement {
 
 export class CotomyMetaElement extends CotomyElement {
     public static get(name: string): CotomyMetaElement {
-        return CotomyElement.first<CotomyMetaElement>(`meta[name="${name}" i]`, CotomyMetaElement);
+        return CotomyElement.first<CotomyMetaElement>(`meta[name="${name}" i]`) ?? CotomyElement.empty<CotomyMetaElement>();
     }
 
     public get content(): string {
@@ -1025,7 +1036,10 @@ export class CotomyWindow {
 
     public initialize() {
         if (!this.initialized) {
-            this._body = CotomyElement.first("body");
+            if (!document.body) {
+                throw new Error("<body> element not found. DOM may not be ready.");
+            }
+            this._body = CotomyElement.first("body")!;
 
             const changeLayoutEvents = ["resize", "scroll", "orientationchange", "fullscreenchange", "cotomy:ready"];
             changeLayoutEvents.forEach(e => {

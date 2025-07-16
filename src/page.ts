@@ -1,5 +1,5 @@
 import { CotomyDebugFeature, CotomyDebugSettings } from "./debug";
-import { CotomyFormBase } from "./form";
+import { CotomyForm } from "./form";
 import { CotomyElement, CotomyWindow } from "./view";
 
 
@@ -76,10 +76,30 @@ export class CotomyPageController {
     }
 
 
-    protected setForm<T extends CotomyFormBase = CotomyFormBase>(form: T): T {
-        return form.build();
+    private _forms: { [ key: string ]: CotomyForm } = {};
+
+    protected setForm<T extends CotomyForm = CotomyForm>(form: T): T {
+        this._forms[form.formId] = form;
+        form.removed(() => {
+            delete this._forms[form.formId];
+        });
+        return form.initialize();
     }
 
+    protected getForm<T extends CotomyForm = CotomyForm>(id: string, type?: { new(...args: any[]): T }): T | undefined {
+        const form = this._forms[id];
+        if (!form) return undefined;
+
+        if (type && !(form instanceof type)) {
+            throw new Error(`Form "${id}" is not instance of expected type.`);
+        }
+
+        return form as T;
+    }
+
+    protected forms(): CotomyForm[] {
+        return Object.values(this._forms);
+    }
 
 
     protected async initializeAsync(): Promise<void> {

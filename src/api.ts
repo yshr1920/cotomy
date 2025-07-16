@@ -181,12 +181,12 @@ export class CotomyViewRenderer {
         return this;
     }
 
-    public get builded(): boolean {
+    public get initialized(): boolean {
         return this._builded;
     }
 
-    protected build(): this {
-        if (!this.builded) {
+    protected initialize(): this {
+        if (!this.initialized) {
             this.renderer("mail", (element, value) => {
                 new CotomyElement(/* html */`<a href="mailto:${value}">${value}</a>`).appendTo(element);
             });
@@ -222,8 +222,8 @@ export class CotomyViewRenderer {
     }
 
     public async applyAsync(respose: CotomyRestApiResponse): Promise<this> {
-        if (!this.builded) {
-            this.build();
+        if (!this.initialized) {
+            this.initialize();
         }
 
         if (!respose.available) {
