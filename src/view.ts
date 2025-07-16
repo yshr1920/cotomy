@@ -192,7 +192,7 @@ export class CotomyElement {
     }
 
     public get empty(): boolean {
-        return this.hasAttribute("data-empty");
+        return this._element.hasAttribute("data-empty");
     }
     
     //#endregion
