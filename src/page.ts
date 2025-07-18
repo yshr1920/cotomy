@@ -75,6 +75,13 @@ export class CotomyPageController {
         return this._instance as T;
     }
 
+    public static get<T extends CotomyPageController = CotomyPageController>(): T {
+        if (!(this._instance instanceof CotomyPageController)) {
+            throw new Error("PageController is not initialized. Use CotomyPageController.set() to initialize it.");
+        }
+        return this._instance as T;
+    }
+
 
     private _forms: { [ key: string ]: CotomyForm } = {};
 

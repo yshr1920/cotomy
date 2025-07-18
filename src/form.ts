@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { StatusCodes } from "http-status-codes";
-import { CotomyRestApi, CotomyRestApiResponse, CotomyViewRenderer } from "./api";
+import { CotomyNotFoundException, CotomyRestApi, CotomyRestApiResponse, CotomyViewRenderer } from "./api";
 import { CotomyDebugFeature, CotomyDebugSettings } from "./debug";
 import { CotomyElement, CotomyWindow } from "./view";
 
@@ -184,23 +184,12 @@ export class CotomyQueryForm extends CotomyForm {
 
 
 export class CotomyApiForm extends CotomyForm {
-    private _apiClient: CotomyRestApi | null = null;
-    private _unauthorizedHandler: ((response: CotomyRestApiResponse) => void) | null = null;
-
     public constructor(element: HTMLElement | { html: string; css?: string | null; } | string) {
         super(element);
     }
 
     public apiClient(): CotomyRestApi {
-        return this._apiClient ?? (this._apiClient = new CotomyRestApi({
-            unauthorizedHandler: response => {
-                if (this._unauthorizedHandler) {
-                    this._unauthorizedHandler(response);
-                } else {
-                    this._apiClient?.unauthorizedHandler(response);
-                }
-            }
-        }));
+        return new CotomyRestApi();
     }
 
     public actionUri(): string {
@@ -298,16 +287,6 @@ export class CotomyApiForm extends CotomyForm {
     }
 
     //#endregion
-
-
-    //#region 認証エラー時の処理
-
-    public unauthorized(handle: (response: CotomyRestApiResponse) => void): this {
-        this._unauthorizedHandler = handle;
-        return this;
-    }
-
-    //#endregion
 }
 
 
@@ -385,15 +364,16 @@ export class CotomyFillApiForm extends CotomyApiForm {
     public async loadAsync(): Promise<CotomyRestApiResponse> {
         if (this.autoIncrement || !this.identifierInputs.every(e => e.value)) return new CotomyRestApiResponse();
         const api = this.apiClient();
-        const response = await api.getAsync(this.loadActionUri());
-        if (response.ok) {
+        try {
+            const response = await api.getAsync(this.loadActionUri());
             await this.fillAsync(response);
-        } else if (response.status === StatusCodes.NOT_FOUND) {
             return response;
-        } else {
-            throw new Error(`Failed to load data: ${response.status} ${response.statusText}`);
+        } catch (error) {
+            if (error instanceof CotomyNotFoundException) {
+                return error.response;
+            }
+            throw error;
         }
-        return response;
     }
 
     protected async fillAsync(response: CotomyRestApiResponse): Promise<void> {

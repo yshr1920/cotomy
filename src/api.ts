@@ -6,7 +6,65 @@ import { CotomyElement } from "./view";
 
 
 
-//#region 例外処理
+//#region 例外クラス
+
+export class CotomyRestApiException extends Error {
+    constructor(public readonly status: number, public readonly message: string,
+            public readonly response: CotomyRestApiResponse, public readonly bodyText: string = "") {
+        super(message);
+        this.name = "CotomyRestApiException";
+    }
+}
+
+export class CotomyHttpClientError extends CotomyRestApiException {
+  constructor(status: number, message: string, response: CotomyRestApiResponse, body = "") {
+    super(status, message, response, body);
+    this.name = "CotomyHttpClientError";
+  }
+}
+
+export class CotomyUnauthorizedException extends CotomyHttpClientError {
+    constructor(status: number, message: string, response: CotomyRestApiResponse, body = "") {
+        super(status, message, response, body);
+        this.name = "CotomyUnauthorizedException";
+    }
+}
+
+export class CotomyForbiddenException extends CotomyHttpClientError {
+    constructor(status: number, message: string, response: CotomyRestApiResponse, body = "") {
+        super(status, message, response, body);
+        this.name = "CotomyForbiddenException";
+    }
+}
+
+export class CotomyNotFoundException extends CotomyHttpClientError {
+    constructor(status: number, message: string, response: CotomyRestApiResponse, body = "") {
+        super(status, message, response, body);
+        this.name = "CotomyNotFoundException";
+    }
+}
+
+export class CotomyConflictException extends CotomyHttpClientError {
+    constructor(status: number, message: string, response: CotomyRestApiResponse, body = "") {
+        super(status, message, response, body);
+        this.name = "CotomyConflictException";
+    }
+}
+
+export class CotomyValidationException extends CotomyHttpClientError {
+    constructor(status: number, message: string, response: CotomyRestApiResponse, body = "") {
+        super(status, message, response, body);
+        this.name = "CotomyValidationException";
+    }
+}
+
+export class CotomyHttpServerError extends CotomyRestApiException {
+  constructor(status: number, message: string, response: CotomyRestApiResponse, body = "") {
+    super(status, message, response, body);
+    this.name = "CotomyHttpServerError";
+  }
+}
+
 
 export class CotomyResponseJsonParseException extends Error {
     public constructor(message: string = "Failed to parse JSON response.") {
@@ -264,7 +322,6 @@ export interface ICotomyRestApiOptions {
     mode?: RequestMode | null;
     keepalive?: boolean | null;
     integrity?: string | null;
-    unauthorizedHandler?: ((response: CotomyRestApiResponse) => void) | null;
 }
 
 export interface ICotomyRestSubmitForm {
@@ -284,7 +341,7 @@ export class CotomyRestApi {
     public constructor(private readonly _options: ICotomyRestApiOptions = {
             baseUrl: null, headers: null, credentials: null, redirect: null,
             cache: null, referrerPolicy: null, mode: null, keepalive: true,
-            integrity: '', unauthorizedHandler: null, }) {
+            integrity: '', }) {
     }
 
     public get baseUrl(): string {
@@ -325,10 +382,6 @@ export class CotomyRestApi {
 
     public get abortController(): AbortController {
         return this._abortController;
-    }
-
-    public get unauthorizedHandler(): (response: CotomyRestApiResponse) => void {
-        return this._options.unauthorizedHandler || (() => location.reload());
     }
 
 
@@ -387,24 +440,30 @@ export class CotomyRestApi {
             integrity: this.integrity,
         }));
 
-        switch (response.status) {
-            case StatusCodes.UNAUTHORIZED:
-            case StatusCodes.FORBIDDEN:
-                this.unauthorizedHandler(response);
-                break;
-            case StatusCodes.BAD_REQUEST:
-            case StatusCodes.NOT_FOUND:
-            case StatusCodes.UNPROCESSABLE_ENTITY:
-            case StatusCodes.GONE:
-                break;
-            default:
-                // 400番台と500番台はエラーハンドリングを行う
-                if (response.status >= 400 && response.status < 600) {
-                    const errorBody = await response.textAsync().catch(() => 'No response body available');
-                    const errorMessage = response.statusText
-                            || ResponseMessages.getMessage(response.status) || `Unexpected error: ${response.status}`;
-                    throw new Error(`${errorMessage}\nDetails: ${errorBody}`);
-                }
+        // 400番台と500番台のエラーハンドリング
+        if (response.status >= 400 && response.status < 600) {
+            const errorBody = await response.textAsync().catch(() => 'No response body available');
+            const errorMessage = response.statusText || ResponseMessages.getMessage(response.status) || `Unexpected error: ${response.status}`;
+            switch (response.status) {
+                case StatusCodes.BAD_REQUEST:
+                case StatusCodes.UNPROCESSABLE_ENTITY:
+                    throw new CotomyValidationException(response.status, errorMessage, response, errorBody);
+                case StatusCodes.UNAUTHORIZED:
+                    throw new CotomyUnauthorizedException(response.status, errorMessage, response, errorBody);
+                case StatusCodes.FORBIDDEN:
+                    throw new CotomyForbiddenException(response.status, errorMessage, response, errorBody);
+                case StatusCodes.NOT_FOUND:
+                    throw new CotomyNotFoundException(response.status, errorMessage, response, errorBody);
+                case StatusCodes.CONFLICT:
+                case StatusCodes.GONE:
+                    throw new CotomyConflictException(response.status, errorMessage, response, errorBody);
+                default:
+                    if (response.status < 500) {
+                        throw new CotomyHttpClientError(response.status, errorMessage, response, errorBody);
+                    } else {
+                        throw new CotomyHttpServerError(response.status, errorMessage, response, errorBody);
+                    }
+            }
         }
 
         return response as T;
