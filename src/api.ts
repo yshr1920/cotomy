@@ -269,7 +269,7 @@ export class CotomyViewRenderer {
                 const hasOffset = /[+-]\d{2}:\d{2}$/.test(value);
                 const date = hasOffset ? new Date(value) : new Date(`${value}Z`);
                 if (!isNaN(date.getTime())) {
-                    const format = element.attribute("data-format") ?? "YYYY/MM/DD HH:mm";
+                    const format = element.attribute("data-cotomy-format") ?? "YYYY/MM/DD HH:mm";
                     element.text = dayjs(date).format(format);
                 } else {
                     element.text = "";
@@ -289,11 +289,11 @@ export class CotomyViewRenderer {
         }
 
         for (const [key, value] of Object.entries(await respose.objectAsync())) {
-            this.element.find(`[data-bind="${key}" i]`).forEach(element => {
+            this.element.find(`[data-cotomy-bind="${key}" i]`).forEach(element => {
                 if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Bind)) {
-                    console.debug(`Binding data to element [data-bind="${key}"]:`, value);
+                    console.debug(`Binding data to element [data-cotomy-bind="${key}"]:`, value);
                 }
-                const type = element.attribute("data-type")?.toLowerCase();
+                const type = element.attribute("data-cotomy-type")?.toLowerCase();
                 if (type && this._renderers[type]) {
                     this._renderers[type](element, value);
                 } else {

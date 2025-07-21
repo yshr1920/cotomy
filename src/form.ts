@@ -60,7 +60,25 @@ export abstract class CotomyForm extends CotomyElement {
     //#region フォームの再読み込み
 
     public reload(): void {
-        location.reload();
+        CotomyWindow.instance.reload();
+    }
+
+    public get autoRestore(): boolean {
+        return this.attribute("data-cotomy-restore") !== "false";
+    }
+
+    public set autoRestore(value: boolean) {
+        if (value) {
+            this.removeAttribute("data-cotomy-restore");
+        } else {
+            this.setAttribute("data-cotomy-restore", "false");
+        }
+    }
+
+    public restore(): void {
+        if (this.autoRestore) {
+            this.reload();
+        }
     }
 
     //#endregion
@@ -70,7 +88,7 @@ export abstract class CotomyForm extends CotomyElement {
     //#region フォームの構築
 
     public get initialized(): boolean {
-        return this.hasAttribute("data-builded");
+        return this.hasAttribute("data-cotomy-builded");
     }
     
     public initialize(): this {
@@ -80,18 +98,18 @@ export abstract class CotomyForm extends CotomyElement {
             });
             
             CotomyWindow.instance.pageshow(e => {
-                if (e.persisted) {
-                    this.reload();
+                if (e.persisted && !CotomyWindow.instance.reloading) {
+                    this.restore();
                 }
             });
 
-            this.find("button[type=button][data-action]").forEach(e => {
+            this.find("button[type=button][data-cotomy-action]").forEach(e => {
                 e.click(() => {
-                    this.trigger("cotomy:action", new CotomyActionEvent(e.attribute("data-action")!));
+                    this.trigger("cotomy:action", new CotomyActionEvent(e.attribute("data-cotomy-action")!));
                 })
             });
 
-            this.setAttribute("data-builded");
+            this.setAttribute("data-cotomy-builded");
         }
         return this;
     }
@@ -193,24 +211,24 @@ export class CotomyApiForm extends CotomyForm {
     }
 
     public actionUri(): string {
-        return `${this.attribute("action")!}/${this.autoIncrement ? (this.attribute("data-id") || "") : this.identifierString}`;
+        return `${this.attribute("action")!}/${this.autoIncrement ? (this.attribute("data-cotomy-key") || "") : this.identifierString}`;
     }
 
     //#region データ識別
 
     public get identifier(): string | undefined {
-        return this.attribute("data-id") || undefined;
+        return this.attribute("data-cotomy-key") || undefined;
     }
 
     protected setIncrementedId(response: CotomyRestApiResponse) {
         const id = response.headers.get("Location")?.split("/").pop();
-        this.setAttribute("data-id", id);
+        this.setAttribute("data-cotomy-key", id);
     }
 
     public get identifierInputs(): CotomyElement[] {
-        return this.find("[data-keyindex]").sort((a, b) => {
-            const aIndex = parseInt(a.attribute("data-keyindex") ?? "0");
-            const bIndex = parseInt(b.attribute("data-keyindex") ?? "0");
+        return this.find("[data-cotomy-keyindex]").sort((a, b) => {
+            const aIndex = parseInt(a.attribute("data-cotomy-keyindex") ?? "0");
+            const bIndex = parseInt(b.attribute("data-cotomy-keyindex") ?? "0");
             return aIndex - bIndex;
         });
     }
@@ -383,9 +401,9 @@ export class CotomyFillApiForm extends CotomyApiForm {
                     continue;
                 }
 
-                this.find(`input[name="${key}" i]:not([data-fill="false"]):not([multiple]),
-                        textarea[name="${key}" i]:not([data-fill="false"]), 
-                        select[name="${key}" i]:not([data-fill="false"]):not([multiple])`).forEach(input => {
+                this.find(`input[name="${key}" i]:not([data-cotomy-fill="false"]):not([multiple]),
+                        textarea[name="${key}" i]:not([data-cotomy-fill="false"]), 
+                        select[name="${key}" i]:not([data-cotomy-fill="false"]):not([multiple])`).forEach(input => {
                     if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Fill)) {
                         console.debug(`Filling input[name="${key}"] with value:`, value);
                     }

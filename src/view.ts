@@ -39,7 +39,7 @@ export class CotomyElement {
 
     public static empty<T extends CotomyElement = CotomyElement>(type?: new (el: HTMLElement) => T): T {
         const ctor = (type ?? CotomyElement) as new (el: HTMLElement) => T;
-        return new ctor(document.createElement("div")).setAttribute("data-empty", "").setElementStyle("display", "none");
+        return new ctor(document.createElement("div")).setAttribute("data-cotomy-empty", "").setElementStyle("display", "none");
     }
 
     //#endregion
@@ -127,7 +127,7 @@ export class CotomyElement {
 
     //#region Layout Event Listener
 
-    public static readonly LISTEN_LAYOUT_EVENTS_ATTRIBUTE: string = "data-layout";
+    public static readonly LISTEN_LAYOUT_EVENTS_ATTRIBUTE: string = "data-cotomy-layout";
 
     public listenLayoutEvents(): this {
         this.setAttribute(CotomyElement.LISTEN_LAYOUT_EVENTS_ATTRIBUTE, "");
@@ -193,7 +193,7 @@ export class CotomyElement {
     }
 
     public get empty(): boolean {
-        return this._element.hasAttribute("data-empty");
+        return this._element.hasAttribute("data-cotomy-empty");
     }
     
     //#endregion
@@ -231,7 +231,7 @@ export class CotomyElement {
             return <string>this.element.value;
         } else {
             // "value" プロパティが存在しない場合、空文字列を返す
-            return this.attribute("data-value") ?? "";
+            return this.attribute("data-cotomy-value") ?? "";
         }
     }
 
@@ -239,7 +239,7 @@ export class CotomyElement {
         if ("value" in this.element) {
             this.element.value = val;
         } else {
-            this.setAttribute("data-value", val);
+            this.setAttribute("data-cotomy-value", val);
         }
     }
 
@@ -1042,6 +1042,7 @@ export class CotomyWindow {
 
     private _body: CotomyElement = CotomyElement.empty();
     private _mutationObserver: MutationObserver | null = null;
+    private _reloading: boolean = false;
 
     public get initialized(): boolean {
         return this._body.attached;
@@ -1107,6 +1108,14 @@ export class CotomyWindow {
         }
     }
 
+    public get reloading(): boolean {
+        return this._reloading;
+    }
+
+    public reload() {
+        this._reloading = true;
+        location.reload();
+    }
 
 
 
