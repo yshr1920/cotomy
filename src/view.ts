@@ -67,9 +67,7 @@ export class CotomyElement {
             }
         }
         this.removed(() => {
-            if (!this.empty) {
-                this._element = CotomyElement.createHTMLElement(/* html */ `<div data-cotomy-invalid style="display: none;"></div>`);
-            }
+            this._element = CotomyElement.createHTMLElement(/* html */ `<div data-cotomy-invalid style="display: none;"></div>`);
         });
     }
 
@@ -150,7 +148,7 @@ export class CotomyElement {
     }
 
     public get element(): HTMLElement {
-        return this.empty ? CotomyElement.createHTMLElement(/* html */ `<div data-empty style="display: none;"></div>`) : this._element;
+        return this._element;
     }
 
     public get tagname(): string {
@@ -193,9 +191,17 @@ export class CotomyElement {
     }
 
     public get empty(): boolean {
-        return this._element.hasAttribute("data-cotomy-empty");
+        const nonEmptyTags = new Set([
+            "input", "select", "textarea", "img", "video", "audio", "br", "hr",
+            "iframe", "embed", "canvas", "object", "svg", "source", "track", "col",
+            "link", "meta", "base"
+        ]);
+
+        return nonEmptyTags.has(this.tagname)
+                || this._element.hasAttribute("data-cotomy-empty")
+                || this._element.innerHTML.trim() === "";
     }
-    
+
     //#endregion
 
 
