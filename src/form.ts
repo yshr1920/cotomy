@@ -359,7 +359,7 @@ export class CotomyFillApiForm extends CotomyApiForm {
     protected async submitToApiAsync(formData: globalThis.FormData): Promise<CotomyRestApiResponse> {
         const response = await super.submitToApiAsync(formData);
         if (response.ok) {
-            this.renderer().applyAsync(response);
+            await this.fillAsync(response);
         }
         return response;
     }
