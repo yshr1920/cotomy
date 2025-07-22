@@ -68,7 +68,7 @@ export class CotomyElement {
         }
         this.removed(() => {
             if (!this.empty) {
-                this._element = document.createElement("div");
+                this._element = CotomyElement.createHTMLElement(/* html */ `<div data-cotomy-invalid style="display: none;"></div>`);
             }
         });
     }
@@ -326,8 +326,12 @@ export class CotomyElement {
         }
     }
 
+    public get valid(): boolean {
+        return !this.element.hasAttribute("data-cotomy-invalid");
+    }
+
     public remove() {
-        if (this.attached) {
+        if (this.valid) {
             this._element.remove();
         }
     }
