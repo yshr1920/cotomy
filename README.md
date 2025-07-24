@@ -1,12 +1,13 @@
 # Cotomy
 
-> このライブラリは ES2020+ を対象としています。
-> 古いブラウザ（iOS 13以前やIEなど）で使用する場合は `core-js` 等による Polyfill が必要です。
+> This library targets ES2020+.  
+> For older browsers (e.g. iOS 13 or IE), you will need a Polyfill such as `core-js`.
 
-A lightweight framework for managing form behavior and page controllers in web applications.  
-Ideal for SPA (Single Page Application) or traditional web apps with dynamic form operations.
+**Cotomy** is a lightweight framework for managing form behavior and page controllers in web applications.  
+It is suitable for both SPAs (Single Page Applications) and traditional web apps requiring dynamic form operations.
 
-## Installation
+⚠️ **Warning**: This project is in early development. APIs may change without notice until version 1.0.0.
+
 
 To install Cotomy in your project, run the following command:
 
@@ -40,14 +41,12 @@ By passing HTML and CSS strings to the constructor, it is possible to generate E
     });
 ```
 
+- `"display HTML in character literals with color coding"` → `"syntax highlighting for embedded HTML"`
+- `"generate Element designs with a limited scope"` → `"generate scoped DOM elements with associated styles"`
+
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Warning
-
-This project is in its early stages, and the API is still evolving.  
-Since the version is below `1.0.0`, breaking changes may occur without prior notice.
+This project is licensed under the [MIT License](LICENSE).
 
 ## Contact
 
