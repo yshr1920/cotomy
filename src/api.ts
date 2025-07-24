@@ -321,7 +321,7 @@ export class CotomyViewRenderer {
                 if (type && this._renderers[type]) {
                     this._renderers[type](element, value);
                 } else {
-                    element.text = String(value);
+                    element.text = String(value ?? "");
                 }
             });
         }
