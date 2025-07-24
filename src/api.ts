@@ -246,57 +246,49 @@ export class CotomyViewRenderer {
     protected initialize(): this {
         if (!this.initialized) {
             this.renderer("mail", (element, value) => {
+                element.clean();
                 if (value) {
                     new CotomyElement(/* html */`<a href="mailto:${value}">${value}</a>`).appendTo(element);
-                } else {
-                    element.clean();
                 }
             });
 
             this.renderer("tel", (element, value) => {
+                element.clean();
                 if (value) {
                     new CotomyElement(/* html */`<a href="tel:${value}">${value}</a>`).appendTo(element);
-                } else {
-                    element.clean();
                 }
             });
-
+            
             this.renderer("url", (element, value) => {
+                element.clean();
                 if (value) {
                     new CotomyElement(/* html */`<a href="${value}" target="_blank">${value}</a>`).appendTo(element);
-                } else {
-                    element.clean();
                 }
             });
 
             this.renderer("number", (element, value) => {
+                element.clean();
                 if (value) {
                     element.text = new Intl.NumberFormat(navigator.language || this.locale).format(value);
-                } else {
-                    element.clean();
                 }
             });
 
             this.renderer("currency", (element, value) => {
+                element.clean();
                 if (value) {
                     element.text = new Intl.NumberFormat(navigator.language || this.locale, { style: "currency", currency: this.currency }).format(value);
-                } else {
-                    element.clean();
                 }
             });
 
             this.renderer("utc", (element, value) => {
+                element.clean();
                 if (value) {
                     const hasOffset = /[+-]\d{2}:\d{2}$/.test(value);
                     const date = hasOffset ? new Date(value) : new Date(`${value}Z`);
                     if (!isNaN(date.getTime())) {
                         const format = element.attribute("data-cotomy-format") ?? "YYYY/MM/DD HH:mm";
                         element.text = dayjs(date).format(format);
-                    } else {
-                        element.text = "";
                     }
-                } else {
-                    element.clean();
                 }
             });
         }
@@ -317,7 +309,7 @@ export class CotomyViewRenderer {
                 if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Bind)) {
                     console.debug(`Binding data to element [data-cotomy-bind="${key}"]:`, value);
                 }
-                const type = element.attribute("data-cotomy-type")?.toLowerCase();
+                const type = element.attribute("data-cotomy-bindtype")?.toLowerCase();
                 if (type && this._renderers[type]) {
                     this._renderers[type](element, value);
                 } else {

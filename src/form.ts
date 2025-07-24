@@ -201,8 +201,8 @@ export class CotomyQueryForm extends CotomyForm {
 
 
 export class CotomyApiFailedEvent extends Event {
-    public constructor(private _response: CotomyApiResponse) {
-        super('cotomy:apifailed', { bubbles: true, cancelable: true });
+    public constructor(private _response: CotomyApiResponse, eventName: string = "cotomy:apifailed") {
+        super(eventName, { bubbles: true, cancelable: true });
     }
 
     public get response(): CotomyApiResponse {
@@ -272,14 +272,14 @@ export class CotomyApiForm extends CotomyForm {
     }
 
     public submitFailed(handle: ((event: CotomyApiFailedEvent) => void | Promise<void>)): this {
-        this.on("cotomy:apifailed", async e => {
+        this.on("cotomy:submitfailed", async e => {
             await handle(e as CotomyApiFailedEvent);
         });
         return this;
     }
 
     protected triggerSubmitFailedEvent(response: CotomyApiResponse): void {
-        this.trigger("cotomy:apifailed", new CotomyApiFailedEvent(response));
+        this.trigger("cotomy:submitfailed", new CotomyApiFailedEvent(response, "cotomy:submitfailed"));
         if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Api)) {
             console.error("Submit failed:", response);
         }
@@ -289,9 +289,9 @@ export class CotomyApiForm extends CotomyForm {
         return this.autoIncrement || !this.identifierInputs.every(e => e.readonly) ? "post" : "put";
     }
 
-    public formData(): globalThis.FormData {
+    public formData(): FormData {
         const formElement = <HTMLFormElement>this.element;
-        const formData = new globalThis.FormData(formElement);
+        const formData = new FormData(formElement);
 
         this.find("input[type=datetime-local][name]:not([disabled])").forEach(input => {
             const localDateTime = input.value;
@@ -318,7 +318,7 @@ export class CotomyApiForm extends CotomyForm {
         await this.submitToApiAsync(formData);
     }
 
-    protected async submitToApiAsync(formData: globalThis.FormData): Promise<CotomyApiResponse> {
+    protected async submitToApiAsync(formData: FormData): Promise<CotomyApiResponse> {
         const api = this.apiClient();
 
         try {

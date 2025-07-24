@@ -1036,7 +1036,8 @@ export class CotomyElement {
 
 export class CotomyMetaElement extends CotomyElement {
     public static get(name: string): CotomyMetaElement {
-        return CotomyElement.first<CotomyMetaElement>(`meta[name="${name}" i]`) ?? CotomyElement.empty<CotomyMetaElement>();
+        return CotomyElement.first<CotomyMetaElement>(`meta[name="${name}" i]`, CotomyMetaElement)
+                ?? CotomyElement.empty<CotomyMetaElement>(CotomyMetaElement);
     }
 
     public get content(): string {
