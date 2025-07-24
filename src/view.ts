@@ -353,6 +353,7 @@ export class CotomyElement {
 
     public clean() {
         this.find("*").forEach(e => e.remove());
+        this.text = "";
     }
 
     //#endregion

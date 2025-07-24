@@ -8,58 +8,58 @@ import { CotomyElement } from "./view";
 
 //#region 例外クラス
 
-export class CotomyRestApiException extends Error {
+export class CotomyApiException extends Error {
     constructor(public readonly status: number, public readonly message: string,
-            public readonly response: CotomyRestApiResponse, public readonly bodyText: string = "") {
+            public readonly response: CotomyApiResponse, public readonly bodyText: string = "") {
         super(message);
-        this.name = "CotomyRestApiException";
+        this.name = "CotomyApiException";
     }
 }
 
-export class CotomyHttpClientError extends CotomyRestApiException {
-  constructor(status: number, message: string, response: CotomyRestApiResponse, body = "") {
+export class CotomyHttpClientError extends CotomyApiException {
+  constructor(status: number, message: string, response: CotomyApiResponse, body = "") {
     super(status, message, response, body);
     this.name = "CotomyHttpClientError";
   }
 }
 
 export class CotomyUnauthorizedException extends CotomyHttpClientError {
-    constructor(status: number, message: string, response: CotomyRestApiResponse, body = "") {
+    constructor(status: number, message: string, response: CotomyApiResponse, body = "") {
         super(status, message, response, body);
         this.name = "CotomyUnauthorizedException";
     }
 }
 
 export class CotomyForbiddenException extends CotomyHttpClientError {
-    constructor(status: number, message: string, response: CotomyRestApiResponse, body = "") {
+    constructor(status: number, message: string, response: CotomyApiResponse, body = "") {
         super(status, message, response, body);
         this.name = "CotomyForbiddenException";
     }
 }
 
 export class CotomyNotFoundException extends CotomyHttpClientError {
-    constructor(status: number, message: string, response: CotomyRestApiResponse, body = "") {
+    constructor(status: number, message: string, response: CotomyApiResponse, body = "") {
         super(status, message, response, body);
         this.name = "CotomyNotFoundException";
     }
 }
 
 export class CotomyConflictException extends CotomyHttpClientError {
-    constructor(status: number, message: string, response: CotomyRestApiResponse, body = "") {
+    constructor(status: number, message: string, response: CotomyApiResponse, body = "") {
         super(status, message, response, body);
         this.name = "CotomyConflictException";
     }
 }
 
 export class CotomyValidationException extends CotomyHttpClientError {
-    constructor(status: number, message: string, response: CotomyRestApiResponse, body = "") {
+    constructor(status: number, message: string, response: CotomyApiResponse, body = "") {
         super(status, message, response, body);
         this.name = "CotomyValidationException";
     }
 }
 
-export class CotomyHttpServerError extends CotomyRestApiException {
-  constructor(status: number, message: string, response: CotomyRestApiResponse, body = "") {
+export class CotomyHttpServerError extends CotomyApiException {
+  constructor(status: number, message: string, response: CotomyApiResponse, body = "") {
     super(status, message, response, body);
     this.name = "CotomyHttpServerError";
   }
@@ -152,7 +152,7 @@ class ResponseMessages {
 
 //#region APIレスポンスクラス
 
-export class CotomyRestApiResponse {
+export class CotomyApiResponse {
     private _json: any | null = null;
     private _map: Record<string, any> | null = null;
 
@@ -246,40 +246,64 @@ export class CotomyViewRenderer {
     protected initialize(): this {
         if (!this.initialized) {
             this.renderer("mail", (element, value) => {
-                new CotomyElement(/* html */`<a href="mailto:${value}">${value}</a>`).appendTo(element);
+                if (value) {
+                    new CotomyElement(/* html */`<a href="mailto:${value}">${value}</a>`).appendTo(element);
+                } else {
+                    element.clean();
+                }
             });
 
             this.renderer("tel", (element, value) => {
-                new CotomyElement(/* html */`<a href="tel:${value}">${value}</a>`).appendTo(element);
+                if (value) {
+                    new CotomyElement(/* html */`<a href="tel:${value}">${value}</a>`).appendTo(element);
+                } else {
+                    element.clean();
+                }
             });
 
             this.renderer("url", (element, value) => {
-                new CotomyElement(/* html */`<a href="${value}" target="_blank">${value}</a>`).appendTo(element);
+                if (value) {
+                    new CotomyElement(/* html */`<a href="${value}" target="_blank">${value}</a>`).appendTo(element);
+                } else {
+                    element.clean();
+                }
             });
 
             this.renderer("number", (element, value) => {
-                element.text = new Intl.NumberFormat(navigator.language || this.locale).format(value);
+                if (value) {
+                    element.text = new Intl.NumberFormat(navigator.language || this.locale).format(value);
+                } else {
+                    element.clean();
+                }
             });
 
             this.renderer("currency", (element, value) => {
-                element.text = new Intl.NumberFormat(navigator.language || this.locale, { style: "currency", currency: this.currency }).format(value);
+                if (value) {
+                    element.text = new Intl.NumberFormat(navigator.language || this.locale, { style: "currency", currency: this.currency }).format(value);
+                } else {
+                    element.clean();
+                }
             });
 
             this.renderer("utc", (element, value) => {
-                const hasOffset = /[+-]\d{2}:\d{2}$/.test(value);
-                const date = hasOffset ? new Date(value) : new Date(`${value}Z`);
-                if (!isNaN(date.getTime())) {
-                    const format = element.attribute("data-cotomy-format") ?? "YYYY/MM/DD HH:mm";
-                    element.text = dayjs(date).format(format);
+                if (value) {
+                    const hasOffset = /[+-]\d{2}:\d{2}$/.test(value);
+                    const date = hasOffset ? new Date(value) : new Date(`${value}Z`);
+                    if (!isNaN(date.getTime())) {
+                        const format = element.attribute("data-cotomy-format") ?? "YYYY/MM/DD HH:mm";
+                        element.text = dayjs(date).format(format);
+                    } else {
+                        element.text = "";
+                    }
                 } else {
-                    element.text = "";
+                    element.clean();
                 }
             });
         }
         return this;
     }
 
-    public async applyAsync(respose: CotomyRestApiResponse): Promise<this> {
+    public async applyAsync(respose: CotomyApiResponse): Promise<this> {
         if (!this.initialized) {
             this.initialize();
         }
@@ -312,7 +336,7 @@ export class CotomyViewRenderer {
 
 //#region インターフェース定義
 
-export interface ICotomyRestApiOptions {
+export interface ICotomyApiOptions {
     baseUrl?: string | null;
     headers?: Record<string, string> | null;
     credentials?: RequestCredentials | null;
@@ -335,10 +359,10 @@ export interface ICotomyRestSubmitForm {
 
 
 
-export class CotomyRestApi {
+export class CotomyApi {
     private readonly _abortController: AbortController = new AbortController();
 
-    public constructor(private readonly _options: ICotomyRestApiOptions = {
+    public constructor(private readonly _options: ICotomyApiOptions = {
             baseUrl: null, headers: null, credentials: null, redirect: null,
             cache: null, referrerPolicy: null, mode: null, keepalive: true,
             integrity: '', }) {
@@ -385,7 +409,10 @@ export class CotomyRestApi {
     }
 
 
-    private async requestAsync<T extends CotomyRestApiResponse = CotomyRestApiResponse>(method: string, path: string, body?: globalThis.FormData | Record<string, string> | any, signal?: AbortSignal, responseType?: new (response?: Response | null) => T): Promise<T> {
+    private async requestAsync<T extends CotomyApiResponse = CotomyApiResponse>(method: string, path: string, body?: globalThis.FormData | Record<string, string> | any, signal?: AbortSignal, responseType?: new (response?: Response | null) => T): Promise<T> {
+        if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Api)) {
+            console.debug(`API request: ${method} ${path}`, { body, headers: this.headers });
+        }
 
         //#region Content-Type毎のbody変換処理
 
@@ -425,7 +452,7 @@ export class CotomyRestApi {
         }
 
         const ct = headers.get('Content-Type') || "multipart/form-data";
-        const responseClass = responseType ?? CotomyRestApiResponse as new (response?: Response | null) => T;
+        const responseClass = responseType ?? CotomyApiResponse as new (response?: Response | null) => T;
         const response = new responseClass(await fetch(url, {
             method,
             headers,
@@ -444,6 +471,9 @@ export class CotomyRestApi {
         if (response.status >= 400 && response.status < 600) {
             const errorBody = await response.textAsync().catch(() => 'No response body available');
             const errorMessage = response.statusText || ResponseMessages.getMessage(response.status) || `Unexpected error: ${response.status}`;
+            if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Api)) {
+                console.error(`API request failed: ${errorMessage}`, response, errorBody);
+            }
             switch (response.status) {
                 case StatusCodes.BAD_REQUEST:
                 case StatusCodes.UNPROCESSABLE_ENTITY:
@@ -472,7 +502,7 @@ export class CotomyRestApi {
 
     //#region HTTPメソッド
 
-    public async getAsync(path: string, parameters?: globalThis.FormData | Record<string, string | number>): Promise<CotomyRestApiResponse> {
+    public async getAsync(path: string, parameters?: globalThis.FormData | Record<string, string | number>): Promise<CotomyApiResponse> {
         let queryString = '';
         if (parameters instanceof globalThis.FormData) {
             let params = new URLSearchParams();
@@ -494,63 +524,39 @@ export class CotomyRestApi {
         return this.requestAsync(Methods.GET, fullUrl);
     }
 
-    public async postAsync(path: string, body: globalThis.FormData | Record<string, string | number> | any): Promise<CotomyRestApiResponse> {
-        if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Api)) {
-            console.debug(`POST request to: ${path}`);
-        }
+    public async postAsync(path: string, body: globalThis.FormData | Record<string, string | number> | any): Promise<CotomyApiResponse> {
         return this.requestAsync(Methods.POST, path, body);
     }
 
-    public async putAsync(path: string, body: globalThis.FormData | Record<string, string | number> | any): Promise<CotomyRestApiResponse> {
-        if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Api)) {
-            console.debug(`PUT request to: ${path}`);
-        }
+    public async putAsync(path: string, body: globalThis.FormData | Record<string, string | number> | any): Promise<CotomyApiResponse> {
         return this.requestAsync(Methods.PUT, path, body);
     }
 
-    public async patchAsync(path: string, body: globalThis.FormData | Record<string, string | number> | any): Promise<CotomyRestApiResponse> {
-        if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Api)) {
-            console.debug(`PATCH request to: ${path}`);
-        }
+    public async patchAsync(path: string, body: globalThis.FormData | Record<string, string | number> | any): Promise<CotomyApiResponse> {
         return this.requestAsync(Methods.PATCH, path, body);
     }
 
-    public async deleteAsync(path: string): Promise<CotomyRestApiResponse> {
-        if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Api)) {
-            console.debug(`DELETE request to: ${path}`);
-        }
+    public async deleteAsync(path: string): Promise<CotomyApiResponse> {
         return this.requestAsync(Methods.DELETE, path);
     }
 
-    public async headAsync(path: string): Promise<CotomyRestApiResponse> {
-        if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Api)) {
-            console.debug(`HEAD request to: ${path}`);
-        }
+    public async headAsync(path: string): Promise<CotomyApiResponse> {
         return this.requestAsync(Methods.HEAD, path);
     }
 
-    public async optionsAsync(path: string): Promise<CotomyRestApiResponse> {
-        if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Api)) {
-            console.debug(`OPTIONS request to: ${path}`);
-        }
+    public async optionsAsync(path: string): Promise<CotomyApiResponse> {
         return this.requestAsync(Methods.OPTIONS, path);
     }
 
-    public async traceAsync(path: string): Promise<CotomyRestApiResponse> {
-        if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Api)) {
-            console.debug(`TRACE request to: ${path}`);
-        }
+    public async traceAsync(path: string): Promise<CotomyApiResponse> {
         return this.requestAsync(Methods.TRACE, path);
     }
 
-    public async connectAsync(path: string): Promise<CotomyRestApiResponse> {
-        if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Api)) {
-            console.debug(`CONNECT request to: ${path}`);
-        }
+    public async connectAsync(path: string): Promise<CotomyApiResponse> {
         return this.requestAsync(Methods.CONNECT, path);
     }
 
-    public async submitAsync(form: ICotomyRestSubmitForm): Promise<CotomyRestApiResponse> {
+    public async submitAsync(form: ICotomyRestSubmitForm): Promise<CotomyApiResponse> {
         return form.method.toUpperCase() === Methods.GET ? this.getAsync(form.action, form.body)
                 : this.requestAsync(form.method.toUpperCase(), form.action, form.body);
     }

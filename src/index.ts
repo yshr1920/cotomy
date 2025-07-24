@@ -1,16 +1,22 @@
 export {
-    CotomyConflictException, CotomyForbiddenException, CotomyHttpClientError,
-    CotomyHttpServerError, CotomyInvalidFormDataBodyException, CotomyNotFoundException, CotomyResponseJsonParseException,
-    CotomyRestApi, CotomyRestApiException, CotomyRestApiResponse, CotomyUnauthorizedException, CotomyValidationException, CotomyViewRenderer
+    CotomyApi,
+    CotomyApiException,
+    CotomyApiResponse, CotomyConflictException,
+    CotomyForbiddenException,
+    CotomyHttpClientError,
+    CotomyHttpServerError,
+    CotomyInvalidFormDataBodyException,
+    CotomyNotFoundException,
+    CotomyResponseJsonParseException, CotomyUnauthorizedException,
+    CotomyValidationException,
+    CotomyViewRenderer
 } from "./api";
 export {
     CotomyDebugFeature,
     CotomyDebugSettings
 } from "./debug";
 export {
-    CotomyActionEvent,
-    CotomyApiForm,
-    CotomyFillApiForm,
+    CotomyActionEvent, CotomyApiFailedEvent, CotomyApiForm, CotomyFillApiForm,
     CotomyForm,
     CotomyQueryForm
 } from "./form";

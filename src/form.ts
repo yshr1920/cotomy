@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { StatusCodes } from "http-status-codes";
-import { CotomyNotFoundException, CotomyRestApi, CotomyRestApiResponse, CotomyViewRenderer } from "./api";
+import { CotomyApi, CotomyApiException, CotomyApiResponse, CotomyNotFoundException, CotomyViewRenderer } from "./api";
 import { CotomyDebugFeature, CotomyDebugSettings } from "./debug";
 import { CotomyElement, CotomyWindow } from "./view";
 
@@ -200,14 +200,24 @@ export class CotomyQueryForm extends CotomyForm {
 }
 
 
+export class CotomyApiFailedEvent extends Event {
+    public constructor(private _response: CotomyApiResponse) {
+        super('cotomy:fail', { bubbles: true, cancelable: true });
+    }
+
+    public get response(): CotomyApiResponse {
+        return this._response;
+    }
+}
+
 
 export class CotomyApiForm extends CotomyForm {
     public constructor(element: HTMLElement | { html: string; css?: string | null; } | string) {
         super(element);
     }
 
-    public apiClient(): CotomyRestApi {
-        return new CotomyRestApi();
+    public apiClient(): CotomyApi {
+        return new CotomyApi();
     }
 
     public actionUri(): string {
@@ -220,7 +230,7 @@ export class CotomyApiForm extends CotomyForm {
         return this.attribute("data-cotomy-key") || undefined;
     }
 
-    protected setIncrementedId(response: CotomyRestApiResponse) {
+    protected setIncrementedId(response: CotomyApiResponse) {
         const id = response.headers.get("Location")?.split("/").pop();
         this.setAttribute("data-cotomy-key", id);
     }
@@ -246,6 +256,20 @@ export class CotomyApiForm extends CotomyForm {
 
 
     //#region API Submit
+
+    public apiFailed(handle: ((event: CotomyApiFailedEvent) => void | Promise<void>)): this {
+        this.element.addEventListener("cotomy:fail", async e => {
+            await handle(e as CotomyApiFailedEvent);
+        });
+        return this;
+    }
+
+    protected triggerApiFailedEvent(response: CotomyApiResponse): void {
+        this.trigger("cotomy:fail", new CotomyApiFailedEvent(response));
+        if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Api)) {
+            console.error("API request failed:", response);
+        }
+    }
 
     public method(): string {
         return this.autoIncrement || !this.identifierInputs.every(e => e.readonly) ? "post" : "put";
@@ -280,28 +304,35 @@ export class CotomyApiForm extends CotomyForm {
         await this.submitToApiAsync(formData);
     }
 
-    protected async submitToApiAsync(formData: globalThis.FormData): Promise<CotomyRestApiResponse> {
+    protected async submitToApiAsync(formData: globalThis.FormData): Promise<CotomyApiResponse> {
         const api = this.apiClient();
 
-        const response = await api.submitAsync({
-            method: this.method(),
-            action: this.actionUri(),
-            body: formData,
-        });
+        try {
+            const response = await api.submitAsync({
+                method: this.method(),
+                action: this.actionUri(),
+                body: formData,
+            });
 
-        // APIのレスポンスからidを設定
-        if (this.autoIncrement && response.status === StatusCodes.CREATED) {
-            this.setIncrementedId(response);
-        }
+            // APIのレスポンスからidを設定
+            if (this.autoIncrement && response.status === StatusCodes.CREATED) {
+                this.setIncrementedId(response);
+            }
 
-        // レスポンスのLocationヘッダーがあれば、リダイレクト
-        const redirect = response.headers.get("Location");
-        if (redirect) {
-            location.href = redirect;
+            // レスポンスのLocationヘッダーがあれば、リダイレクト
+            const redirect = response.headers.get("Location");
+            if (redirect) {
+                location.href = redirect;
+                return response;
+            }
+
             return response;
+        } catch (error) {
+            if (error instanceof CotomyApiException) {
+                this.triggerApiFailedEvent(error.response);
+            }
+            throw error;
         }
-
-        return response;
     }
 
     //#endregion
@@ -356,7 +387,7 @@ export class CotomyFillApiForm extends CotomyApiForm {
     }
 
 
-    protected async submitToApiAsync(formData: globalThis.FormData): Promise<CotomyRestApiResponse> {
+    protected async submitToApiAsync(formData: globalThis.FormData): Promise<CotomyApiResponse> {
         const response = await super.submitToApiAsync(formData);
         if (response.ok) {
             await this.fillAsync(response);
@@ -379,14 +410,17 @@ export class CotomyFillApiForm extends CotomyApiForm {
         return new CotomyViewRenderer(this);
     }
 
-    public async loadAsync(): Promise<CotomyRestApiResponse> {
-        if (this.autoIncrement || !this.identifierInputs.every(e => e.value)) return new CotomyRestApiResponse();
+    public async loadAsync(): Promise<CotomyApiResponse> {
+        if (this.autoIncrement || !this.identifierInputs.every(e => e.value)) return new CotomyApiResponse();
         const api = this.apiClient();
         try {
             const response = await api.getAsync(this.loadActionUri());
             await this.fillAsync(response);
             return response;
         } catch (error) {
+            if (error instanceof CotomyApiException) {
+                this.triggerApiFailedEvent(error.response);
+            }
             if (error instanceof CotomyNotFoundException) {
                 return error.response;
             }
@@ -394,7 +428,7 @@ export class CotomyFillApiForm extends CotomyApiForm {
         }
     }
 
-    protected async fillAsync(response: CotomyRestApiResponse): Promise<void> {
+    protected async fillAsync(response: CotomyApiResponse): Promise<void> {
         if (response.ok && response.available) {
             for (const [key, value] of Object.entries(await response.objectAsync())) {
                 if (key.endsWith('[]')) {
