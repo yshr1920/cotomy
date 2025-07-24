@@ -430,11 +430,15 @@ export class CotomyApi {
                 }
             },
             "multipart/form-data": (body) => {
-                if (!(body instanceof globalThis.FormData)) {
-                    throw new CotomyInvalidFormDataBodyException("Body must be an instance of FormData for multipart/form-data.");
+                if (body instanceof globalThis.FormData) {
+                    return body;
                 }
-                return body;
-            },
+                const formData = new globalThis.FormData();
+                for (const [key, value] of Object.entries(body)) {
+                    formData.append(key, String(value));
+                }
+                return formData;
+            }        
         };
 
         //#endregion

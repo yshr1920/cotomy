@@ -202,7 +202,7 @@ export class CotomyQueryForm extends CotomyForm {
 
 export class CotomyApiFailedEvent extends Event {
     public constructor(private _response: CotomyApiResponse) {
-        super('cotomy:fail', { bubbles: true, cancelable: true });
+        super('cotomy:apifailed', { bubbles: true, cancelable: true });
     }
 
     public get response(): CotomyApiResponse {
@@ -258,16 +258,30 @@ export class CotomyApiForm extends CotomyForm {
     //#region API Submit
 
     public apiFailed(handle: ((event: CotomyApiFailedEvent) => void | Promise<void>)): this {
-        this.element.addEventListener("cotomy:fail", async e => {
+        this.on("cotomy:apifailed", async e => {
             await handle(e as CotomyApiFailedEvent);
         });
         return this;
     }
 
     protected triggerApiFailedEvent(response: CotomyApiResponse): void {
-        this.trigger("cotomy:fail", new CotomyApiFailedEvent(response));
+        this.trigger("cotomy:apifailed", new CotomyApiFailedEvent(response));
         if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Api)) {
             console.error("API request failed:", response);
+        }
+    }
+
+    public submitFailed(handle: ((event: CotomyApiFailedEvent) => void | Promise<void>)): this {
+        this.on("cotomy:apifailed", async e => {
+            await handle(e as CotomyApiFailedEvent);
+        });
+        return this;
+    }
+
+    protected triggerSubmitFailedEvent(response: CotomyApiResponse): void {
+        this.trigger("cotomy:apifailed", new CotomyApiFailedEvent(response));
+        if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Api)) {
+            console.error("Submit failed:", response);
         }
     }
 
@@ -330,6 +344,7 @@ export class CotomyApiForm extends CotomyForm {
         } catch (error) {
             if (error instanceof CotomyApiException) {
                 this.triggerApiFailedEvent(error.response);
+                this.triggerSubmitFailedEvent(error.response);
             }
             throw error;
         }
