@@ -1,5 +1,8 @@
 # Cotomy
 
+> このライブラリは ES2020+ を対象としています。
+> 古いブラウザ（iOS 13以前やIEなど）で使用する場合は `core-js` 等による Polyfill が必要です。
+
 A lightweight framework for managing form behavior and page controllers in web applications.  
 Ideal for SPA (Single Page Application) or traditional web apps with dynamic form operations.
 

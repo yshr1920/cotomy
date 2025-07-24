@@ -29,12 +29,16 @@ export class CotomyElement {
         return Array.from(elements).map(e => new ctor(<HTMLElement>e));
     }
 
+    public static contains(selector: string): boolean {
+        return document.querySelector(selector) !== null;
+    }
+
     public static byId<T extends CotomyElement = CotomyElement>(id: string, type?: new (el: HTMLElement) => T): T | undefined {
         return this.first<T>(`#${id}`, type);
     }
 
-    public static contains(selector: string): boolean {
-        return document.querySelector(selector) !== null;
+    public static containsById(id: string): boolean {
+        return document.getElementById(id) !== null;
     }
 
     public static empty<T extends CotomyElement = CotomyElement>(type?: new (el: HTMLElement) => T): T {
