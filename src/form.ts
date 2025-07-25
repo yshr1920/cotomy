@@ -88,7 +88,7 @@ export abstract class CotomyForm extends CotomyElement {
     //#region フォームの構築
 
     public get initialized(): boolean {
-        return this.hasAttribute("data-cotomy-builded");
+        return this.hasAttribute("data-cotomy-initialized");
     }
     
     public initialize(): this {
@@ -109,7 +109,7 @@ export abstract class CotomyForm extends CotomyElement {
                 })
             });
 
-            this.setAttribute("data-cotomy-builded");
+            this.setAttribute("data-cotomy-initialized");
         }
         return this;
     }
@@ -221,37 +221,8 @@ export class CotomyApiForm extends CotomyForm {
     }
 
     public actionUri(): string {
-        return `${this.attribute("action")!}/${this.autoIncrement ? (this.attribute("data-cotomy-key") || "") : this.identifierString}`;
+        return this.attribute("action")!;
     }
-
-    //#region データ識別
-
-    public get identifier(): string | undefined {
-        return this.attribute("data-cotomy-key") || undefined;
-    }
-
-    protected setIncrementedId(response: CotomyApiResponse) {
-        const id = response.headers.get("Location")?.split("/").pop();
-        this.setAttribute("data-cotomy-key", id);
-    }
-
-    public get identifierInputs(): CotomyElement[] {
-        return this.find("[data-cotomy-keyindex]").sort((a, b) => {
-            const aIndex = parseInt(a.attribute("data-cotomy-keyindex") ?? "0");
-            const bIndex = parseInt(b.attribute("data-cotomy-keyindex") ?? "0");
-            return aIndex - bIndex;
-        });
-    }
-
-    public get identifierString(): string {
-        return this.identifier ?? this.identifierInputs.map(e => e.value).join("/");
-    }
-
-    public get autoIncrement(): boolean {
-        return !this.identifier && this.identifierInputs.length == 0;
-    }
-
-    //#endregion
 
 
 
@@ -286,7 +257,7 @@ export class CotomyApiForm extends CotomyForm {
     }
 
     public method(): string {
-        return this.autoIncrement || !this.identifierInputs.every(e => e.readonly) ? "post" : "put";
+        return this.attribute("method") ?? "post";
     }
 
     public formData(): FormData {
@@ -328,11 +299,6 @@ export class CotomyApiForm extends CotomyForm {
                 body: formData,
             });
 
-            // APIのレスポンスからidを設定
-            if (this.autoIncrement && response.status === StatusCodes.CREATED) {
-                this.setIncrementedId(response);
-            }
-
             // レスポンスのLocationヘッダーがあれば、リダイレクト
             const redirect = response.headers.get("Location");
             if (redirect) {
@@ -354,7 +320,62 @@ export class CotomyApiForm extends CotomyForm {
 }
 
 
-export class CotomyFillApiForm extends CotomyApiForm {
+
+export class CotomyIdentifiedApiForm extends CotomyApiForm {
+
+    public actionUri(): string {
+        return `${this.attribute("action")!}/${this.autoIncrement ? (this.attribute("data-cotomy-key") || "") : this.identifierString}`;
+    }
+
+    public method(): string {
+        return this.autoIncrement || !this.identifierInputs.every(e => e.readonly) ? "post" : "put";
+    }
+
+
+    //#region データ識別
+
+    public get identifier(): string | undefined {
+        return this.attribute("data-cotomy-key") || undefined;
+    }
+
+    protected setIncrementedId(response: CotomyApiResponse) {
+        const id = response.headers.get("Location")?.split("/").pop();
+        this.setAttribute("data-cotomy-key", id);
+    }
+
+    public get identifierInputs(): CotomyElement[] {
+        return this.find("[data-cotomy-keyindex]").sort((a, b) => {
+            const aIndex = parseInt(a.attribute("data-cotomy-keyindex") ?? "0");
+            const bIndex = parseInt(b.attribute("data-cotomy-keyindex") ?? "0");
+            return aIndex - bIndex;
+        });
+    }
+
+    public get identifierString(): string {
+        return this.identifier ?? this.identifierInputs.map(e => e.value).join("/");
+    }
+
+    public get autoIncrement(): boolean {
+        return !this.identifier && this.identifierInputs.length == 0;
+    }
+
+    protected async submitToApiAsync(formData: FormData): Promise<CotomyApiResponse> {
+        const response = await super.submitToApiAsync(formData);
+
+        // APIのレスポンスからidを設定
+        if (this.autoIncrement && response.status === StatusCodes.CREATED) {
+            this.setIncrementedId(response);
+        }
+
+        return response;
+    }
+
+    //#endregion
+}
+
+
+
+export class CotomyFillApiForm extends CotomyIdentifiedApiForm {
     private _fillers: { [key: string]: (input: CotomyElement, value: any) => void } = {};
 
     public constructor(element: HTMLElement | { html: string; css?: string | null; } | string) {

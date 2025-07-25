@@ -630,6 +630,10 @@ export class CotomyElement {
         return <T>elements.shift() ?? undefined;
     }
 
+    public contains(selector: string): boolean {
+        return this.find(selector).length > 0;
+    }
+
     public prepend(prepend: CotomyElement): this {
         this._element.prepend(prepend.element);
         return this;
