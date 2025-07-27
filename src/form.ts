@@ -324,17 +324,49 @@ export class CotomyApiForm extends CotomyForm {
 export class CotomyIdentifiedApiForm extends CotomyApiForm {
 
     public actionUri(): string {
-        return `${this.attribute("action")!}/${this.isServerGeneratedKey ? (this.attribute("data-cotomy-key") || "") : this.keyString}`;
+        return `${this.attribute("action")!}/${this.hasGeneratedKey ? (this.attribute("data-cotomy-key") || "") : this.keyString}`;
     }
 
     public method(): string {
-        return this.isServerGeneratedKey || !this.keyInputs.every(e => e.readonly) ? "post" : "put";
+        return this.hasGeneratedKey || !this.pathKeyInputs.every(e => e.readonly) ? "post" : "put";
     }
 
 
     //#region データ識別
 
-    public get keyInputs(): CotomyElement[] {
+    public get generatedKey(): string | undefined {
+        return this.attribute("data-cotomy-key") || undefined;
+    }
+
+    protected setGeneratedKey(response: CotomyApiResponse) {
+        if (this.attribute("data-cotomy-identify") !== "false") {
+            const location = response.headers.get("Location");
+            if (location) {
+                const action = this.actionUri().replace(/\?.*$/, ""); // remove query
+                const actionParts = action.split("/");
+                const locationParts = location.split("/");
+
+                const addedParts = locationParts.slice(actionParts.length);
+                if (addedParts.length === 1 || this.pathKeyInputs.length === addedParts.length) {
+                    if (this.pathKeyInputs.length > 0) {
+                        this.pathKeyInputs.forEach((input, i) => {
+                            input.value = addedParts[i] || "";
+                        });
+                    } else {
+                        this.setAttribute("data-cotomy-key", addedParts[0]);
+                    }
+                } else {
+                    console.warn("Path key inputs and Location-derived keys do not match in count.", this.pathKeyInputs.length, addedParts.length);
+                }
+            }
+        }
+    }
+
+    public get hasGeneratedKey(): boolean {
+        return this.attribute("data-cotomy-identify") !== "false" && !this.generatedKey && this.keyInputs.length == 0;
+    }
+
+    public get pathKeyInputs(): CotomyElement[] {
         return this.find("[data-cotomy-keyindex]").sort((a, b) => {
             const aIndex = parseInt(a.attribute("data-cotomy-keyindex") ?? "0");
             const bIndex = parseInt(b.attribute("data-cotomy-keyindex") ?? "0");
@@ -342,29 +374,28 @@ export class CotomyIdentifiedApiForm extends CotomyApiForm {
         });
     }
 
-    public get serverGeneratedKey(): string | undefined {
-        return this.attribute("data-cotomy-key") || undefined;
+    public get keyInputs(): CotomyElement[] {
+        return this.contains("[data-cotomy-key]") ? this.find("[data-cotomy-key]").sort((a, b) => {
+            const aIndex = parseInt(a.attribute("data-cotomy-key") ?? "0");
+            const bIndex = parseInt(b.attribute("data-cotomy-key") ?? "0");
+            return aIndex - bIndex;
+        }) : this.find("[name][data-cotomy-key]");
     }
 
-    protected setServerGeneratedKey(response: CotomyApiResponse) {
-        const id = response.headers.get("Location")?.split("/").pop();
-        this.setAttribute("data-cotomy-key", id);
-    }
-
-    public get isServerGeneratedKey(): boolean {
-        return !this.serverGeneratedKey && this.keyInputs.length == 0;
+    public get usePathKey(): boolean {
+        return this.pathKeyInputs.length > 0 || this.hasGeneratedKey;
     }
 
     public get keyString(): string {
-        return this.serverGeneratedKey ?? this.keyInputs.map(e => e.value).join("/");
+        return this.generatedKey ?? this.pathKeyInputs.map(e => e.value).join("/");
     }
 
     protected async submitToApiAsync(formData: FormData): Promise<CotomyApiResponse> {
         const response = await super.submitToApiAsync(formData);
 
         // APIのレスポンスからidを設定
-        if (this.isServerGeneratedKey && response.status === StatusCodes.CREATED) {
-            this.setServerGeneratedKey(response);
+        if (this.hasGeneratedKey && response.status === StatusCodes.CREATED) {
+            this.setGeneratedKey(response);
         }
 
         return response;
@@ -447,7 +478,10 @@ export class CotomyFillApiForm extends CotomyIdentifiedApiForm {
     }
 
     public async loadAsync(): Promise<CotomyApiResponse> {
-        if (this.isServerGeneratedKey || !this.keyInputs.every(e => e.value)) return new CotomyApiResponse();
+        if (this.hasGeneratedKey || !this.keyInputs.every(e => e.value)) {
+            return new CotomyApiResponse();
+        }
+
         const api = this.apiClient();
         try {
             const response = await api.getAsync(this.loadActionUri());
@@ -490,8 +524,8 @@ export class CotomyFillApiForm extends CotomyIdentifiedApiForm {
         }
 
         // 識別子の要素をreadonlyにする
-        this.keyInputs.forEach(e => e.setElementStyle("background-color", "#f0f0f0"));
-        this.keyInputs.forEach(e => e.setAttribute("readonly"));
+        this.pathKeyInputs.forEach(e => e.setElementStyle("background-color", "#f0f0f0"));
+        this.pathKeyInputs.forEach(e => e.setAttribute("readonly"));
 
         // textareaを自動リサイズ
         this.find("textarea").forEach(e => e.input());
