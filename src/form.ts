@@ -299,13 +299,6 @@ export class CotomyApiForm extends CotomyForm {
                 body: formData,
             });
 
-            // レスポンスのLocationヘッダーがあれば、リダイレクト
-            const redirect = response.headers.get("Location");
-            if (redirect) {
-                location.href = redirect;
-                return response;
-            }
-
             return response;
         } catch (error) {
             if (error instanceof CotomyApiException) {
