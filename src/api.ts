@@ -246,42 +246,42 @@ export class CotomyViewRenderer {
     protected initialize(): this {
         if (!this.initialized) {
             this.renderer("mail", (element, value) => {
-                element.clean();
+                element.clear();
                 if (value) {
                     new CotomyElement(/* html */`<a href="mailto:${value}">${value}</a>`).appendTo(element);
                 }
             });
 
             this.renderer("tel", (element, value) => {
-                element.clean();
+                element.clear();
                 if (value) {
                     new CotomyElement(/* html */`<a href="tel:${value}">${value}</a>`).appendTo(element);
                 }
             });
             
             this.renderer("url", (element, value) => {
-                element.clean();
+                element.clear();
                 if (value) {
                     new CotomyElement(/* html */`<a href="${value}" target="_blank">${value}</a>`).appendTo(element);
                 }
             });
 
             this.renderer("number", (element, value) => {
-                element.clean();
+                element.clear();
                 if (value) {
                     element.text = new Intl.NumberFormat(navigator.language || this.locale).format(value);
                 }
             });
 
             this.renderer("currency", (element, value) => {
-                element.clean();
+                element.clear();
                 if (value) {
                     element.text = new Intl.NumberFormat(navigator.language || this.locale, { style: "currency", currency: this.currency }).format(value);
                 }
             });
 
             this.renderer("utc", (element, value) => {
-                element.clean();
+                element.clear();
                 if (value) {
                     const hasOffset = /[+-]\d{2}:\d{2}$/.test(value);
                     const date = hasOffset ? new Date(value) : new Date(`${value}Z`);

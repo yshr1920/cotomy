@@ -346,7 +346,7 @@ export class CotomyElement {
         return e;
     }
 
-    public clean() {
+    public clear() {
         this.find("*").forEach(e => e.remove());
         this.text = "";
     }
