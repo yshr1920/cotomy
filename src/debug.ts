@@ -7,6 +7,7 @@ export enum CotomyDebugFeature {
     FormData = "formdata",
     Html = "html",
     Page = "page",
+    FormLoad = "formload",
 }
 
 export class CotomyDebugSettings {

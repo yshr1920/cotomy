@@ -191,19 +191,34 @@ export class CotomyApiResponse {
         return await this._response?.blob() || new Blob;
     }
 
-    public async objectAsync<T extends object>(defaultValue: T = {} as T): Promise<any> {
-        if (this._response && !this._json) {
+    /**
+     * Centralized helper to ensure response JSON is parsed exactly once.
+     */
+    private async _ensureJsonParsedAsync(defaultValue: any): Promise<any> {
+        if (this._response && this._json === null) {
             try {
                 const text = await this._response.text();
                 if (!text) {
-                    return defaultValue;
+                    this._json = defaultValue;
+                } else {
+                    this._json = JSON.parse(text);
                 }
-                this._json = JSON.parse(text);
             } catch (error) {
-                throw new CotomyResponseJsonParseException(`Failed to parse JSON response: ${error instanceof Error ? error.message : String(error)}`);
+                throw new CotomyResponseJsonParseException(
+                    `Failed to parse JSON response: ${error instanceof Error ? error.message : String(error)}`
+                );
             }
         }
-        return this._json;
+        return this._json ?? defaultValue;
+    }
+
+    public async objectAsync<T = any>(defaultValue: T = {} as T): Promise<T> {
+        return await this._ensureJsonParsedAsync(defaultValue);
+    }
+
+    public async arrayAsync<T = any>(defaultValue: T[] = []): Promise<T[]> {
+        const parsed = await this._ensureJsonParsedAsync(defaultValue);
+        return Array.isArray(parsed) ? parsed : defaultValue;
     }
 }
 
