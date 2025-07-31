@@ -146,11 +146,6 @@ export class CotomyElement {
         return this.attribute("id");
     }
 
-    public setId(id: string): this {
-        this.setAttribute("id", id);
-        return this;
-    }
-
     public get element(): HTMLElement {
         return this._element;
     }
