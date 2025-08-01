@@ -59,10 +59,10 @@ export class CotomyValidationException extends CotomyHttpClientError {
 }
 
 export class CotomyHttpServerError extends CotomyApiException {
-  constructor(status: number, message: string, response: CotomyApiResponse, body = "") {
-    super(status, message, response, body);
-    this.name = "CotomyHttpServerError";
-  }
+    constructor(status: number, message: string, response: CotomyApiResponse, body = "") {
+        super(status, message, response, body);
+        this.name = "CotomyHttpServerError";
+    }
 }
 
 

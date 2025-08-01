@@ -314,14 +314,14 @@ export class CotomyApiForm extends CotomyForm {
 
 
 
-export class CotomyIdentifiedApiForm extends CotomyApiForm {
+export class CotomyEntityApiForm extends CotomyApiForm {
 
     public actionUri(): string {
-        return `${this.attribute("action")!}/${this.requiresExternalKey ? (this.attribute("data-cotomy-key") || "") : this.keyString}`;
+        return `${this.attribute("action")!}/${this.externalKey ? (this.attribute("data-cotomy-key") || "") : this.keyString}`;
     }
 
     public method(): string {
-        return this.requiresExternalKey || !this.pathKeyInputs.every(e => e.readonly) ? "post" : "put";
+        return this.externalKey || !this.pathKeyInputs.every(e => e.readonly) || this.keyInputs.length > 0 ? "post" : "put";
     }
 
 
@@ -333,7 +333,7 @@ export class CotomyIdentifiedApiForm extends CotomyApiForm {
 
     protected setExternalKey(response: CotomyApiResponse) {
         if (this.requiresExternalKey && response.status === StatusCodes.CREATED) {
-            if (this.externalKey) {
+            if (this.hasExternalKey) {
                 if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.FormLoad)) {
                     console.warn("External key already exists, but server responded with 201 Created. Possible duplicate POST.");
                 }
@@ -357,8 +357,12 @@ export class CotomyIdentifiedApiForm extends CotomyApiForm {
     }
 
     public get requiresExternalKey(): boolean {
-        return this.attribute("data-cotomy-identify") !== "false" && !this.externalKey && this.keyInputs.length == 0 && this.pathKeyInputs.length == 0;
+        return this.attribute("data-cotomy-identify") !== "false" && this.keyInputs.length == 0 && this.pathKeyInputs.length == 0;
     }
+
+    public get hasExternalKey(): boolean {
+        return !!this.externalKey;
+    } 
 
     public get pathKeyInputs(): CotomyElement[] {
         return this.find("[data-cotomy-keyindex]").sort((a, b) => {
@@ -381,7 +385,7 @@ export class CotomyIdentifiedApiForm extends CotomyApiForm {
     }
 
     public get keyString(): string {
-        return this.externalKey ?? this.pathKeyInputs.map(e => e.value).join("/");
+        return this.externalKey || this.pathKeyInputs.map(e => e.value).join("/");
     }
 
     protected async submitToApiAsync(formData: FormData): Promise<CotomyApiResponse> {
@@ -400,7 +404,7 @@ export class CotomyIdentifiedApiForm extends CotomyApiForm {
 
 
 
-export class CotomyFillApiForm extends CotomyIdentifiedApiForm {
+export class CotomyEntityFillApiForm extends CotomyEntityApiForm {
     private _fillers: { [key: string]: (input: CotomyElement, value: any) => void } = {};
 
     public constructor(element: HTMLElement | { html: string; css?: string | null; } | string) {
@@ -475,7 +479,7 @@ export class CotomyFillApiForm extends CotomyIdentifiedApiForm {
         const hasPathKeys = this.pathKeyInputs.length > 0 && this.pathKeyInputs.every(e => !!e.value);
         const hasKeyInputs = this.keyInputs.length > 0 && this.keyInputs.every(e => !!e.value);
 
-        if (this.requiresExternalKey || (!hasPathKeys && !hasKeyInputs)) {
+        if (!this.hasExternalKey && !hasPathKeys && !hasKeyInputs) {
             return new CotomyApiResponse();
         }
 

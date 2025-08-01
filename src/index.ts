@@ -16,7 +16,7 @@ export {
     CotomyDebugSettings
 } from "./debug";
 export {
-    CotomyActionEvent, CotomyApiFailedEvent, CotomyApiForm, CotomyFillApiForm,
+    CotomyActionEvent, CotomyApiFailedEvent, CotomyApiForm, CotomyEntityFillApiForm as CotomyFillApiForm,
     CotomyForm,
     CotomyQueryForm
 } from "./form";
