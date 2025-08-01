@@ -357,7 +357,7 @@ export class CotomyIdentifiedApiForm extends CotomyApiForm {
     }
 
     public get requiresExternalKey(): boolean {
-        return this.attribute("data-cotomy-identify") !== "false" && !this.externalKey && this.keyInputs.length == 0 && this.pathKeyInputs.length > 0;
+        return this.attribute("data-cotomy-identify") !== "false" && !this.externalKey && this.keyInputs.length == 0 && this.pathKeyInputs.length == 0;
     }
 
     public get pathKeyInputs(): CotomyElement[] {
