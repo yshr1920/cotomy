@@ -105,7 +105,11 @@ export abstract class CotomyForm extends CotomyElement {
 
     //#region Submit
 
-    public abstract submitAsync(e: Event): Promise<void>;
+    public submit(): void {
+        this.trigger("submit");
+    }
+
+    protected abstract submitAsync(e: Event): Promise<void>;
 
     //#endregion
 }
@@ -123,7 +127,7 @@ export class CotomyQueryForm extends CotomyForm {
     }
 
 
-    public async submitAsync(e: Event): Promise<void> {
+    protected async submitAsync(e: Event): Promise<void> {
         e.preventDefault();
         e.stopPropagation();
 
@@ -245,7 +249,7 @@ export class CotomyApiForm extends CotomyForm {
         return formData;
     };
 
-    public async submitAsync(e: Event): Promise<void> {
+    protected async submitAsync(e: Event): Promise<void> {
         e.preventDefault();
         e.stopPropagation();
 
