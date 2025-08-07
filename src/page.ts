@@ -117,7 +117,7 @@ export class CotomyPageController {
         return CotomyWindow.instance.body;
     }
 
-    protected get uri(): CotomyUrl {
+    protected get url(): CotomyUrl {
         return new CotomyUrl();
     }
 }

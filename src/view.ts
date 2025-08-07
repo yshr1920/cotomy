@@ -52,6 +52,7 @@ export class CotomyElement {
 
     private _element: HTMLElement;
     private _parentElement: CotomyElement | null = null;
+    private _eventHandlers: { [event: string]: Array<(e: Event) => void | Promise<void>> } = {};
 
     public constructor(element: HTMLElement | { html: string; css?: string | null; } | string) {
         if (element instanceof HTMLElement) {
@@ -678,9 +679,12 @@ export class CotomyElement {
 
     public on(event: string, handle: (e: Event) => void | Promise<void>): this {
         this.element.addEventListener(event, handle);
+        if (!this._eventHandlers[event]) {
+            this._eventHandlers[event] = [];
+        }
+        this._eventHandlers[event].push(handle);
         return this;
     }
-
     public onChild(event: string, selector: string, handle: (e: Event, matched: HTMLElement) => void | Promise<void>): this {
         this.element.addEventListener(event, (e: Event) => {
             if (e.target instanceof HTMLElement) {
@@ -699,11 +703,22 @@ export class CotomyElement {
         return this;
     }
 
-    public off(event: string, handle: (e: Event) => void | Promise<void>): this {
-        this.element.removeEventListener(event, handle);
+    public off(event: string, handle?: (e: Event) => void | Promise<void>): this {
+        if (handle) {
+            this.element.removeEventListener(event, handle);
+            this._eventHandlers[event] = this._eventHandlers[event]?.filter(h => h !== handle) ?? [];
+        } else {
+            for (const h of this._eventHandlers[event] ?? []) {
+                this.element.removeEventListener(event, h);
+            }
+            delete this._eventHandlers[event];
+        }
         return this;
     }
 
+    public handlers(event: string): Array<(e: Event) => void | Promise<void>> {
+        return this._eventHandlers[event] ?? [];
+    }
 
     //#region Mouse Events
 
@@ -1058,6 +1073,7 @@ export class CotomyWindow {
     private _body: CotomyElement = CotomyElement.empty();
     private _mutationObserver: MutationObserver | null = null;
     private _reloading: boolean = false;
+    private _eventHandlers: { [event: string]: Array<(e: Event) => void | Promise<void>> } = {};
 
     public get initialized(): boolean {
         return this._body.attached;
@@ -1167,21 +1183,39 @@ export class CotomyWindow {
         window.dispatchEvent(new Event(event));
     }
 
+    public on(event: string, handle: (e: Event) => void | Promise<void>) {
+        if (!this._eventHandlers[event]) this._eventHandlers[event] = [];
+        this._eventHandlers[event].push(handle);
+        window.addEventListener(event, async e => await handle(e));
+    }
+
+    public off(event: string, handle?: (e: Event) => void | Promise<void>) {
+        if (handle) {
+            window.removeEventListener(event, handle);
+            this._eventHandlers[event] = this._eventHandlers[event]?.filter(h => h !== handle) ?? [];
+        } else {
+            for (const h of this._eventHandlers[event] ?? []) {
+                window.removeEventListener(event, h);
+            }
+            delete this._eventHandlers[event];
+        }
+    }
+
+    public handlers(event: string): Array<(e: Event) => void | Promise<void>> {
+        return this._eventHandlers[event] ?? [];
+    }
+
     public load(handle: (e: Event) => void | Promise<void>) {
-        window.addEventListener("load", async e => await handle(e));
+        this.on("load", handle);
     }
 
     public ready(handle: ((e: Event) => void | Promise<void>)) {
-        window.addEventListener("cotomy:ready", async e => await handle(e));
-    }
-
-    public on(event: string, handle: (e: Event) => void | Promise<void>) {
-        window.addEventListener(event, async e => await handle(e));
+        this.on("cotomy:ready", handle);
     }
 
     public resize(handle: ((event: Event) => void | Promise<void>) | null = null) {
         if (handle) {
-            window.addEventListener("resize", async e => await handle(e));
+            this.on("resize", handle);
         } else {
             this.trigger("resize");
         }
@@ -1189,7 +1223,7 @@ export class CotomyWindow {
 
     public scroll(handle: ((event: Event) => void | Promise<void>) | null = null) {
         if (handle) {
-            window.addEventListener("scroll", async e => await handle(e));
+            this.on("scroll", handle);
         } else {
             this.trigger("scroll");
         }
@@ -1197,7 +1231,7 @@ export class CotomyWindow {
 
     public changeLayout(handle: ((event: Event) => void | Promise<void>) | null = null) {
         if (handle) {
-            window.addEventListener("cotomy:changelayout", async e => await handle(e));
+            this.on("cotomy:changelayout", handle);
         } else {
             this.trigger("cotomy:changelayout");
         }
@@ -1205,7 +1239,7 @@ export class CotomyWindow {
 
     public pageshow(handle: ((event: PageTransitionEvent) => void | Promise<void>) | null = null) {
         if (handle) {
-            window.addEventListener("pageshow", async e => await handle(e));
+            this.on("pageshow", handle as (e: Event) => void | Promise<void>);
         } else {
             this.trigger("pageshow");
         }

@@ -32,7 +32,7 @@ export abstract class CotomyForm extends CotomyElement {
         return this.attribute("method") ?? "get";
     }
 
-    public actionUri(): string {
+    public actionUrl(): string {
         return this.attribute("action") ?? location.pathname + location.search;
     }
 
@@ -126,11 +126,11 @@ export class CotomyQueryForm extends CotomyForm {
 
 
     public async submitAsync(): Promise<void> {
-        const uri = this.actionUri();
+        const url = this.actionUrl();
 
         // クエリパラメータを連想配列にする
         const queryParams: { [key: string]: string } = {};
-        const queryString = uri.split("?")[1];
+        const queryString = url.split("?")[1];
         if (queryString) {
             queryString.split("&").forEach(param => {
                 const [key, value] = param.split("=");
@@ -158,7 +158,7 @@ export class CotomyQueryForm extends CotomyForm {
             .map(([key, value]) => `${key}=${value}`)
             .join("&");
 
-        location.href = `${uri.split("?")[0]}?${newQueryString}`;
+        location.href = `${url.split("?")[0]}?${newQueryString}`;
     }
 }
 
@@ -183,7 +183,7 @@ export class CotomyApiForm extends CotomyForm {
         return new CotomyApi();
     }
 
-    public actionUri(): string {
+    public actionUrl(): string {
         return this.attribute("action")!;
     }
 
@@ -255,7 +255,7 @@ export class CotomyApiForm extends CotomyForm {
         try {
             const response = await api.submitAsync({
                 method: this.method(),
-                action: this.actionUri(),
+                action: this.actionUrl(),
                 body: formData,
             });
 
@@ -276,7 +276,7 @@ export class CotomyApiForm extends CotomyForm {
 
 export class CotomyEntityApiForm extends CotomyApiForm {
 
-    public actionUri(): string {
+    public actionUrl(): string {
         return `${this.attribute("action")!}/${this.externalKey ? (this.attribute("data-cotomy-key") || "") : this.keyString}`;
     }
 
@@ -427,8 +427,8 @@ export class CotomyEntityFillApiForm extends CotomyEntityApiForm {
         this.loadAsync();
     }
 
-    public loadActionUri(): string {
-        return this.actionUri();
+    public loadActionUrl(): string {
+        return this.actionUrl();
     }
 
     public renderer(): CotomyViewRenderer {
@@ -445,7 +445,7 @@ export class CotomyEntityFillApiForm extends CotomyEntityApiForm {
 
         const api = this.apiClient();
         try {
-            const response = await api.getAsync(this.loadActionUri());
+            const response = await api.getAsync(this.loadActionUrl());
             await this.fillAsync(response);
             return response;
         } catch (error) {
