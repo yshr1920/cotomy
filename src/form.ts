@@ -85,7 +85,9 @@ export abstract class CotomyForm extends CotomyElement {
     public initialize(): this {
         if (!this.initialized) {
             this.on("submit", async e => {
-                await this.submitAsync(e);
+                e.preventDefault();
+                e.stopPropagation();
+                await this.submitAsync();
             });
             
             CotomyWindow.instance.pageshow(e => {
@@ -105,11 +107,7 @@ export abstract class CotomyForm extends CotomyElement {
 
     //#region Submit
 
-    public submit(): void {
-        this.trigger("submit");
-    }
-
-    protected abstract submitAsync(e: Event): Promise<void>;
+    public abstract submitAsync(): Promise<void>;
 
     //#endregion
 }
@@ -127,10 +125,7 @@ export class CotomyQueryForm extends CotomyForm {
     }
 
 
-    protected async submitAsync(e: Event): Promise<void> {
-        e.preventDefault();
-        e.stopPropagation();
-
+    public async submitAsync(): Promise<void> {
         const uri = this.actionUri();
 
         // クエリパラメータを連想配列にする
@@ -249,10 +244,7 @@ export class CotomyApiForm extends CotomyForm {
         return formData;
     };
 
-    protected async submitAsync(e: Event): Promise<void> {
-        e.preventDefault();
-        e.stopPropagation();
-
+    public async submitAsync(): Promise<void> {
         const formData = this.formData();
         await this.submitToApiAsync(formData);
     }
