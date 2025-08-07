@@ -6,15 +6,6 @@ import { CotomyElement, CotomyWindow } from "./view";
 
 
 
-export class CotomyActionEvent extends Event {
-    public action: string;
-
-    constructor(action: string) {
-        super('cotomy:action', { bubbles: true, cancelable: true });
-        this.action = action;
-    }
-}
-
 
 export abstract class CotomyForm extends CotomyElement {
     public constructor(element: HTMLElement | { html: string; css?: string | null; } | string) {
@@ -103,12 +94,6 @@ export abstract class CotomyForm extends CotomyElement {
                 }
             });
 
-            this.find("button[type=button][data-cotomy-action]").forEach(e => {
-                e.click(() => {
-                    this.trigger("cotomy:action", new CotomyActionEvent(e.attribute("data-cotomy-action")!));
-                })
-            });
-
             this.setAttribute("data-cotomy-initialized");
         }
         return this;
@@ -120,29 +105,8 @@ export abstract class CotomyForm extends CotomyElement {
 
     //#region Submit
 
-    public submit(): void {
-        this.trigger("submit");
-    }
-
     protected abstract submitAsync(e: Event): Promise<void>;
 
-    //#endregion
-
-
-
-    //#region Form Operations
-
-    public action(handle: ((event: CotomyActionEvent) => void | Promise<void>) | string): this {
-        if (typeof handle === "string") {
-            this.trigger("cotomy:action", new CotomyActionEvent(handle));
-        } else {
-            this.element.addEventListener("cotomy:action", async e => {
-                await handle(e as CotomyActionEvent);
-            });
-        }
-        return this;
-    }
-    
     //#endregion
 }
 
