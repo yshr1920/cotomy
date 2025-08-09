@@ -72,7 +72,7 @@ export class CotomyElement {
             }
         }
         this.removed(() => {
-            this._element = CotomyElement.createHTMLElement(/* html */ `<div data-cotomy-invalid style="display: none;"></div>`);
+            this._element = CotomyElement.createHTMLElement(/* html */ `<div data-cotomy-invalidated style="display: none;"></div>`);
         });
     }
 
@@ -87,7 +87,7 @@ export class CotomyElement {
             this._scopeId = `_${cuid()}`;
             this.setAttribute(this._scopeId, "");
         }
-        return this._scopeId!;
+        return this._scopeId;
     }
 
     public get scopedSelector(): string {
@@ -104,9 +104,17 @@ export class CotomyElement {
         return !["script", "style", "link", "meta"].includes(this.tagname);
     }
 
+    private get scopedCssElementId(): string {
+        return `css-${this.scopeId}`;
+    }
+
+    private get scopedCssElement(): CotomyElement | undefined {
+        return this.stylable ? CotomyElement.byId(this.scopedCssElementId) : undefined;
+    }
+
     private useScopedCss(css: string): this {
         if (css && this.stylable) {
-            const cssid = `css-${this.scopeId}`;
+            const cssid = this.scopedCssElementId;
             CotomyElement.find(`#${cssid}`).forEach(e => e.remove());
             const element = document.createElement("style");
             const writeCss = css.replace(/\[scope\]/g, `[${this.scopeId}]`);
@@ -332,24 +340,20 @@ export class CotomyElement {
         }
     }
 
-    public get valid(): boolean {
-        return !this.element.hasAttribute("data-cotomy-invalid");
+    private get invalidated(): boolean {
+        return this.element.hasAttribute("data-cotomy-invalidated");
     }
 
     public remove() {
-        if (this.valid) {
+        if (!this.invalidated) {
             this._element.remove();
         }
     }
 
-    public clone(): CotomyElement {
-        let e = new CotomyElement(document.createElement(this.tagname));
-        return e;
-    }
-
-    public clear() {
+    public clear(): this {
         this.find("*").forEach(e => e.remove());
         this.text = "";
+        return this;
     }
 
     //#endregion
@@ -1100,11 +1104,6 @@ export class CotomyWindow {
                 e.preventDefault();
             });
 
-            document.addEventListener("dragover", e => {
-                e.stopPropagation();
-                e.preventDefault();
-            });
-
             this.resize(() => {
                 document.querySelectorAll(`[${CotomyElement.LISTEN_LAYOUT_EVENTS_ATTRIBUTE}]`).forEach(e => {
                     e.dispatchEvent(new CustomEvent("cotomy:resize"));
@@ -1186,7 +1185,7 @@ export class CotomyWindow {
     public on(event: string, handle: (e: Event) => void | Promise<void>) {
         if (!this._eventHandlers[event]) this._eventHandlers[event] = [];
         this._eventHandlers[event].push(handle);
-        window.addEventListener(event, async e => await handle(e));
+        window.addEventListener(event, handle);
     }
 
     public off(event: string, handle?: (e: Event) => void | Promise<void>) {
