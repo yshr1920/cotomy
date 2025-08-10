@@ -3,54 +3,45 @@ import { CotomyForm } from "./form";
 import { CotomyElement, CotomyWindow } from "./view";
 
 
+
+
 export class CotomyUrl {
     public static location() {
         return new CotomyUrl();
     }
 
-
-    private _url: string;
+    private _url: URL;
 
     public constructor(url: string | null = null) {
-        this._url = url ?? this.current();
-    }
-
-
-    private current(): string {
-        const { pathname, search } = location;
-        return `${pathname}${search}`;
+        this._url = new URL(url ?? (location.pathname + location.search), location.origin);
     }
 
     public get url(): string {
-        return this._url;
+        return this._url.pathname + this._url.search;
     }
 
     public get path(): string {
-        return this._url.split("?")[0];
+        return this._url.pathname;
     }
 
     public get segments(): string[] {
-        const segments = this.path.split("/").filter(segment => segment.length > 0);
-        return segments.filter(segment => segment.length > 0);
+        return this._url.pathname.split("/").filter(s => s.length > 0);
     }
 
     public get query(): string {
-        return this._url.split("?")[1] ?? "";
+        return this._url.search.replace(/^\?/, "");
     }
 
-    public get parameters(): { [ key: string ]: string } {
-        const search = this._url.split("?")[1] ?? "";
-        const parameters = search.split("&").map(parameter => parameter.split("="));
-        const dictionary: { [ key: string ]: string } = {};
-        parameters.forEach(([ key, value ]) => dictionary[key] = value);
-        return dictionary;
+    public get parameters(): { [key: string]: string } {
+        const dict: Record<string, string> = {};
+        this._url.searchParams.forEach((value, key) => { dict[key] = value; });
+        return dict;
     }
 
     public redirect() {
         window.location.href = this.url;
     }
 }
-
 
 
 
@@ -83,7 +74,7 @@ export class CotomyPageController {
     }
 
 
-    private _forms: { [ key: string ]: CotomyForm } = {};
+    private _forms: { [key: string]: CotomyForm } = {};
 
     protected setForm<T extends CotomyForm = CotomyForm>(form: T): T {
         this._forms[form.formId] = form;
