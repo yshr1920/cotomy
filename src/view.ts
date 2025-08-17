@@ -7,13 +7,45 @@ export class CotomyElement {
     
     //#region Factory and Finder
 
-    protected static createHTMLElement(html: string): HTMLElement {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, "text/html");
-        if (doc.body.childNodes.length === 0) {
-            throw new Error("Invalid HTML string provided.");
+    public static createHTMLElement(html: string): HTMLElement {
+        const wrapperMap: Record<string, { prefix: string, suffix: string }> = {
+            "tr": { prefix: "<table><tbody>", suffix: "</tbody></table>" },
+            "td": { prefix: "<table><tbody><tr>", suffix: "</tr></tbody></table>" },
+            "th": { prefix: "<table><tbody><tr>", suffix: "</tr></tbody></table>" },
+            "thead": { prefix: "<table>", suffix: "</table>" },
+            "tbody": { prefix: "<table>", suffix: "</table>" },
+            "tfoot": { prefix: "<table>", suffix: "</table>" },
+            "caption": { prefix: "<table>", suffix: "</table>" },
+            "colgroup": { prefix: "<table>", suffix: "</table>" },
+            "col": { prefix: "<table><colgroup>", suffix: "</colgroup></table>" },
+            "option": { prefix: "<select>", suffix: "</select>" },
+            "optgroup": { prefix: "<select>", suffix: "</select>" },
+            "legend": { prefix: "<fieldset>", suffix: "</fieldset>" },
+            "li": { prefix: "<ul>", suffix: "</ul>" }
+        };
+
+        const match = html.match(/<\s*([a-z0-9]+)/i);
+        if (!match) {
+            throw new Error(`Invalid HTML: cannot extract tag from "${html}"`);
         }
-        return (doc.body.firstChild as HTMLElement)!;
+        const tag = match[1].toLowerCase();
+
+        const wrap = wrapperMap[tag];
+        const wrappedHtml = wrap ? `${wrap.prefix}${html}${wrap.suffix}` : html;
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(wrappedHtml, "text/html");
+        const errors = doc.querySelector("parsererror");
+        if (errors) {
+            throw new Error(`HTML parsing failed for tag <${tag}>: "${html}"`);
+        }
+
+        const element = doc.body.querySelector(tag);
+        if (!element) {
+            throw new Error(`Parsed but <${tag}> element not found: "${html}"`);
+        }
+
+        return element as HTMLElement;
     }
 
     public static first<T extends CotomyElement = CotomyElement>(selector: string, type?: new (el: HTMLElement) => T): T | undefined {
