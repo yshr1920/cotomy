@@ -116,7 +116,7 @@ export class CotomyElement {
 
     public get scopeId(): string {
         if (!this._scopeId) {
-            this._scopeId = `_${cuid()}`;
+            this._scopeId = `__cotomy_scope__${cuid()}`;
             this.setAttribute(this._scopeId, "");
         }
         return this._scopeId;
@@ -138,10 +138,6 @@ export class CotomyElement {
 
     private get scopedCssElementId(): string {
         return `css-${this.scopeId}`;
-    }
-
-    private get scopedCssElement(): CotomyElement | undefined {
-        return this.stylable ? CotomyElement.byId(this.scopedCssElementId) : undefined;
     }
 
     private useScopedCss(css: string): this {
@@ -185,6 +181,13 @@ export class CotomyElement {
 
     public get id(): string | null | undefined {
         return this.attribute("id");
+    }
+
+    public generateId(prefix: string = "__cotomy_elem__"): this {
+        if (!this.id) {
+            this.setAttribute("id", `${prefix}${cuid()}`);
+        }
+        return this;
     }
 
     public get element(): HTMLElement {

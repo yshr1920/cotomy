@@ -77,9 +77,12 @@ export class CotomyPageController {
     private _forms: { [key: string]: CotomyForm } = {};
 
     protected setForm<T extends CotomyForm = CotomyForm>(form: T): T {
-        this._forms[form.formId] = form;
+        if (!form.id) {
+            form.generateId();
+        }
+        this._forms[form.id!] = form;
         form.removed(() => {
-            delete this._forms[form.formId];
+            delete this._forms[form.id!];
         });
         return form.initialize();
     }

@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { StatusCodes } from "http-status-codes";
-import { CotomyApi, CotomyApiException, CotomyApiResponse, CotomyNotFoundException, CotomyViewRenderer } from "./api";
+import { BracketBindNameGenerator, CotomyApi, CotomyApiException, CotomyApiResponse, CotomyNotFoundException, CotomyViewRenderer, IBindNameGenerator } from "./api";
 import { CotomyDebugFeature, CotomyDebugSettings } from "./debug";
 import { CotomyElement, CotomyWindow } from "./view";
 
@@ -12,36 +12,19 @@ export abstract class CotomyForm extends CotomyElement {
         super(element);
     }
 
-
-    //#region フォーム識別
-    
-    public get formId(): string {
-        if (!this.hasAttribute("id")) {
-            this.setAttribute("id", this.scopeId);
-        }
-        return this.attribute("id")!;
+    public generateId(prefix: string = "__cotomy_form__"): this {
+        return super.generateId(prefix);
     }
-
-    //#endregion
-
 
 
     //#region フォームの基本情報
 
-    public method(): string {
+    protected method(): string {
         return this.attribute("method") ?? "get";
     }
 
     public actionUrl(): string {
         return this.attribute("action") ?? location.pathname + location.search;
-    }
-
-    public get autoComplete(): boolean {
-        return this.attribute("autocomplete") === "on";
-    }
-
-    public set autoComplete(value: boolean) {
-        this.setAttribute("autocomplete", value ? "on" : "off");
     }
 
     //#endregion
@@ -117,10 +100,9 @@ export abstract class CotomyForm extends CotomyElement {
 export class CotomyQueryForm extends CotomyForm {
     public constructor(element: HTMLElement | { html: string; css?: string | null; } | string | string) {
         super(element);
-        this.autoComplete = true;
     }
 
-    public method(): string {
+    protected method(): string {
         return "get";   // QueryFormはGETメソッドを使用することが前提
     }
 
@@ -219,7 +201,7 @@ export class CotomyApiForm extends CotomyForm {
         }
     }
 
-    public method(): string {
+    protected method(): string {
         return this.attribute("method") ?? "post";
     }
 
@@ -280,14 +262,14 @@ export class CotomyEntityApiForm extends CotomyApiForm {
         return `${this.attribute("action")!}/${this.externalKey ? (this.attribute("data-cotomy-key") || "") : this.keyString}`;
     }
 
-    public method(): string {
+    protected method(): string {
         return this.externalKey || !this.pathKeyInputs.every(e => e.readonly) || this.keyInputs.length > 0 ? "post" : "put";
     }
 
 
     //#region データ識別
 
-    public get externalKey(): string | undefined {
+    protected get externalKey(): string | undefined {
         return this.attribute("data-cotomy-key") || undefined;
     }
 
@@ -316,15 +298,15 @@ export class CotomyEntityApiForm extends CotomyApiForm {
         }
     }
 
-    public get requiresExternalKey(): boolean {
+    protected get requiresExternalKey(): boolean {
         return this.attribute("data-cotomy-identify") !== "false" && this.keyInputs.length == 0 && this.pathKeyInputs.length == 0;
     }
 
-    public get hasExternalKey(): boolean {
+    protected get hasExternalKey(): boolean {
         return !!this.externalKey;
     } 
 
-    public get pathKeyInputs(): CotomyElement[] {
+    protected get pathKeyInputs(): CotomyElement[] {
         return this.find("[data-cotomy-keyindex]").sort((a, b) => {
             const aIndex = parseInt(a.attribute("data-cotomy-keyindex") ?? "0");
             const bIndex = parseInt(b.attribute("data-cotomy-keyindex") ?? "0");
@@ -332,7 +314,7 @@ export class CotomyEntityApiForm extends CotomyApiForm {
         });
     }
 
-    public get keyInputs(): CotomyElement[] {
+    protected get keyInputs(): CotomyElement[] {
         return this.contains("[data-cotomy-key]") ? this.find("[data-cotomy-key]").sort((a, b) => {
             const aIndex = parseInt(a.attribute("data-cotomy-key") ?? "0");
             const bIndex = parseInt(b.attribute("data-cotomy-key") ?? "0");
@@ -340,7 +322,7 @@ export class CotomyEntityApiForm extends CotomyApiForm {
         }) : this.find("[name][data-cotomy-key]");
     }
 
-    public get usePathKey(): boolean {
+    protected get usePathKey(): boolean {
         return this.pathKeyInputs.length > 0 || this.requiresExternalKey;
     }
 
@@ -371,8 +353,8 @@ export class CotomyEntityFillApiForm extends CotomyEntityApiForm {
         super(element);
     }
 
-    public filler(type: string, callback: (input: CotomyElement, value: any) => void): this {
-        this._fillers[type] = callback;
+    public filler(type: string, func: (input: CotomyElement, value: any) => void): this {
+        this._fillers[type] = func;
         return this;
     }
 
@@ -427,15 +409,19 @@ export class CotomyEntityFillApiForm extends CotomyEntityApiForm {
         this.loadAsync();
     }
 
-    public loadActionUrl(): string {
+    protected loadActionUrl(): string {
         return this.actionUrl();
     }
 
-    public renderer(): CotomyViewRenderer {
-        return new CotomyViewRenderer(this);
+    protected bindNameGenerator(): IBindNameGenerator {
+        return new BracketBindNameGenerator();
     }
 
-    public async loadAsync(): Promise<CotomyApiResponse> {
+    protected renderer(): CotomyViewRenderer {
+        return new CotomyViewRenderer(this, this.bindNameGenerator());
+    }
+
+    protected async loadAsync(): Promise<CotomyApiResponse> {
         const hasPathKeys = this.pathKeyInputs.length > 0 && this.pathKeyInputs.every(e => !!e.value);
         const hasKeyInputs = this.keyInputs.length > 0 && this.keyInputs.every(e => !!e.value);
 
@@ -459,28 +445,38 @@ export class CotomyEntityFillApiForm extends CotomyEntityApiForm {
         }
     }
 
+    protected async fillObjectAsync(bindNameGenerator: IBindNameGenerator, target: any, propertyName: string | undefined = undefined): Promise<void> {
+        for (const [key, value] of Object.entries(target)) {
+            if (key.endsWith('[]')) {
+                continue;
+            }
+
+            const pname = bindNameGenerator.create(key, propertyName);
+            if (Array.isArray(value)) continue;
+            if (value && typeof value === "object") {
+                await this.fillObjectAsync(bindNameGenerator, value, pname);
+                continue;
+            }
+
+            this.find(`input[name="${pname}" i]:not([data-cotomy-fill="false"]):not([multiple]),
+                    textarea[name="${pname}" i]:not([data-cotomy-fill="false"]), 
+                    select[name="${pname}" i]:not([data-cotomy-fill="false"]):not([multiple])`).forEach(input => {
+                if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Fill)) {
+                    console.debug(`Filling input[name="${pname}"] with value:`, value);
+                }
+                const type = input.attribute("type")?.toLowerCase();
+                if (type && this._fillers[type]) {
+                    this._fillers[type](input, value);
+                } else {
+                    input.value = String(value || "");
+                }
+            });
+        }
+    }
+
     protected async fillAsync(response: CotomyApiResponse): Promise<void> {
         if (response.ok && response.available) {
-            for (const [key, value] of Object.entries(await response.objectAsync())) {
-                if (key.endsWith('[]')) {
-                    continue;
-                }
-
-                this.find(`input[name="${key}" i]:not([data-cotomy-fill="false"]):not([multiple]),
-                        textarea[name="${key}" i]:not([data-cotomy-fill="false"]), 
-                        select[name="${key}" i]:not([data-cotomy-fill="false"]):not([multiple])`).forEach(input => {
-                    if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Fill)) {
-                        console.debug(`Filling input[name="${key}"] with value:`, value);
-                    }
-                    const type = input.attribute("type")?.toLowerCase();
-                    if (type && this._fillers[type]) {
-                        this._fillers[type](input, value);
-                    } else {
-                        input.value = String(value || "");
-                    }
-                });
-            }
-            
+            await this.fillObjectAsync(this.bindNameGenerator(), await response.objectAsync());
             await this.renderer().applyAsync(response);
         }
 

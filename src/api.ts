@@ -229,6 +229,22 @@ export class CotomyApiResponse {
 
 //#region APIから取得したデータの展開
 
+export interface IBindNameGenerator {
+    create(name: string, parent?: string): string;
+}
+
+export class BracketBindNameGenerator implements IBindNameGenerator {
+    create(name: string, parent?: string): string {
+        return parent ? `${parent}[${name}]` : name;
+    }
+}
+
+export class DotBindNameGenerator implements IBindNameGenerator {
+    create(name: string, parent?: string): string {
+        return parent ? `${parent}.${name}` : name;
+    }
+}
+
 export class CotomyViewRenderer {
     private _locale: string | null = null;
     private _currency: string | null = null;
@@ -238,7 +254,7 @@ export class CotomyViewRenderer {
     private _builded: boolean = false;
     
 
-    public constructor(private readonly element: CotomyElement) {
+    public constructor(private readonly element: CotomyElement, private readonly bindNameGenerator: IBindNameGenerator) {
     }
 
     protected get locale(): string {
@@ -310,19 +326,17 @@ export class CotomyViewRenderer {
         return this;
     }
 
-    public async applyAsync(respose: CotomyApiResponse): Promise<this> {
-        if (!this.initialized) {
-            this.initialize();
-        }
-
-        if (!respose.available) {
-            throw new Error("Response is not available.");
-        }
-
-        for (const [key, value] of Object.entries(await respose.objectAsync())) {
-            this.element.find(`[data-cotomy-bind="${key}" i]`).forEach(element => {
+    protected async applyObjectAsync(target: any, propertyName: string | undefined = undefined): Promise<void> {
+        for (const [key, value] of Object.entries(await target)) {
+            const pname = this.bindNameGenerator.create(key, propertyName);
+            if (Array.isArray(value)) continue;
+            if (value && typeof value === "object") {
+                await this.applyObjectAsync(value, pname);
+                continue;
+            }
+            this.element.find(`[data-cotomy-bind="${pname}" i]`).forEach(element => {
                 if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Bind)) {
-                    console.debug(`Binding data to element [data-cotomy-bind="${key}"]:`, value);
+                    console.debug(`Binding data to element [data-cotomy-bind="${pname}"]:`, value);
                 }
                 const type = element.attribute("data-cotomy-bindtype")?.toLowerCase();
                 if (type && this._renderers[type]) {
@@ -332,7 +346,18 @@ export class CotomyViewRenderer {
                 }
             });
         }
+    }
 
+    public async applyAsync(respose: CotomyApiResponse): Promise<this> {
+        if (!this.initialized) {
+            this.initialize();
+        }
+
+        if (!respose.available) {
+            throw new Error("Response is not available.");
+        }
+
+        await this.applyObjectAsync(await respose.objectAsync());
         return this;
     }
 }
