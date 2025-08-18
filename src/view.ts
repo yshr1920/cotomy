@@ -721,14 +721,11 @@ export class CotomyElement {
         this._eventHandlers[event].push(handle);
         return this;
     }
-    public onChild(event: string, selector: string, handle: (e: Event, matched: HTMLElement) => void | Promise<void>): this {
+    
+    public onChild(event: string, selector: string, handle: (e: Event) => void | Promise<void>): this {
         this.element.addEventListener(event, (e: Event) => {
             if (e.target instanceof HTMLElement) {
-                const target = new CotomyElement(e.target as HTMLElement);
-                const matched = target.closest(selector);
-                if (matched) {
-                    handle(e, matched.element);
-                }
+                handle(e);
             }
         });
         return this;
