@@ -259,11 +259,20 @@ export class CotomyApiForm extends CotomyForm {
 export class CotomyEntityApiForm extends CotomyApiForm {
 
     public actionUrl(): string {
-        return `${this.attribute("action")!}/${this.externalKey ? (this.attribute("data-cotomy-key") || "") : this.keyString}`;
+        const base = this.attribute("action")!;
+        const keys = this.externalKey ? [ this.externalKey ] : this.pathKeyInputs.map(e => encodeURIComponent(e.value));
+        return `${base}/${keys.join("/")}`;
     }
 
     protected method(): string {
-        return this.externalKey || !this.pathKeyInputs.every(e => e.readonly) || this.keyInputs.length > 0 ? "post" : "put";
+        if (this.hasAttribute("method") && this.attribute("method") !== "") {
+            return this.attribute("method")!;
+        }
+
+        if (this.externalKey) return "put";
+        if (this.pathKeyInputs.length > 0 && this.pathKeyInputs.every(e => e.readonly)) return "put";
+        if (this.keyInputs.length > 0 && this.keyInputs.every(e => e.readonly)) return "put";
+        return "post";
     }
 
 
@@ -285,19 +294,35 @@ export class CotomyEntityApiForm extends CotomyApiForm {
             const location = response.headers.get("Location");
             if (!location) return;
 
-            const baseAction = this.attribute("action")!.replace(/\?.*$/, "");
-            const actionParts = baseAction.split("/");
-            const locationParts = location.split("/");
+            const normalize = (url: string) => {
+                const s = url.replace(/[?#].*$/, "");
+                return s.endsWith("/") ? s.slice(0, -1) : s;
+            };
 
-            const addedParts = locationParts.slice(actionParts.length);
+            const toPath = (u: string) => {
+                try { return new URL(u, location).pathname; } catch { return u; }
+            };
+            
+            const baseAction = normalize(toPath(this.attribute("action")!));
+            const locPath    = normalize(toPath(location));
+            const actionParts   = baseAction.split("/");
+            const locationParts = locPath.split("/");
+            const isPrefix = locationParts.length >= actionParts.length && actionParts.every((p, i) => p === locationParts[i]);
+            if (!isPrefix) {
+                throw new Error(`Location path does not start with action path. action="${baseAction}", location="${locPath}"`);
+            }
+
+            const addedParts = locationParts.slice(actionParts.length).filter(Boolean);
             if (addedParts.length === 1 && addedParts[0]) {
                 this.setAttribute("data-cotomy-key", addedParts[0]);
             } else {
-                console.warn("Unsupported: external key count mismatch.", this.pathKeyInputs.length, addedParts.length);
+                const msg = `Location does not contain a single external key segment.
+                action="${baseAction}", location="${locPath}", added=["${addedParts.join('","')}"]`;
+                throw new Error(msg);
             }
         }
     }
-
+    
     protected get requiresExternalKey(): boolean {
         return this.attribute("data-cotomy-identify") !== "false" && this.keyInputs.length == 0 && this.pathKeyInputs.length == 0;
     }
@@ -323,10 +348,14 @@ export class CotomyEntityApiForm extends CotomyApiForm {
     }
 
     protected get usePathKey(): boolean {
-        return this.pathKeyInputs.length > 0 || this.requiresExternalKey;
+        const use = this.pathKeyInputs.length > 0 || this.requiresExternalKey;
+        if (use && this.hasExternalKey && CotomyDebugSettings.isEnabled(CotomyDebugFeature.FormLoad)) {
+            console.warn("Both externalKey and pathKeyInputs are present. Using externalKey and ignoring pathKeyInputs.");
+        }
+        return use;
     }
 
-    public get keyString(): string {
+    public get pathKeyString(): string {
         return this.externalKey || this.pathKeyInputs.map(e => e.value).join("/");
     }
 
