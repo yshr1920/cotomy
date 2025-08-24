@@ -446,7 +446,7 @@ export class CotomyEntityFillApiForm extends CotomyEntityApiForm {
         return new BracketBindNameGenerator();
     }
 
-    protected renderer(): CotomyViewRenderer {
+    public renderer(): CotomyViewRenderer {
         return new CotomyViewRenderer(this, this.bindNameGenerator());
     }
 
