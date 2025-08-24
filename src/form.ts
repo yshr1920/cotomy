@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { StatusCodes } from "http-status-codes";
-import { BracketBindNameGenerator, CotomyApi, CotomyApiException, CotomyApiResponse, CotomyNotFoundException, CotomyViewRenderer, IBindNameGenerator } from "./api";
+import { CotomyApi, CotomyApiException, CotomyApiResponse, CotomyBracketBindNameGenerator, CotomyNotFoundException, CotomyViewRenderer, ICotomyBindNameGenerator } from "./api";
 import { CotomyDebugFeature, CotomyDebugSettings } from "./debug";
 import { CotomyElement, CotomyWindow } from "./view";
 
@@ -442,8 +442,8 @@ export class CotomyEntityFillApiForm extends CotomyEntityApiForm {
         return this.actionUrl();
     }
 
-    protected bindNameGenerator(): IBindNameGenerator {
-        return new BracketBindNameGenerator();
+    protected bindNameGenerator(): ICotomyBindNameGenerator {
+        return new CotomyBracketBindNameGenerator();
     }
 
     public renderer(): CotomyViewRenderer {
@@ -474,7 +474,7 @@ export class CotomyEntityFillApiForm extends CotomyEntityApiForm {
         }
     }
 
-    protected async fillObjectAsync(bindNameGenerator: IBindNameGenerator, target: any, propertyName: string | undefined = undefined): Promise<void> {
+    protected async fillObjectAsync(bindNameGenerator: ICotomyBindNameGenerator, target: any, propertyName: string | undefined = undefined): Promise<void> {
         for (const [key, value] of Object.entries(target)) {
             if (key.endsWith('[]')) {
                 continue;

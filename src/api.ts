@@ -229,17 +229,17 @@ export class CotomyApiResponse {
 
 //#region APIから取得したデータの展開
 
-export interface IBindNameGenerator {
+export interface ICotomyBindNameGenerator {
     create(name: string, parent?: string): string;
 }
 
-export class BracketBindNameGenerator implements IBindNameGenerator {
+export class CotomyBracketBindNameGenerator implements ICotomyBindNameGenerator {
     create(name: string, parent?: string): string {
         return parent ? `${parent}[${name}]` : name;
     }
 }
 
-export class DotBindNameGenerator implements IBindNameGenerator {
+export class CotomyDotBindNameGenerator implements ICotomyBindNameGenerator {
     create(name: string, parent?: string): string {
         return parent ? `${parent}.${name}` : name;
     }
@@ -254,7 +254,7 @@ export class CotomyViewRenderer {
     private _builded: boolean = false;
     
 
-    public constructor(private readonly element: CotomyElement, private readonly bindNameGenerator: IBindNameGenerator) {
+    public constructor(private readonly element: CotomyElement, private readonly bindNameGenerator: ICotomyBindNameGenerator) {
     }
 
     protected get locale(): string {

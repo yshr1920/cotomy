@@ -1,5 +1,5 @@
 export {
-    BracketBindNameGenerator, CotomyApi,
+    CotomyBracketBindNameGenerator as BracketBindNameGenerator, CotomyApi,
     CotomyApiException,
     CotomyApiResponse, CotomyConflictException,
     CotomyForbiddenException,
@@ -9,7 +9,7 @@ export {
     CotomyNotFoundException,
     CotomyResponseJsonParseException, CotomyUnauthorizedException,
     CotomyValidationException,
-    CotomyViewRenderer, DotBindNameGenerator, IBindNameGenerator
+    CotomyViewRenderer, CotomyDotBindNameGenerator as DotBindNameGenerator, ICotomyBindNameGenerator as IBindNameGenerator
 } from "./api";
 export {
     CotomyDebugFeature,
