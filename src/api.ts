@@ -322,6 +322,8 @@ export class CotomyViewRenderer {
                     }
                 }
             });
+
+            this._builded = true;
         }
         return this;
     }
