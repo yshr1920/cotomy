@@ -246,23 +246,18 @@ export class CotomyDotBindNameGenerator implements ICotomyBindNameGenerator {
 }
 
 export class CotomyViewRenderer {
-    private _locale: string | null = null;
-    private _currency: string | null = null;
-
     private _renderers: { [key: string]: (element: CotomyElement, value: any) => void } = {};
-
     private _builded: boolean = false;
-    
 
-    public constructor(private readonly element: CotomyElement, private readonly bindNameGenerator: ICotomyBindNameGenerator) {
+    public constructor(public readonly element: CotomyElement, public readonly bindNameGenerator: ICotomyBindNameGenerator) {
     }
 
     protected get locale(): string {
-        return this._locale = this._locale || navigator.language || 'en-US';
+        return navigator.language || 'en-US';
     }
-    
+
     protected get currency(): string {
-        return this._currency = this._currency || LocaleCurrency.getCurrency(this.locale) || 'USD';
+        return LocaleCurrency.getCurrency(this.locale) || 'USD';
     }
 
     public renderer(type: string, callback: (element: CotomyElement, value: any) => void): this {
