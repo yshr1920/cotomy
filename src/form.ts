@@ -8,10 +8,6 @@ import { CotomyElement, CotomyWindow } from "./view";
 
 
 export abstract class CotomyForm extends CotomyElement {
-    public constructor(element: HTMLElement | { html: string; css?: string | null; } | string) {
-        super(element);
-    }
-
     public generateId(prefix: string = "__cotomy_form__"): this {
         return super.generateId(prefix);
     }
@@ -98,10 +94,6 @@ export abstract class CotomyForm extends CotomyElement {
 
 
 export class CotomyQueryForm extends CotomyForm {
-    public constructor(element: HTMLElement | { html: string; css?: string | null; } | string | string) {
-        super(element);
-    }
-
     protected method(): string {
         return "get";   // QueryFormはGETメソッドを使用することが前提
     }
@@ -157,10 +149,6 @@ export class CotomyApiFailedEvent extends Event {
 
 
 export class CotomyApiForm extends CotomyForm {
-    public constructor(element: HTMLElement | { html: string; css?: string | null; } | string) {
-        super(element);
-    }
-
     public apiClient(): CotomyApi {
         return new CotomyApi();
     }
@@ -377,10 +365,6 @@ export class CotomyEntityApiForm extends CotomyApiForm {
 
 export class CotomyEntityFillApiForm extends CotomyEntityApiForm {
     private _fillers: { [key: string]: (input: CotomyElement, value: any) => void } = {};
-
-    public constructor(element: HTMLElement | { html: string; css?: string | null; } | string) {
-        super(element);
-    }
 
     public filler(type: string, func: (input: CotomyElement, value: any) => void): this {
         this._fillers[type] = func;

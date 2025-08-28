@@ -7,7 +7,13 @@ export class CotomyElement {
     
     //#region Factory and Finder
 
-    public static createHTMLElement(html: string): HTMLElement {
+    public static encodeHtml(text: string): string {
+        const div = document.createElement("div");
+        div.textContent = text ?? "";
+        return div.innerHTML;
+    }
+
+    protected static createHTMLElement(html: string): HTMLElement {
         const wrapperMap: Record<string, { prefix: string, suffix: string }> = {
             "tr": { prefix: "<table><tbody>", suffix: "</tbody></table>" },
             "td": { prefix: "<table><tbody><tr>", suffix: "</tr></tbody></table>" },
@@ -86,7 +92,7 @@ export class CotomyElement {
     private _parentElement: CotomyElement | null = null;
     private _eventHandlers: { [event: string]: Array<(e: Event) => void | Promise<void>> } = {};
 
-    public constructor(element: HTMLElement | { html: string; css?: string | null; } | string) {
+    public constructor(element: HTMLElement | { html: string, css?: string; } | string) {
         if (element instanceof HTMLElement) {
             this._element = element;
         } else if (typeof element === "string") {
