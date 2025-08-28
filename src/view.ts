@@ -75,7 +75,7 @@ export class CotomyElement {
 
     public static empty<T extends CotomyElement = CotomyElement>(type?: new (el: HTMLElement) => T): T {
         const ctor = (type ?? CotomyElement) as new (el: HTMLElement) => T;
-        return new ctor(document.createElement("div")).setAttribute("data-cotomy-empty", "").setElementStyle("display", "none");
+        return new ctor(document.createElement("div")).attribute("data-cotomy-empty", "").style("display", "none");
     }
 
     //#endregion
@@ -117,7 +117,7 @@ export class CotomyElement {
     public get scopeId(): string {
         if (!this._scopeId) {
             this._scopeId = `__cotomy_scope__${cuid()}`;
-            this.setAttribute(this._scopeId, "");
+            this.attribute(this._scopeId, "");
         }
         return this._scopeId;
     }
@@ -169,7 +169,7 @@ export class CotomyElement {
     public static readonly LISTEN_LAYOUT_EVENTS_ATTRIBUTE: string = "data-cotomy-layout";
 
     public listenLayoutEvents(): this {
-        this.setAttribute(CotomyElement.LISTEN_LAYOUT_EVENTS_ATTRIBUTE, "");
+        this.attribute(CotomyElement.LISTEN_LAYOUT_EVENTS_ATTRIBUTE, "");
         return this;
     }
 
@@ -185,7 +185,7 @@ export class CotomyElement {
 
     public generateId(prefix: string = "__cotomy_elem__"): this {
         if (!this.id) {
-            this.setAttribute("id", `${prefix}${cuid()}`);
+            this.attribute("id", `${prefix}${cuid()}`);
         }
         return this;
     }
@@ -268,9 +268,9 @@ export class CotomyElement {
             this.element.readOnly = readonly;
         } else {
             if (readonly) {
-                this.setAttribute("readonly", "readonly");
+                this.attribute("readonly", "readonly");
             } else {
-                this.removeAttribute("readonly");
+                this.attribute("readonly", null);
             }
         }
     }
@@ -288,7 +288,7 @@ export class CotomyElement {
         if ("value" in this.element) {
             this.element.value = val;
         } else {
-            this.setAttribute("data-cotomy-value", val);
+            this.attribute("data-cotomy-value", val);
         }
     }
 
@@ -356,7 +356,7 @@ export class CotomyElement {
     
         const rect = this.element.getBoundingClientRect();
         if (rect.width > 0 && rect.height > 0) {
-            const style = this.computedStyle;
+            const style = this.getComputedStyle();
             return style.display !== "none" && style.visibility !== "hidden" && style.visibility !== "collapse";
         }
     
@@ -403,7 +403,7 @@ export class CotomyElement {
 
     public set width(width: number) {
         let w = width.toString() + "px";
-        this.setElementStyle("width", w);
+        this.style("width", w);
     }
 
     public get height(): number {
@@ -412,7 +412,7 @@ export class CotomyElement {
 
     public set height(height: number) {
         let h = height.toString() + "px";
-        this.setElementStyle("height", h);
+        this.style("height", h);
     }
 
     public get innerWidth(): number {
@@ -424,12 +424,13 @@ export class CotomyElement {
     }
 
     public get outerWidth(): number {
-        const margin = parseFloat(this.computedStyle.marginLeft) + parseFloat(this.computedStyle.marginRight);
+        const style = this.getComputedStyle();
+        const margin = parseFloat(style.marginLeft) + parseFloat(style.marginRight);
         return this.element.offsetWidth + margin;
     }
 
     public get outerHeight(): number {
-        const style = this.computedStyle;
+        const style = this.getComputedStyle();
         const margin = parseFloat(style.marginTop) + parseFloat(style.marginBottom);
         return this.element.offsetHeight + margin;
     }
@@ -467,7 +468,7 @@ export class CotomyElement {
 
     public get innerRect(): { top: number; left: number; width: number; height: number } {
         const rect = this.element.getBoundingClientRect();
-        const style = this.computedStyle;
+        const style = this.getComputedStyle();
         const padding = {
             top: parseFloat(style.paddingTop),
             right: parseFloat(style.paddingRight),
@@ -484,7 +485,7 @@ export class CotomyElement {
 
     public get outerRect(): { top: number; left: number; width: number; height: number } {
         const rect = this.element.getBoundingClientRect();
-        const style = this.computedStyle;
+        const style = this.getComputedStyle();
         const margin = {
             top: parseFloat(style.marginTop),
             right: parseFloat(style.marginRight),
@@ -501,7 +502,7 @@ export class CotomyElement {
 
 
     public get padding(): { top: number; right: number; bottom: number; left: number } {
-        const style = this.computedStyle;
+        const style = this.getComputedStyle();
         return {
             top: parseFloat(style.paddingTop),
             right: parseFloat(style.paddingRight),
@@ -511,7 +512,7 @@ export class CotomyElement {
     }
 
     public get margin(): { top: number; right: number; bottom: number; left: number } {
-        const style = this.computedStyle;
+        const style = this.getComputedStyle();
         return {
             top: parseFloat(style.marginTop),
             right: parseFloat(style.marginRight),
@@ -551,49 +552,68 @@ export class CotomyElement {
         return this.element.hasAttribute(name);
     }
 
-    public attribute(name: string): string | null | undefined {
-        return this.element.hasAttribute(name) ? this.element.getAttribute(name) : undefined;
+    public attribute(name: string): string | null | undefined;
+    public attribute(name: string, value: string | number | undefined): this;
+    public attribute(name: string, value: null): this;
+    public attribute(name: string, value?: string | number | undefined | null): string | null | undefined | this {
+        if (arguments.length === 1) {
+            // getter
+            return this.element.hasAttribute(name) ? this.element.getAttribute(name) : undefined;
+        } else if (value === null) {
+            // remove
+            this.element.removeAttribute(name);
+            return this;
+        } else {
+            // setter
+            this.element.setAttribute(name, value?.toString() ?? "");
+            return this;
+        }
     }
 
-    public setAttribute(name: string, value: string | number | undefined = undefined): this {
-        this.element.setAttribute(name, value?.toString() ?? "");
+    public hasClass(name: string): boolean {
+        return this.element.classList.contains(name);
+    }
+
+    public addClass(name: string): this {
+        this.element.classList.add(name);
         return this;
     }
 
-    public removeAttribute(name: string) {
-        this.element.removeAttribute(name);
-    }
-
-    public hasClass(cls: string): boolean {
-        return this.element.classList.contains(cls);
-    }
-
-    public addClass(cls: string): this {
-        this.element.classList.add(cls);
+    public removeClass(name: string): this {
+        this.element.classList.remove(name);
         return this;
     }
 
-    public removeClass(cls: string): this {
-        this.element.classList.remove(cls);
+    public toggleClass(name: string, force?: boolean): this {
+        this.element.classList.toggle(name, force);
         return this;
     }
 
-    public setElementStyle(name: string, value: string): this {
-        this.element.style.setProperty(name, value);
-        return this;
+    public style(name: string): string;
+    public style(name: string, value: string): this;
+    public style(name: string, value: null): this;
+    public style(name: string, value: undefined): this;
+    public style(name: string, value?: string | null): string | this {
+        if (arguments.length === 1) {
+            // getter
+            return this.element.style.getPropertyValue(name);
+        } else if (value == null) {
+            // remove
+            this.element.style.removeProperty(name);
+            return this;
+        } else {
+            // setter
+            this.element.style.setProperty(name, value);
+            return this;
+        }
     }
 
-    public removeElementStyle(name: string): this {
-        this.element.style.removeProperty(name);
-        return this;
-    }
-
-    public get computedStyle(): CSSStyleDeclaration {
+    protected getComputedStyle(): CSSStyleDeclaration {
         return window.getComputedStyle(this.element);
     }
 
-    public style(name: string): string {
-        return this.computedStyle.getPropertyValue(name);
+    public computedStyle(name: string): string {
+        return window.getComputedStyle(this.element).getPropertyValue(name);
     }
 
     //#endregion
@@ -711,7 +731,9 @@ export class CotomyElement {
 
     //#region Event
 
-    public trigger(event: string, e: Event | null = null): this {
+    public trigger(event: string): this;
+    public trigger(event: string, e: Event): this;
+    public trigger(event: string, e?: Event): this {
         this.element.dispatchEvent(e ?? new Event(event));
         return this;
     }
@@ -739,6 +761,8 @@ export class CotomyElement {
         return this;
     }
 
+    public off(event: string): this;
+    public off(event: string, handle: (e: Event) => void | Promise<void>): this;
     public off(event: string, handle?: (e: Event) => void | Promise<void>): this {
         if (handle) {
             this.element.removeEventListener(event, handle);
@@ -758,7 +782,9 @@ export class CotomyElement {
 
     //#region Mouse Events
 
-    public click(handle: ((e: MouseEvent) => void | Promise<void>) | null = null): this {
+    public click(): this;
+    public click(handle: (e: MouseEvent) => void | Promise<void>): this;
+    public click(handle?: (e: MouseEvent) => void | Promise<void>): this {
         if (handle) {
             this.element.addEventListener("click", async e => await handle(e as MouseEvent));
         } else {
@@ -767,7 +793,9 @@ export class CotomyElement {
         return this;
     }
 
-    public dblclick(handle: ((e: MouseEvent) => void | Promise<void>) | null = null): this {
+    public dblclick(): this;
+    public dblclick(handle: (e: MouseEvent) => void | Promise<void>): this;
+    public dblclick(handle?: (e: MouseEvent) => void | Promise<void>): this {
         if (handle) {
             this.element.addEventListener("dblclick", async e => await handle(e as MouseEvent));
         } else {
@@ -776,7 +804,9 @@ export class CotomyElement {
         return this;
     }
 
-    public mouseover(handle: ((e: MouseEvent) => void | Promise<void>) | null = null): this {
+    public mouseover(): this;
+    public mouseover(handle: (e: MouseEvent) => void | Promise<void>): this;
+    public mouseover(handle?: (e: MouseEvent) => void | Promise<void>): this {
         if (handle) {
             this.element.addEventListener("mouseover", async e => await handle(e as MouseEvent));
         } else {
@@ -785,7 +815,9 @@ export class CotomyElement {
         return this;
     }
 
-    public mouseout(handle: ((e: MouseEvent) => void | Promise<void>) | null = null): this {
+    public mouseout(): this;
+    public mouseout(handle: (e: MouseEvent) => void | Promise<void>): this;
+    public mouseout(handle?: (e: MouseEvent) => void | Promise<void>): this {
         if (handle) {
             this.element.addEventListener("mouseout", async e => await handle(e as MouseEvent));
         } else {
@@ -794,7 +826,9 @@ export class CotomyElement {
         return this;
     }
 
-    public mousedown(handle: ((e: MouseEvent) => void | Promise<void>) | null = null): this {
+    public mousedown(): this;
+    public mousedown(handle: (e: MouseEvent) => void | Promise<void>): this;
+    public mousedown(handle?: (e: MouseEvent) => void | Promise<void>): this {
         if (handle) {
             this.element.addEventListener("mousedown", async e => await handle(e as MouseEvent));
         } else {
@@ -803,7 +837,9 @@ export class CotomyElement {
         return this;
     }
 
-    public mouseup(handle: ((e: MouseEvent) => void | Promise<void>) | null = null): this {
+    public mouseup(): this;
+    public mouseup(handle: (e: MouseEvent) => void | Promise<void>): this;
+    public mouseup(handle?: (e: MouseEvent) => void | Promise<void>): this {
         if (handle) {
             this.element.addEventListener("mouseup", async e => await handle(e as MouseEvent));
         } else {
@@ -812,7 +848,9 @@ export class CotomyElement {
         return this;
     }
 
-    public mousemove(handle: ((e: MouseEvent) => void | Promise<void>) | null = null): this {
+    public mousemove(): this;
+    public mousemove(handle: (e: MouseEvent) => void | Promise<void>): this;
+    public mousemove(handle?: (e: MouseEvent) => void | Promise<void>): this {
         if (handle) {
             this.element.addEventListener("mousemove", async e => await handle(e as MouseEvent));
         } else {
@@ -821,7 +859,9 @@ export class CotomyElement {
         return this;
     }
 
-    public mouseenter(handle: ((e: MouseEvent) => void | Promise<void>) | null = null): this {
+    public mouseenter(): this;
+    public mouseenter(handle: (e: MouseEvent) => void | Promise<void>): this;
+    public mouseenter(handle?: (e: MouseEvent) => void | Promise<void>): this {
         if (handle) {
             this.element.addEventListener("mouseenter", async e => await handle(e as MouseEvent));
         } else {
@@ -830,7 +870,9 @@ export class CotomyElement {
         return this;
     }
 
-    public mouseleave(handle: ((e: MouseEvent) => void | Promise<void>) | null = null): this {
+    public mouseleave(): this;
+    public mouseleave(handle: (e: MouseEvent) => void | Promise<void>): this;
+    public mouseleave(handle?: (e: MouseEvent) => void | Promise<void>): this {
         if (handle) {
             this.element.addEventListener("mouseleave", async e => await handle(e as MouseEvent));
         } else {
@@ -839,7 +881,9 @@ export class CotomyElement {
         return this;
     }
 
-    public dragstart(handle: ((e: DragEvent) => void | Promise<void>) | null = null): this {
+    public dragstart(): this;
+    public dragstart(handle: (e: DragEvent) => void | Promise<void>): this;
+    public dragstart(handle?: (e: DragEvent) => void | Promise<void>): this {
         if (handle) {
             this.element.addEventListener("dragstart", async e => await handle(e as DragEvent));
         } else {
@@ -848,7 +892,9 @@ export class CotomyElement {
         return this;
     }
 
-    public dragend(handle: ((e: DragEvent) => void | Promise<void>) | null = null): this {
+    public dragend(): this;
+    public dragend(handle: (e: DragEvent) => void | Promise<void>): this;
+    public dragend(handle?: (e: DragEvent) => void | Promise<void>): this {
         if (handle) {
             this.element.addEventListener("dragend", async e => await handle(e as DragEvent));
         } else {
@@ -857,7 +903,9 @@ export class CotomyElement {
         return this;
     }
 
-    public dragover(handle: ((e: DragEvent) => void | Promise<void>) | null = null): this {
+    public dragover(): this;
+    public dragover(handle: (e: DragEvent) => void | Promise<void>): this;
+    public dragover(handle?: (e: DragEvent) => void | Promise<void>): this {
         if (handle) {
             this.element.addEventListener("dragover", async e => await handle(e as DragEvent));
         } else {
@@ -866,7 +914,9 @@ export class CotomyElement {
         return this;
     }
 
-    public dragenter(handle: ((e: DragEvent) => void | Promise<void>) | null = null): this {
+    public dragenter(): this;
+    public dragenter(handle: (e: DragEvent) => void | Promise<void>): this;
+    public dragenter(handle?: (e: DragEvent) => void | Promise<void>): this {
         if (handle) {
             this.element.addEventListener("dragenter", async e => await handle(e as DragEvent));
         } else {
@@ -875,7 +925,9 @@ export class CotomyElement {
         return this;
     }
 
-    public dragleave(handle: ((e: DragEvent) => void | Promise<void>) | null = null): this {
+    public dragleave(): this;
+    public dragleave(handle: (e: DragEvent) => void | Promise<void>): this;
+    public dragleave(handle?: (e: DragEvent) => void | Promise<void>): this {
         if (handle) {
             this.element.addEventListener("dragleave", async e => await handle(e as DragEvent));
         } else {
@@ -884,7 +936,9 @@ export class CotomyElement {
         return this;
     }
 
-    public drop(handle: ((e: DragEvent) => void | Promise<void>) | null = null): this {
+    public drop(): this;
+    public drop(handle: (e: DragEvent) => void | Promise<void>): this;
+    public drop(handle?: (e: DragEvent) => void | Promise<void>): this {
         if (handle) {
             this.element.addEventListener("drop", async e => await handle(e as DragEvent));
         } else {
@@ -893,7 +947,9 @@ export class CotomyElement {
         return this;
     }
 
-    public drag(handle: ((e: DragEvent) => void | Promise<void>) | null = null): this {
+    public drag(): this;
+    public drag(handle: (e: DragEvent) => void | Promise<void>): this;
+    public drag(handle?: (e: DragEvent) => void | Promise<void>): this {
         if (handle) {
             this.element.addEventListener("drag", async e => await handle(e as DragEvent));
         } else {
@@ -913,7 +969,9 @@ export class CotomyElement {
 
     //#region Keyboard Events
 
-    public keydown(handle: ((e: KeyboardEvent) => void | Promise<void>) | null = null): this {
+    public keydown(): this;
+    public keydown(handle: (e: KeyboardEvent) => void | Promise<void>): this;
+    public keydown(handle?: (e: KeyboardEvent) => void | Promise<void>): this {
         if (handle) {
             this.element.addEventListener("keydown", async e => await handle(e as KeyboardEvent));
         } else {
@@ -922,7 +980,9 @@ export class CotomyElement {
         return this;
     }
 
-    public keyup(handle: ((e: KeyboardEvent) => void | Promise<void>) | null = null): this {
+    public keyup(): this;
+    public keyup(handle: (e: KeyboardEvent) => void | Promise<void>): this;
+    public keyup(handle?: (e: KeyboardEvent) => void | Promise<void>): this {
         if (handle) {
             this.element.addEventListener("keyup", async e => await handle(e as KeyboardEvent));
         } else {
@@ -931,7 +991,9 @@ export class CotomyElement {
         return this;
     }
 
-    public keypress(handle: ((e: KeyboardEvent) => void | Promise<void>) | null = null): this {
+    public keypress(): this;
+    public keypress(handle: (e: KeyboardEvent) => void | Promise<void>): this;
+    public keypress(handle?: (e: KeyboardEvent) => void | Promise<void>): this {
         if (handle) {
             this.element.addEventListener("keypress", async e => await handle(e as KeyboardEvent));
         } else {
@@ -945,7 +1007,9 @@ export class CotomyElement {
 
     //#region Input Control Events
 
-    public change(handle: ((e: Event) => void | Promise<void>) | null = null): this {
+    public change(): this;
+    public change(handle: (e: Event) => void | Promise<void>): this;
+    public change(handle?: (e: Event) => void | Promise<void>): this {
         if (handle) {
             this.element.addEventListener("change", async e => await handle(e));
         } else {
@@ -954,7 +1018,9 @@ export class CotomyElement {
         return this;
     }
 
-    public input(handle: ((e: Event) => void | Promise<void>) | null = null): this {
+    public input(): this;
+    public input(handle: (e: Event) => void | Promise<void>): this;
+    public input(handle?: (e: Event) => void | Promise<void>): this {
         if (handle) {
             this.element.addEventListener("input", async e => await handle(e));
         } else {
@@ -979,7 +1045,9 @@ export class CotomyElement {
                 });
     }
 
-    public inview(handle: ((e: Event) => void | Promise<void>) | null = null): this {
+    public inview(): this;
+    public inview(handle: (e: Event) => void | Promise<void>): this;
+    public inview(handle?: (e: Event) => void | Promise<void>): this {
         if (handle) {
             CotomyElement.intersectionObserver.observe(this.element);
             this.element.addEventListener("inview", async e => await handle(e));
@@ -989,7 +1057,9 @@ export class CotomyElement {
         return this;
     }
 
-    public outview(handle: ((e: Event) => void | Promise<void>) | null = null): this {
+    public outview(): this;
+    public outview(handle: (e: Event) => void | Promise<void>): this;
+    public outview(handle?: (e: Event) => void | Promise<void>): this {
         if (handle) {
             CotomyElement.intersectionObserver.observe(this.element);
             this.element.addEventListener("outview", async e => await handle(e));
@@ -999,7 +1069,9 @@ export class CotomyElement {
         return this;
     }
 
-    public focus(handle: ((e: FocusEvent) => void | Promise<void>) | null = null): this {
+    public focus(): this;
+    public focus(handle: (e: FocusEvent) => void | Promise<void>): this;
+    public focus(handle?: (e: FocusEvent) => void | Promise<void>): this {
         if (handle) {
             this.element.addEventListener("focus", async e => await handle(e as FocusEvent));
         } else {
@@ -1008,7 +1080,9 @@ export class CotomyElement {
         return this;
     }
 
-    public blur(handle: ((e: FocusEvent) => void | Promise<void>) | null = null): this {
+    public blur(): this;
+    public blur(handle: (e: FocusEvent) => void | Promise<void>): this;
+    public blur(handle?: (e: FocusEvent) => void | Promise<void>): this {
         if (handle) {
             this.element.addEventListener("blur", async e => await handle(e as FocusEvent));
         } else {
@@ -1017,7 +1091,9 @@ export class CotomyElement {
         return this;
     }
 
-    public focusin(handle: ((e: FocusEvent) => void | Promise<void>) | null = null): this {
+    public focusin(): this;
+    public focusin(handle: (e: FocusEvent) => void | Promise<void>): this;
+    public focusin(handle?: (e: FocusEvent) => void | Promise<void>): this {
         if (handle) {
             this.element.addEventListener("focusin", async e => await handle(e as FocusEvent));
         } else {
@@ -1026,7 +1102,9 @@ export class CotomyElement {
         return this;
     }
 
-    public focusout(handle: ((e: FocusEvent) => void | Promise<void>) | null = null): this {
+    public focusout(): this;
+    public focusout(handle: (e: FocusEvent) => void | Promise<void>): this;
+    public focusout(handle?: (e: FocusEvent) => void | Promise<void>): this {
         if (handle) {
             this.element.addEventListener("focusout", async e => await handle(e as FocusEvent));
         } else {
@@ -1051,7 +1129,9 @@ export class CotomyElement {
 
 
     //#region Layout Events
-    public resize(handle: ((e: Event) => void | Promise<void>) | null = null): this {
+    public resize(): this;
+    public resize(handle: (e: Event) => void | Promise<void>): this;
+    public resize(handle?: (e: Event) => void | Promise<void>): this {
         this.listenLayoutEvents();
         if (handle) {
             this.element.addEventListener("cotomy:resize", async e => await handle(e));
@@ -1061,7 +1141,9 @@ export class CotomyElement {
         return this;
     }
 
-    public scroll(handle: ((e: Event) => void | Promise<void>) | null = null): this {
+    public scroll(): this;
+    public scroll(handle: (e: Event) => void | Promise<void>): this;
+    public scroll(handle?: (e: Event) => void | Promise<void>): this {
         this.listenLayoutEvents();
         if (handle) {
             this.element.addEventListener("cotomy:scroll", async e => await handle(e));
@@ -1071,7 +1153,9 @@ export class CotomyElement {
         return this;
     }
     
-    public changelayout(handle: ((e: Event) => void | Promise<void>) | null = null): this {
+    public changelayout(): this;
+    public changelayout(handle: (e: Event) => void | Promise<void>): this;
+    public changelayout(handle?: (e: Event) => void | Promise<void>): this {
         this.listenLayoutEvents();
         if (handle) {
             this.element.addEventListener("cotomy:changelayout", async e => await handle(e));
@@ -1244,7 +1328,9 @@ export class CotomyWindow {
         this.on("cotomy:ready", handle);
     }
 
-    public resize(handle: ((event: Event) => void | Promise<void>) | null = null) {
+    public resize(): void;
+    public resize(handle: (event: Event) => void | Promise<void>): void;
+    public resize(handle?: (event: Event) => void | Promise<void>): void {
         if (handle) {
             this.on("resize", handle);
         } else {
@@ -1252,7 +1338,9 @@ export class CotomyWindow {
         }
     }
 
-    public scroll(handle: ((event: Event) => void | Promise<void>) | null = null) {
+    public scroll(): void;
+    public scroll(handle: (event: Event) => void | Promise<void>): void;
+    public scroll(handle?: (event: Event) => void | Promise<void>): void {
         if (handle) {
             this.on("scroll", handle);
         } else {
@@ -1260,7 +1348,9 @@ export class CotomyWindow {
         }
     }
 
-    public changeLayout(handle: ((event: Event) => void | Promise<void>) | null = null) {
+    public changeLayout(): void;
+    public changeLayout(handle: (event: Event) => void | Promise<void>): void;
+    public changeLayout(handle?: (event: Event) => void | Promise<void>): void {
         if (handle) {
             this.on("cotomy:changelayout", handle);
         } else {
@@ -1268,7 +1358,9 @@ export class CotomyWindow {
         }
     }
 
-    public pageshow(handle: ((event: PageTransitionEvent) => void | Promise<void>) | null = null) {
+    public pageshow(): void;
+    public pageshow(handle: (event: PageTransitionEvent) => void | Promise<void>): void;
+    public pageshow(handle?: (event: PageTransitionEvent) => void | Promise<void>): void {
         if (handle) {
             this.on("pageshow", handle as (e: Event) => void | Promise<void>);
         } else {

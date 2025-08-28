@@ -43,9 +43,9 @@ export abstract class CotomyForm extends CotomyElement {
 
     public set autoRestore(value: boolean) {
         if (value) {
-            this.removeAttribute("data-cotomy-restore");
+            this.attribute("data-cotomy-restore", null);
         } else {
-            this.setAttribute("data-cotomy-restore", "false");
+            this.attribute("data-cotomy-restore", "false");
         }
     }
 
@@ -79,7 +79,7 @@ export abstract class CotomyForm extends CotomyElement {
                 }
             });
 
-            this.setAttribute("data-cotomy-initialized");
+            this.attribute("data-cotomy-initialized", "");
         }
         return this;
     }
@@ -314,7 +314,7 @@ export class CotomyEntityApiForm extends CotomyApiForm {
 
             const addedParts = locationParts.slice(actionParts.length).filter(Boolean);
             if (addedParts.length === 1 && addedParts[0]) {
-                this.setAttribute("data-cotomy-key", addedParts[0]);
+                this.attribute("data-cotomy-key", addedParts[0]);
             } else {
                 const msg = `Location does not contain a single external key segment.
                 action="${baseAction}", location="${locPath}", added=["${addedParts.join('","')}"]`;
@@ -402,16 +402,16 @@ export class CotomyEntityFillApiForm extends CotomyEntityApiForm {
             });
 
             this.filler("checkbox", (input, value) => {
-                input.removeAttribute("checked");
+                input.attribute("checked", null);
                 if (value) {
-                    input.setAttribute("checked");
+                    input.attribute("checked", "");
                 }
             });
 
             this.filler("radio", (input, value) => {
-                input.removeAttribute("checked");
+                input.attribute("checked", null);
                 if (input.value === value) {
-                    input.setAttribute("checked");
+                    input.attribute("checked", "");
                 }
             });
 
