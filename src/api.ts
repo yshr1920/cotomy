@@ -154,7 +154,6 @@ class ResponseMessages {
 
 export class CotomyApiResponse {
     private _object: any | null = null;
-    private _map: Record<string, any> | null = null;
     private _text: string | null = null;
 
     public constructor(private readonly _response?: Response | null) {
@@ -185,10 +184,8 @@ export class CotomyApiResponse {
     }
 
     public async textAsync(): Promise<string> {
-        if (this._text !== null) return this._text;
         if (!this._response) return "";
-        this._text = await this._response.text();
-        return this._text;
+        return this._text ?? (this._text = await this._response?.text());
     }
 
     /**
