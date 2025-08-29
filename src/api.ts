@@ -315,7 +315,9 @@ export class CotomyViewRenderer {
     }
 
     protected async applyObjectAsync(target: any, propertyName: string | undefined = undefined): Promise<void> {
-        this.element.find("[data-cotomy-bind]").forEach(e => e.clear());
+        if (!propertyName) {
+            this.element.find("[data-cotomy-bind]").forEach(e => e.clear());
+        }
         for (const [key, value] of Object.entries(await target)) {
             const pname = this.bindNameGenerator.create(key, propertyName);
             if (Array.isArray(value)) continue;
