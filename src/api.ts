@@ -153,8 +153,9 @@ class ResponseMessages {
 //#region APIレスポンスクラス
 
 export class CotomyApiResponse {
-    private _json: any | null = null;
+    private _object: any | null = null;
     private _map: Record<string, any> | null = null;
+    private _text: string | null = null;
 
     public constructor(private readonly _response?: Response | null) {
     }
@@ -184,24 +185,23 @@ export class CotomyApiResponse {
     }
 
     public async textAsync(): Promise<string> {
-        return await this._response?.text() || "";
-    }
-
-    public async blobAsync(): Promise<Blob> {
-        return await this._response?.blob() || new Blob;
+        if (this._text !== null) return this._text;
+        if (!this._response) return "";
+        this._text = await this._response.text();
+        return this._text;
     }
 
     /**
      * Centralized helper to ensure response JSON is parsed exactly once.
      */
     private async _ensureJsonParsedAsync(defaultValue: any): Promise<any> {
-        if (this._response && this._json === null) {
+        if (this._response && this._object === null) {
             try {
-                const text = await this._response.text();
+                const text = await this.textAsync();
                 if (!text) {
-                    this._json = defaultValue;
+                    this._object = defaultValue;
                 } else {
-                    this._json = JSON.parse(text);
+                    this._object = JSON.parse(text);
                 }
             } catch (error) {
                 throw new CotomyResponseJsonParseException(
@@ -209,7 +209,7 @@ export class CotomyApiResponse {
                 );
             }
         }
-        return this._json ?? defaultValue;
+        return this._object ?? defaultValue;
     }
 
     public async objectAsync<T = any>(defaultValue: T = {} as T): Promise<T> {
