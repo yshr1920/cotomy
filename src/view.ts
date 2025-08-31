@@ -1,11 +1,6 @@
 import cuid from "cuid";
-import dayjs from 'dayjs';
-import timezone from 'dayjs/plugin/timezone';
-import utc from 'dayjs/plugin/utc';
 import { CotomyDebugFeature, CotomyDebugSettings } from "./debug";
 
-dayjs.extend(utc);
-dayjs.extend(timezone);
 
 
 export class CotomyElement {
