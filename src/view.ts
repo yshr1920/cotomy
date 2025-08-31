@@ -319,27 +319,6 @@ export class CotomyElement {
         this.element.innerHTML = html;
     }
 
-    private isValidUtcDateString(value: string): boolean {
-        return dayjs(value).isValid() && (value.endsWith("Z") || /[+-]\d{2}:\d{2}$/.test(value));
-    }
-
-    public convertUtcToLocal(recursive: boolean = true): this {
-        if (this.hasAttribute("data-cotomy-datetime") && dayjs(this.text).isValid()) {
-            const timezone = this.attribute("data-cotomy-timezone")
-                    || this.closest("[data-cotomy-timezone]")?.attribute("data-cotomy-timezone");
-            const format: string = this.attribute("data-cotomy-format") ?? "YYYY-MM-DD HH:mm";
-            const lt = dayjs(this.isValidUtcDateString(this.text) ? this.text : `${this.text}Z`);
-            const dt = this.attribute("data-cotomy-datetime") === "local" ? lt : lt.utc();
-            this.text = (timezone && timezone.trim() !== "") ? dt.tz(timezone).format(format) : dt.format(format);
-        } else if (recursive) {
-            this.find("[data-cotomy-datetime]").forEach(element => {
-                element.convertUtcToLocal(recursive);
-            });
-        }
-
-        return this;
-    }
-
     //#endregion
 
 

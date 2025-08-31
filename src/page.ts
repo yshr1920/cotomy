@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { CotomyDebugFeature, CotomyDebugSettings } from "./debug";
 import { CotomyForm } from "./form";
 import { CotomyElement, CotomyWindow } from "./view";
@@ -113,9 +114,26 @@ export class CotomyPageController {
         }
     }
 
+    private isValidUtcDateString(value: string): boolean {
+        return dayjs(value).isValid() && (value.endsWith("Z") || /[+-]\d{2}:\d{2}$/.test(value));
+    }
+
+    private initializeDateTimeElements() {
+        CotomyWindow.instance.body.find("[data-cotomy-datetime]").forEach(e => {
+            if (dayjs(e.text).isValid()) {
+                const timezone = e.attribute("data-cotomy-timezone")
+                        || e.closest("[data-cotomy-timezone]")?.attribute("data-cotomy-timezone");
+                const format: string = e.attribute("data-cotomy-format") ?? "YYYY-MM-DD HH:mm";
+                const lt = dayjs(this.isValidUtcDateString(e.text) ? e.text : `${e.text}Z`);
+                const dt = e.attribute("data-cotomy-datetime") === "local" ? lt : lt.utc();
+                e.text = (timezone && timezone.trim() !== "") ? dt.tz(timezone).format(format) : dt.format(format);
+            }
+        });
+    }
+
 
     protected async initializeAsync(): Promise<void> {
-        this.body.convertUtcToLocal();
+        this.initializeDateTimeElements();
 
         CotomyWindow.instance.pageshow(async e => {
             if (e.persisted) {
