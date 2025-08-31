@@ -127,7 +127,7 @@ export class CotomyPageController {
                 const timezone = e.attribute("data-cotomy-timezone")
                         || e.closest("[data-cotomy-timezone]")?.attribute("data-cotomy-timezone");
                 const format: string = e.attribute("data-cotomy-format") ?? "YYYY-MM-DD HH:mm";
-                const lt = this.isValidUtcDateString(e.text) ? dayjs(e.text) : dayjs(`${e.text}Z`);
+                const lt = this.isValidUtcDateString(e.text) ? dayjs(e.text) : dayjs(`${dayjs(e.text).format("YYYY-MM-DDTHH:mm:ss")}Z`);
                 const dt = e.attribute("data-cotomy-datetime") === "local" ? lt : lt.utc();
                 e.text = (timezone && timezone.trim() !== "") ? dt.tz(timezone).format(format) : dt.format(format);
                 e.attribute("data-cotomy-formatted", "");
