@@ -118,9 +118,11 @@ export class CotomyPageController {
         this.body.convertUtcToLocal();
 
         CotomyWindow.instance.pageshow(async e => {
-            await this.restoreAsync();
-            if (CotomyWindow.instance.reloading) {
-                e.stopImmediatePropagation();
+            if (e.persisted) {
+                await this.restoreAsync();
+                if (CotomyWindow.instance.reloading) {
+                    e.stopImmediatePropagation();
+                }
             }
         });
     }
