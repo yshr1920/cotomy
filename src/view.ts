@@ -319,30 +319,22 @@ export class CotomyElement {
         this.element.innerHTML = html;
     }
 
-    public convertUtcToLocal(recursive: boolean = true): this {
-        const value = this.attribute("data-cotomy-utc") ? this.text.trim()
-                : (this.attribute("type") === "datetime-local" ? this.value : "");
+    private isValidUtcDateString(value: string): boolean {
+        return dayjs(value).isValid() && (value.endsWith("Z") || /[+-]\d{2}:\d{2}$/.test(value));
+    }
 
-        if (value !== "") {
-            // IANA Time Zone 名
+    public convertUtcToLocal(recursive: boolean = true): this {
+        if (this.hasAttribute("data-cotomy-datetime") && dayjs(this.text).isValid()) {
             const timezone = this.attribute("data-cotomy-timezone")
                     || this.closest("[data-cotomy-timezone]")?.attribute("data-cotomy-timezone");
-            const hasOffset = /[+-]\d{2}:\d{2}$/.test(value);
-            const date = new Date(value + (hasOffset ? "" : "Z"));
-
-            if (this.attribute("data-cotomy-utc")) {
-                const format: string = this.attribute("data-cotomy-format") ?? "YYYY-MM-DD HH:mm";
-                this.text = timezone ? dayjs.utc(date).tz(timezone).format(format) : dayjs(date).format(format);
-                this.attribute("data-cotomy-utc", null);
-                if (recursive) {
-                    this.find("[data-cotomy-utc]").forEach(element => {
-                        element.convertUtcToLocal(recursive);
-                    });
-                }
-            } else {
-                this.value = timezone
-                        ? dayjs.utc(date).tz(timezone).format("YYYY-MM-DD HH:mm") : dayjs(date).format("YYYY-MM-DD HH:mm");
-            }
+            const format: string = this.attribute("data-cotomy-format") ?? "YYYY-MM-DD HH:mm";
+            const lt = dayjs(this.isValidUtcDateString(this.text) ? this.text : `${this.text}Z`);
+            const dt = this.attribute("data-cotomy-datetime") === "local" ? lt : lt.utc();
+            this.text = (timezone && timezone.trim() !== "") ? dt.tz(timezone).format(format) : dt.format(format);
+        } else if (recursive) {
+            this.find("[data-cotomy-datetime]").forEach(element => {
+                element.convertUtcToLocal(recursive);
+            });
         }
 
         return this;
