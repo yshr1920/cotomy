@@ -29,25 +29,19 @@ export abstract class CotomyForm extends CotomyElement {
 
     //#region フォームの再読み込み
 
-    public reload(): void {
+    public async reloadAsync(): Promise<void> {
         CotomyWindow.instance.reload();
     }
 
-    public get autoRestore(): boolean {
-        return this.attribute("data-cotomy-restore") !== "false";
+    public get autoReload(): boolean {
+        return this.attribute("data-cotomy-autoreload") !== "false";
     }
 
-    public set autoRestore(value: boolean) {
+    public set autoReload(value: boolean) {
         if (value) {
-            this.attribute("data-cotomy-restore", null);
+            this.attribute("data-cotomy-autoreload", null);
         } else {
-            this.attribute("data-cotomy-restore", "false");
-        }
-    }
-
-    public restore(): void {
-        if (this.autoRestore) {
-            this.reload();
+            this.attribute("data-cotomy-autoreload", "false");
         }
     }
 
@@ -67,12 +61,6 @@ export abstract class CotomyForm extends CotomyElement {
                 e.preventDefault();
                 e.stopPropagation();
                 await this.submitAsync();
-            });
-            
-            CotomyWindow.instance.pageshow(e => {
-                if (e.persisted && !CotomyWindow.instance.reloading) {
-                    this.restore();
-                }
             });
 
             this.attribute("data-cotomy-initialized", "");
@@ -418,8 +406,8 @@ export class CotomyEntityFillApiForm extends CotomyEntityApiForm {
 
 
 
-    public reload(): void {
-        this.loadAsync();
+    public async reloadAsync(): Promise<void> {
+        await this.loadAsync();
     }
 
     protected loadActionUrl(): string {

@@ -102,9 +102,27 @@ export class CotomyPageController {
         return Object.values(this._forms);
     }
 
+    protected async restoreAsync(): Promise<void> {
+        for (const f of this.forms()) {
+            if (CotomyWindow.instance.reloading) {
+                break;
+            }
+            if (f.autoReload) {
+                await f.reloadAsync();
+            }
+        }
+    }
+
 
     protected async initializeAsync(): Promise<void> {
         this.body.convertUtcToLocal();
+
+        CotomyWindow.instance.pageshow(async e => {
+            await this.restoreAsync();
+            if (CotomyWindow.instance.reloading) {
+                e.stopImmediatePropagation();
+            }
+        });
     }
 
     public get body(): CotomyElement {
