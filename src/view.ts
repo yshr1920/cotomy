@@ -331,8 +331,7 @@ export class CotomyElement {
             const date = new Date(value + (hasOffset ? "" : "Z"));
 
             if (this.attribute("data-cotomy-utc")) {
-                const format: string = this.attribute("data-cotomy-format")
-                        ?? this.closest("[data-cotomy-format]")?.attribute("data-cotomy-format") ?? "YYYY-MM-DD HH:mm";
+                const format: string = this.attribute("data-cotomy-format") ?? "YYYY-MM-DD HH:mm";
                 this.text = timezone ? dayjs.utc(date).tz(timezone).format(format) : dayjs(date).format(format);
                 this.attribute("data-cotomy-utc", null);
                 if (recursive) {
