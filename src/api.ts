@@ -1,6 +1,5 @@
 import dayjs from 'dayjs';
 import { StatusCodes } from "http-status-codes";
-import LocaleCurrency from 'locale-currency';
 import { CotomyDebugFeature, CotomyDebugSettings } from './debug';
 import { CotomyElement } from "./view";
 
@@ -250,11 +249,12 @@ export class CotomyViewRenderer {
     }
 
     protected get locale(): string {
-        return navigator.language || 'en-US';
-    }
-
-    protected get currency(): string {
-        return LocaleCurrency.getCurrency(this.locale) || 'USD';
+        const languages = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language]).filter(Boolean);
+        let locale = this.element.attribute("data-cotomy-locale")
+                || this.element.closest("[data-cotomy-locale]")?.attribute("data-cotomy-locale")
+                || languages[0]
+                || 'en-US';
+        return locale.includes("-") ? locale.split("-")[0] : locale;
     }
 
     public renderer(type: string, callback: (element: CotomyElement, value: any) => void): this {
@@ -287,14 +287,13 @@ export class CotomyViewRenderer {
             });
 
             this.renderer("number", (element, value) => {
-                if (value) {
-                    element.text = new Intl.NumberFormat(navigator.language || this.locale).format(value);
-                }
-            });
-
-            this.renderer("currency", (element, value) => {
-                if (value) {
-                    element.text = new Intl.NumberFormat(navigator.language || this.locale, { style: "currency", currency: this.currency }).format(value);
+                if (value !== undefined && value !== null) {
+                    // ISO 4217 通貨コード
+                    const currency = element.attribute("data-cotomy-currency")
+                            || element.closest("[data-cotomy-currency]")?.attribute("data-cotomy-currency");
+                    element.text = currency
+                            ? new Intl.NumberFormat(this.locale, { style: "currency", currency: currency }).format(value)
+                            : new Intl.NumberFormat(this.locale).format(value);
                 }
             });
 

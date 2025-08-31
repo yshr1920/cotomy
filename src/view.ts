@@ -1,6 +1,11 @@
 import cuid from "cuid";
 import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
 import { CotomyDebugFeature, CotomyDebugSettings } from "./debug";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 
 export class CotomyElement {
@@ -314,28 +319,31 @@ export class CotomyElement {
         this.element.innerHTML = html;
     }
 
-    public convertUtcToLocal(format: string = "YYYY-MM-DD HH:mm", recursive: boolean = true): this {
-        if (this.hasClass("utc"))  {
-            if (this.text.trim() === "") {
-                return this;
+    public convertUtcToLocal(recursive: boolean = true): this {
+        const value = this.attribute("data-cotomy-utc") ? this.text.trim()
+                : (this.attribute("type") === "datetime-local" ? this.value : "");
+
+        if (value !== "") {
+            // IANA Time Zone 名
+            const timezone = this.attribute("data-cotomy-timezone")
+                    || this.closest("[data-cotomy-timezone]")?.attribute("data-cotomy-timezone");
+            const hasOffset = /[+-]\d{2}:\d{2}$/.test(value);
+            const date = new Date(value + (hasOffset ? "" : "Z"));
+
+            if (this.attribute("data-cotomy-utc")) {
+                const format: string = this.attribute("data-cotomy-format")
+                        ?? this.closest("[data-cotomy-format]")?.attribute("data-cotomy-format") ?? "YYYY-MM-DD HH:mm";
+                this.text = timezone ? dayjs.utc(date).tz(timezone).format(format) : dayjs(date).format(format);
+                this.attribute("data-cotomy-utc", null);
+                if (recursive) {
+                    this.find("[data-cotomy-utc]").forEach(element => {
+                        element.convertUtcToLocal(recursive);
+                    });
+                }
+            } else {
+                this.value = timezone
+                        ? dayjs.utc(date).tz(timezone).format("YYYY-MM-DD HH:mm") : dayjs(date).format("YYYY-MM-DD HH:mm");
             }
-
-            const hasOffset = /[+-]\d{2}:\d{2}$/.test(this.text);
-            const date = new Date(this.text + (hasOffset ? "" : "Z"));
-            this.text = isNaN(date.getTime()) ? "" : dayjs(date).format(format);
-            this.removeClass("utc");
-        }
-
-        if (this.attribute("type") === "datetime-local") {
-            const hasOffset = /[+-]\d{2}:\d{2}$/.test(this.value);
-            const date = new Date(this.value + (hasOffset ? "" : "Z"));
-            this.value = isNaN(date.getTime()) ? "" : dayjs(date).format(format);
-        }
-
-        if (recursive) {
-            this.find(".utc").forEach(element => {
-                element.convertUtcToLocal(format, recursive);
-            });
         }
 
         return this;
