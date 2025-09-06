@@ -1,14 +1,18 @@
 export {
     CotomyApi,
     CotomyApiException,
-    CotomyApiResponse, CotomyBracketBindNameGenerator, CotomyConflictException, CotomyDotBindNameGenerator, CotomyForbiddenException,
+    CotomyApiResponse,
+    CotomyBracketBindNameGenerator,
+    CotomyConflictException,
+    CotomyDotBindNameGenerator,
+    CotomyForbiddenException,
     CotomyHttpClientError,
     CotomyHttpServerError,
     CotomyInvalidFormDataBodyException,
     CotomyNotFoundException,
-    CotomyResponseJsonParseException, CotomyUnauthorizedException,
-    CotomyValidationException,
-    CotomyViewRenderer, ICotomyBindNameGenerator
+    CotomyRequestInvalidException, CotomyResponseJsonParseException, CotomyTooManyRequestsException, CotomyUnauthorizedException,
+    CotomyViewRenderer,
+    ICotomyBindNameGenerator
 } from "./api";
 export {
     CotomyDebugFeature,

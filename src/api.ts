@@ -6,43 +6,44 @@ import { CotomyElement } from "./view";
 
 
 //#region 例外クラス
-
+// 共通基底例外
 export class CotomyApiException extends Error {
-    constructor(public readonly status: number, public readonly message: string,
-            public readonly response: CotomyApiResponse, public readonly bodyText: string = "") {
+    constructor(
+        public readonly status: number,
+        public readonly message: string,
+        public readonly response: CotomyApiResponse,
+        public readonly bodyText: string = ""
+    ) {
         super(message);
         this.name = "CotomyApiException";
     }
 }
 
+// クライアントエラー系
 export class CotomyHttpClientError extends CotomyApiException {
-  constructor(status: number, message: string, response: CotomyApiResponse, body = "") {
-    super(status, message, response, body);
-    this.name = "CotomyHttpClientError";
-  }
+    constructor(status: number, message: string, response: CotomyApiResponse, body = "") {
+        super(status, message, response, body);
+        this.name = "CotomyHttpClientError";
+    }
 }
-
 export class CotomyUnauthorizedException extends CotomyHttpClientError {
     constructor(status: number, message: string, response: CotomyApiResponse, body = "") {
         super(status, message, response, body);
         this.name = "CotomyUnauthorizedException";
     }
 }
-
 export class CotomyForbiddenException extends CotomyHttpClientError {
     constructor(status: number, message: string, response: CotomyApiResponse, body = "") {
         super(status, message, response, body);
         this.name = "CotomyForbiddenException";
     }
 }
-
 export class CotomyNotFoundException extends CotomyHttpClientError {
     constructor(status: number, message: string, response: CotomyApiResponse, body = "") {
         super(status, message, response, body);
         this.name = "CotomyNotFoundException";
     }
 }
-
 export class CotomyConflictException extends CotomyHttpClientError {
     constructor(status: number, message: string, response: CotomyApiResponse, body = "") {
         super(status, message, response, body);
@@ -50,10 +51,17 @@ export class CotomyConflictException extends CotomyHttpClientError {
     }
 }
 
-export class CotomyValidationException extends CotomyHttpClientError {
+export class CotomyRequestInvalidException extends CotomyHttpClientError {
     constructor(status: number, message: string, response: CotomyApiResponse, body = "") {
         super(status, message, response, body);
-        this.name = "CotomyValidationException";
+        this.name = "CotomyRequestInvalidException";
+    }
+}
+
+export class CotomyTooManyRequestsException extends CotomyHttpClientError {
+    constructor(status: number, message: string, response: CotomyApiResponse, body = "") {
+        super(status, message, response, body);
+        this.name = "CotomyTooManyRequestsException";
     }
 }
 
@@ -64,22 +72,20 @@ export class CotomyHttpServerError extends CotomyApiException {
     }
 }
 
-
 export class CotomyResponseJsonParseException extends Error {
-    public constructor(message: string = "Failed to parse JSON response.") {
+    constructor(message: string = "Failed to parse JSON response.") {
         super(message);
         this.name = "ResponseJsonParseException";
     }
 }
-
 export class CotomyInvalidFormDataBodyException extends Error {
-    public constructor(message: string = "Body must be an instance of FormData.") {
+    constructor(message: string = "Body must be an instance of FormData.") {
         super(message);
         this.name = "InvalidFormDataBodyException";
-    }  
+    }
 }
 
-//#endregion 例外処理
+//#endregion 例外クラス
 
 
 //#region 定数定義
@@ -503,7 +509,7 @@ export class CotomyApi {
             switch (response.status) {
                 case StatusCodes.BAD_REQUEST:
                 case StatusCodes.UNPROCESSABLE_ENTITY:
-                    throw new CotomyValidationException(response.status, errorMessage, response, errorBody);
+                    throw new CotomyRequestInvalidException(response.status, errorMessage, response, errorBody);
                 case StatusCodes.UNAUTHORIZED:
                     throw new CotomyUnauthorizedException(response.status, errorMessage, response, errorBody);
                 case StatusCodes.FORBIDDEN:
@@ -513,6 +519,8 @@ export class CotomyApi {
                 case StatusCodes.CONFLICT:
                 case StatusCodes.GONE:
                     throw new CotomyConflictException(response.status, errorMessage, response, errorBody);
+                case StatusCodes.TOO_MANY_REQUESTS:
+                    throw new CotomyTooManyRequestsException(response.status, errorMessage, response, errorBody);
                 default:
                     if (response.status < 500) {
                         throw new CotomyHttpClientError(response.status, errorMessage, response, errorBody);
