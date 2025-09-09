@@ -75,13 +75,13 @@ export class CotomyHttpServerError extends CotomyApiException {
 export class CotomyResponseJsonParseException extends Error {
     constructor(message: string = "Failed to parse JSON response.") {
         super(message);
-        this.name = "ResponseJsonParseException";
+        this.name = "CotomyResponseJsonParseException";
     }
 }
 export class CotomyInvalidFormDataBodyException extends Error {
     constructor(message: string = "Body must be an instance of FormData.") {
         super(message);
-        this.name = "InvalidFormDataBodyException";
+        this.name = "CotomyInvalidFormDataBodyException";
     }
 }
 
@@ -484,6 +484,14 @@ export class CotomyApi {
         }
 
         const ct = headers.get('Content-Type') || "multipart/form-data";
+        if (ct === 'multipart/form-data' && body && !(body instanceof globalThis.FormData)) {
+            if (typeof body !== 'object' || Array.isArray(body)) {
+                throw new CotomyInvalidFormDataBodyException(
+                    'Body must be FormData or a plain object when using multipart/form-data.'
+                );
+            }
+        }
+        
         const responseClass = responseType ?? CotomyApiResponse as new (response?: Response | null) => T;
         const response = new responseClass(await fetch(url, {
             method,
