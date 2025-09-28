@@ -13,7 +13,7 @@ export class CotomyElement {
         return div.innerHTML;
     }
 
-    protected static createHTMLElement(html: string): HTMLElement {
+    private static createHTMLElement(html: string): HTMLElement {
         const wrapperMap: Record<string, { prefix: string, suffix: string }> = {
             "tr": { prefix: "<table><tbody>", suffix: "</tbody></table>" },
             "td": { prefix: "<table><tbody><tr>", suffix: "</tr></tbody></table>" },
@@ -44,6 +44,9 @@ export class CotomyElement {
         const errors = doc.querySelector("parsererror");
         if (errors) {
             throw new Error(`HTML parsing failed for tag <${tag}>: "${html}"`);
+        }
+        if (doc.body.children.length !== 1) {
+            throw new Error(`CotomyElement requires a single root element, but got ${doc.body.children.length}.`);
         }
 
         const element = doc.body.querySelector(tag);
@@ -92,18 +95,26 @@ export class CotomyElement {
     private _parentElement: CotomyElement | null = null;
     private _eventHandlers: { [event: string]: Array<(e: Event) => void | Promise<void>> } = {};
 
-    public constructor(element: HTMLElement | { html: string, css?: string; } | string) {
+    public constructor(element: HTMLElement | { html: string, css?: string } | { tagname: string, text?: string, css?: string } | string) {
         if (element instanceof HTMLElement) {
             this._element = element;
         } else if (typeof element === "string") {
             this._element = CotomyElement.createHTMLElement(element);
         } else {
-            this._element = CotomyElement.createHTMLElement(element.html);
+            this._element = CotomyElement.createHTMLElement("html" in element ? element.html : `<${element.tagname}></${element.tagname}>`);
+            if ("tagname" in element && element.text) {
+                this._element.textContent = element.text;
+            }
             if (element.css) {
                 this.useScopedCss(element.css);
             }
             if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Html)) {
-                console.debug(`CotomyElement {html: "${element.html}" } is created`);
+                if ("html" in element) {
+                    console.debug(`CotomyElement {html: "${element.html}" } is created`);
+                }
+                if ("tagname" in element) {
+                    console.debug(`CotomyElement {tagname: "${element.tagname}", text: "${element.text ?? ""}"} is created`);
+                }
                 if (element.css) {
                     console.debug(`CotomyElement {css: "${element.css}" } is applied`);
                 }
