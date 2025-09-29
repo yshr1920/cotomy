@@ -508,7 +508,7 @@ export class CotomyApi {
         }));
 
         if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Api)) {
-            console.debug(`response: ${response.status} ${response.statusText}`, response);
+            console.debug(`response body: ${response.status} ${response.statusText}`, await response.textAsync());
         }
 
         // 400番台と500番台のエラーハンドリング
