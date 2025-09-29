@@ -507,6 +507,10 @@ export class CotomyApi {
             integrity: this.integrity,
         }));
 
+        if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Api)) {
+            console.debug(`response: ${response.status} ${response.statusText}`, response);
+        }
+
         // 400番台と500番台のエラーハンドリング
         if (response.status >= 400 && response.status < 600) {
             const errorBody = await response.textAsync().catch(() => 'No response body available');
