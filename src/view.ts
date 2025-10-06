@@ -739,7 +739,8 @@ export class CotomyElement {
     
     public onChild(event: string, selector: string, handle: (e: Event) => void | Promise<void>): this {
         this.element.addEventListener(event, (e: Event) => {
-            if (e.target instanceof HTMLElement) {
+            const target = e.target as HTMLElement | null;
+            if (target && target.closest(selector)) {
                 handle(e);
             }
         });
