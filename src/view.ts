@@ -1492,10 +1492,6 @@ export class CotomyWindow {
         }
     }
 
-    public handlers(event: string): Array<(e: Event) => void | Promise<void>> {
-        return this._eventHandlers[event] ?? [];
-    }
-
     public load(handle: (e: Event) => void | Promise<void>) {
         this.on("load", handle);
     }
