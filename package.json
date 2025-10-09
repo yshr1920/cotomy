@@ -1,6 +1,6 @@
 {
   "name": "cotomy",
-  "version": "0.1.61",
+  "version": "0.1.62",
   "main": "dist/cjs/index.cjs",
   "module": "dist/esm/index.js",
   "types": "dist/types/index.d.ts",
@@ -14,7 +14,11 @@
     },
     "./package.json": "./package.json"
   },
-  "files": [ "dist", "README.md", "LICENSE" ],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "build:esm": "tsc --project tsconfig.esm.json",
