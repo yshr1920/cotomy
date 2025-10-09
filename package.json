@@ -19,10 +19,12 @@
     "README.md",
     "LICENSE"
   ],
+  "unpkg": "dist/browser/cotomy.min.js",
   "scripts": {
-    "build": "npm run clean && npm run build:esm && npm run build:cjs",
+    "build": "npm run clean && npm run build:esm && npm run build:cjs && npm run build:browser",
     "build:esm": "tsc --project tsconfig.esm.json",
     "build:cjs": "webpack --config webpack.config.cjs --mode=production",
+    "build:browser": "webpack --config webpack.config.browser.cjs",
     "dev": "webpack --config webpack.config.cjs --mode=development",
     "clean": "rm -rf dist",
     "test": "echo \"(optional) add test runner like vitest or jest\"",

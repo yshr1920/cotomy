@@ -47,6 +47,17 @@ By passing HTML and CSS strings to the constructor, it is possible to generate E
 ## Development
 
 Cotomy ships with both ESM (`dist/esm`) and CommonJS (`dist/cjs`) builds, plus generated type definitions in `dist/types`.  
+For direct `<script>` usage, browser-ready bundles are available at `dist/browser/cotomy.js` and `dist/browser/cotomy.min.js` (also served via the npm `unpkg` entry).
+Include the minified build like so:
+
+```html
+<script src="https://unpkg.com/cotomy/dist/browser/cotomy.min.js"></script>
+<script>
+  const el = new Cotomy.CotomyElement("<div>Hello</div>");
+  document.body.appendChild(el.element);
+</script>
+```
+
 Run the build to refresh every target bundle:
 
 ```bash
