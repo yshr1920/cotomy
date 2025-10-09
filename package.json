@@ -1,14 +1,25 @@
 {
   "name": "cotomy",
   "version": "0.1.61",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "main": "dist/cjs/index.cjs",
+  "module": "dist/esm/index.js",
+  "types": "dist/types/index.d.ts",
+  "browser": "dist/esm/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.cjs",
+      "default": "./dist/esm/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [ "dist", "README.md", "LICENSE" ],
   "scripts": {
-    "build": "webpack --mode=production",
-    "dev": "webpack --mode=development",
+    "build": "npm run clean && npm run build:esm && npm run build:cjs",
+    "build:esm": "tsc --project tsconfig.esm.json",
+    "build:cjs": "webpack --config webpack.config.cjs --mode=production",
+    "dev": "webpack --config webpack.config.cjs --mode=development",
     "clean": "rm -rf dist",
     "test": "echo \"(optional) add test runner like vitest or jest\"",
     "prepare": "npm run build",

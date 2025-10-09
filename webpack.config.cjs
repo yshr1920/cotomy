@@ -6,8 +6,8 @@ module.exports = {
   entry: './src/index.ts',
   target: ['web', 'es2020'],
   output: {
-    filename: 'index.js',
-    path: path.resolve(__dirname, 'dist'),
+    filename: 'index.cjs',
+    path: path.resolve(__dirname, 'dist/cjs'),
     library: {
       name: 'Cotomy',
       type: 'umd',
@@ -24,7 +24,7 @@ module.exports = {
         test: /\.ts$/,
         loader: 'ts-loader',
         options: {
-          configFile: 'tsconfig.json'
+          configFile: 'tsconfig.webpack.json'
         },
         exclude: /node_modules/
       }

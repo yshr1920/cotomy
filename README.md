@@ -44,6 +44,22 @@ By passing HTML and CSS strings to the constructor, it is possible to generate E
 - `"display HTML in character literals with color coding"` → `"syntax highlighting for embedded HTML"`
 - `"generate Element designs with a limited scope"` → `"generate scoped DOM elements with associated styles"`
 
+## Development
+
+Cotomy ships with both ESM (`dist/esm`) and CommonJS (`dist/cjs`) builds, plus generated type definitions in `dist/types`.  
+Run the build to refresh every target bundle:
+
+```bash
+npm install
+npm run build
+```
+
+The Vitest-based test suite can be executed via:
+
+```bash
+npx vitest run
+```
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
