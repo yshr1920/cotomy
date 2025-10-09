@@ -3,7 +3,201 @@ import { CotomyDebugFeature, CotomyDebugSettings } from "./debug";
 
 
 
-export class CotomyElement {
+//#region イベントハンドラ管理要
+
+interface IEventTarget {
+    get scopeId(): string;
+    element: HTMLElement;
+}
+
+type EventHandler = (e: Event) => void | Promise<void>;
+class HandlerEntry {
+    public constructor(public readonly handle: EventHandler,
+            public readonly wrapper?: EventHandler,
+            public readonly options?: AddEventListenerOptions) {
+    }
+
+    public get current(): EventHandler {
+        return this.wrapper ?? this.handle;
+    }
+
+    /**
+     * 比較モード
+     * "strict": 完全一致（wrapperも含めて一致）
+     * "remove": 削除用（wrapper無視＝ワイルドカード扱い）
+     */
+    public equals(entry: HandlerEntry, mode?: "strict" | "remove"): boolean;
+    public equals(handle: EventHandler, options?: AddEventListenerOptions, wrapper?: EventHandler, mode?: "strict" | "remove"): boolean;
+    public equals(entryOrHandle: HandlerEntry | EventHandler, optionsOrMode?: AddEventListenerOptions | "strict" | "remove", wrapper?: EventHandler, mode?: "strict" | "remove"): boolean {
+        let targetHandle: EventHandler;
+        let targetOptions: AddEventListenerOptions | undefined;
+        let targetWrapper: EventHandler | undefined;
+        let compareMode: "strict" | "remove" = "strict";
+        if (entryOrHandle instanceof HandlerEntry) {
+            targetHandle = entryOrHandle.handle;
+            targetOptions = entryOrHandle.options;
+            targetWrapper = entryOrHandle.wrapper;
+            compareMode = (optionsOrMode as "strict" | "remove") ?? "strict";
+        } else {
+            targetHandle = entryOrHandle;
+            // optionsOrMode may be AddEventListenerOptions or mode
+            if (typeof optionsOrMode === "string") {
+                // shift left
+                compareMode = optionsOrMode;
+                targetOptions = undefined;
+                targetWrapper = wrapper;
+            } else {
+                targetOptions = optionsOrMode;
+                targetWrapper = wrapper;
+                compareMode = mode ?? "strict";
+            }
+        }
+
+        if (this.handle !== targetHandle) {
+            return false;
+        }
+
+        if (compareMode === "strict") {
+            // wrapper も完全一致（未指定同士のみ一致、片方のみ未指定は不一致）
+            if (this.wrapper !== targetWrapper) {
+                return false;
+            }
+        }
+        // "remove"モードの場合はwrapperは無視
+
+        return HandlerEntry.optionsEquals(this.options, targetOptions);
+    }
+
+    public static optionsEquals(left?: AddEventListenerOptions, right?: AddEventListenerOptions): boolean {
+        const getBoolean = (options: AddEventListenerOptions | undefined, key: "capture" | "once" | "passive"): boolean =>
+            options?.[key] ?? false;
+        const getSignal = (options: AddEventListenerOptions | undefined): AbortSignal | undefined =>
+            options?.signal;
+
+        const leftSignal = getSignal(left);
+        const rightSignal = getSignal(right);
+        // 厳格一致: === のみ
+        const signalsEqual = leftSignal === rightSignal;
+
+        return getBoolean(left, "capture") === getBoolean(right, "capture")
+            && getBoolean(left, "once") === getBoolean(right, "once")
+            && getBoolean(left, "passive") === getBoolean(right, "passive")
+            && signalsEqual;
+    }
+}
+
+class HandlerRegistory {
+    private _registory: Map<string, HandlerEntry[]> = new Map();
+
+    public constructor(private readonly target: IEventTarget) {
+    }
+
+    private ensure(event: string): HandlerEntry[] {
+        let list = this._registory.get(event);
+        if (!list) {
+            list = [];
+            this._registory.set(event, list);
+        }
+        return list;
+    }
+
+    private find(event: string, entry: HandlerEntry): HandlerEntry | undefined {
+        const list = this._registory.get(event);
+        if (!list) return undefined;
+        return list.find(e => e.equals(entry));
+    }
+
+    public add(event: string, entry: HandlerEntry): void {
+        if (entry.options?.once) {
+            this.remove(event, entry);
+        }
+        const existing = this.find(event, entry);
+        if (existing) {
+            return;
+        }
+        this.ensure(event).push(entry);
+        this.target.element.addEventListener(event, entry.current, entry.options);
+    }
+
+    public remove(event: string, entry?: HandlerEntry): void {
+        if (!entry) {
+            const list = this._registory.get(event);
+            if (!list) return;
+            list.forEach(e => this.target.element.removeEventListener(event, e.current, e.options?.capture ?? false));
+            this._registory.delete(event);
+            return;
+        }
+        const list = this._registory.get(event);
+        if (!list) return;
+        const remaining: HandlerEntry[] = [];
+        for (const e of list) {
+            if (e.equals(entry, "remove")) {
+                this.target.element.removeEventListener(event, e.current, e.options?.capture ?? false);
+            } else {
+                remaining.push(e);
+            }
+        }
+        if (remaining.length === 0) {
+            this._registory.delete(event);
+        } else {
+            this._registory.set(event, remaining);
+        }
+    }
+
+    public get empty(): boolean {
+        return this._registory.size === 0;
+    }
+}
+
+class EventRegistry {
+    private static _instance: EventRegistry;
+    private _registry: Map<string, HandlerRegistory> = new Map();
+
+    public static get instance(): EventRegistry {
+        return this._instance ?? (this._instance = new EventRegistry());
+    }
+
+    private constructor() {}
+
+    private map(target: IEventTarget): HandlerRegistory {
+        const scopeId = target.scopeId;
+        let registry = this._registry.get(scopeId);
+        if (!registry) {
+            registry = new HandlerRegistory(target);
+            this._registry.set(scopeId, registry);
+        }
+        return registry;
+    }
+
+    public on(event: string, target: IEventTarget, entry: HandlerEntry): void {
+        const registry = this.map(target);
+        registry.add(event, entry);
+    }
+
+    public off(event: string, target: IEventTarget, entry?: HandlerEntry): void {
+        const registry = this._registry.get(target.scopeId);
+        if (!registry) return;
+        if (entry) {
+            registry.remove(event, entry);
+        } else {
+            registry.remove(event);
+        }
+        if (registry.empty) {
+            this._registry.delete(target.scopeId);
+        }
+    }
+
+    public clear(target: IEventTarget): void {
+        this._registry.delete(target.scopeId);
+    }
+}
+
+//#endregion
+
+
+
+
+export class CotomyElement implements IEventTarget {
     
     //#region Factory and Finder
 
@@ -93,7 +287,6 @@ export class CotomyElement {
 
     private _element: HTMLElement;
     private _parentElement: CotomyElement | null = null;
-    private _eventHandlers: { [event: string]: Array<(e: Event) => void | Promise<void>> } = {};
 
     public constructor(element: HTMLElement | { html: string, css?: string } | { tagname: string, text?: string, css?: string } | string) {
         if (element instanceof HTMLElement) {
@@ -122,6 +315,7 @@ export class CotomyElement {
         }
         this.removed(() => {
             this._element = CotomyElement.createHTMLElement(/* html */ `<div data-cotomy-invalidated style="display: none;"></div>`);
+            EventRegistry.instance.clear(this);
         });
     }
 
@@ -728,47 +922,49 @@ export class CotomyElement {
         return this;
     }
 
-    public on(event: string, handle: (e: Event) => void | Promise<void>): this {
-        this.element.addEventListener(event, handle);
-        if (!this._eventHandlers[event]) {
-            this._eventHandlers[event] = [];
-        }
-        this._eventHandlers[event].push(handle);
+    public on(event: string, handle: (e: Event) => void | Promise<void>): this;
+    public on(event: string, handle: (e: Event) => void | Promise<void>, options: AddEventListenerOptions): this;
+    public on(event: string, handle: (e: Event) => void | Promise<void>, options?: AddEventListenerOptions): this {
+        const entry = new HandlerEntry(handle, undefined, options);
+        EventRegistry.instance.on(event, this, entry);
         return this;
     }
     
-    public onChild(event: string, selector: string, handle: (e: Event) => void | Promise<void>): this {
-        this.element.addEventListener(event, (e: Event) => {
+    public onChild(event: string, selector: string, handle: (e: Event) => void | Promise<void>): this;
+    public onChild(event: string, selector: string, handle: (e: Event) => void | Promise<void>, options: AddEventListenerOptions): this;
+    public onChild(event: string, selector: string, handle: (e: Event) => void | Promise<void>, options?: AddEventListenerOptions): this {
+        const delegate: EventHandler = (e: Event) => {
             const target = e.target as HTMLElement | null;
             if (target && target.closest(selector)) {
-                handle(e);
+                return handle(e);
             }
-        });
+        };
+        const entry = new HandlerEntry(handle, delegate, options);
+        EventRegistry.instance.on(event, this, entry);
         return this;
     }
 
-    public once(event: string, handle: (e: Event) => void | Promise<void>): this {
-        this.element.addEventListener(event, handle, { once: true });
+    public once(event: string, handle: (e: Event) => void | Promise<void>): this;
+    public once(event: string, handle: (e: Event) => void | Promise<void>, options: AddEventListenerOptions): this;
+    public once(event: string, handle: (e: Event) => void | Promise<void>, options?: AddEventListenerOptions): this {
+        const mergedOptions: AddEventListenerOptions = { ...(options ?? {}), once: true };
+        const entry = new HandlerEntry(handle, undefined, mergedOptions);
+        this.off(event, handle, mergedOptions);
+        EventRegistry.instance.on(event, this, entry);
         return this;
     }
 
     public off(event: string): this;
     public off(event: string, handle: (e: Event) => void | Promise<void>): this;
-    public off(event: string, handle?: (e: Event) => void | Promise<void>): this {
+    public off(event: string, handle: (e: Event) => void | Promise<void>, options: AddEventListenerOptions): this;
+    public off(event: string, handle?: (e: Event) => void | Promise<void>, options?: AddEventListenerOptions): this {
         if (handle) {
-            this.element.removeEventListener(event, handle);
-            this._eventHandlers[event] = this._eventHandlers[event]?.filter(h => h !== handle) ?? [];
+            const entry = new HandlerEntry(handle, undefined, options);
+            EventRegistry.instance.off(event, this, entry);
         } else {
-            for (const h of this._eventHandlers[event] ?? []) {
-                this.element.removeEventListener(event, h);
-            }
-            delete this._eventHandlers[event];
+            EventRegistry.instance.off(event, this);
         }
         return this;
-    }
-
-    public handlers(event: string): Array<(e: Event) => void | Promise<void>> {
-        return this._eventHandlers[event] ?? [];
     }
 
     //#region Mouse Events
@@ -1383,5 +1579,3 @@ export class CotomyWindow {
         return document.documentElement.scrollHeight;
     }
 }
-
-
