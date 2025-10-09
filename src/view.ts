@@ -22,30 +22,31 @@ class HandlerEntry {
     }
 
     /**
-     * 比較モード
-     * "strict": 完全一致（wrapperも含めて一致）
-     * "remove": 削除用（wrapper無視＝ワイルドカード扱い）
+     * Comparison mode
+     * “strict”: Exact match (matches including wrapper)
+     * “remove”: For deletion (ignores wrapper = treats as wildcard)
      */
     public equals(entry: HandlerEntry, mode?: "strict" | "remove"): boolean;
     public equals(handle: EventHandler, options?: AddEventListenerOptions, wrapper?: EventHandler, mode?: "strict" | "remove"): boolean;
     public equals(entryOrHandle: HandlerEntry | EventHandler, optionsOrMode?: AddEventListenerOptions | "strict" | "remove", wrapper?: EventHandler, mode?: "strict" | "remove"): boolean {
         let targetHandle: EventHandler;
-        let targetOptions: AddEventListenerOptions | undefined;
         let targetWrapper: EventHandler | undefined;
+        let targetOptions: AddEventListenerOptions | undefined;
         let compareMode: "strict" | "remove" = "strict";
+
         if (entryOrHandle instanceof HandlerEntry) {
             targetHandle = entryOrHandle.handle;
-            targetOptions = entryOrHandle.options;
             targetWrapper = entryOrHandle.wrapper;
+            targetOptions = entryOrHandle.options;
             compareMode = (optionsOrMode as "strict" | "remove") ?? "strict";
+
         } else {
             targetHandle = entryOrHandle;
-            // optionsOrMode may be AddEventListenerOptions or mode
+
             if (typeof optionsOrMode === "string") {
-                // shift left
                 compareMode = optionsOrMode;
-                targetOptions = undefined;
                 targetWrapper = wrapper;
+                targetOptions = undefined;
             } else {
                 targetOptions = optionsOrMode;
                 targetWrapper = wrapper;
@@ -57,13 +58,9 @@ class HandlerEntry {
             return false;
         }
 
-        if (compareMode === "strict") {
-            // wrapper も完全一致（未指定同士のみ一致、片方のみ未指定は不一致）
-            if (this.wrapper !== targetWrapper) {
-                return false;
-            }
+        if (compareMode === "strict" && this.wrapper !== targetWrapper) {
+            return false;
         }
-        // "remove"モードの場合はwrapperは無視
 
         return HandlerEntry.optionsEquals(this.options, targetOptions);
     }
@@ -93,30 +90,21 @@ class HandlerRegistory {
     }
 
     private ensure(event: string): HandlerEntry[] {
-        let list = this._registory.get(event);
-        if (!list) {
-            list = [];
-            this._registory.set(event, list);
-        }
-        return list;
+        return this._registory.get(event) ?? this._registory.set(event, []).get(event)!;
     }
 
     private find(event: string, entry: HandlerEntry): HandlerEntry | undefined {
-        const list = this._registory.get(event);
-        if (!list) return undefined;
-        return list.find(e => e.equals(entry));
+        return this._registory.get(event)?.find(e => e.equals(entry)) ?? undefined;
     }
 
     public add(event: string, entry: HandlerEntry): void {
         if (entry.options?.once) {
             this.remove(event, entry);
         }
-        const existing = this.find(event, entry);
-        if (existing) {
-            return;
+        if (!this.find(event, entry)) {
+            this.ensure(event).push(entry);
+            this.target.element.addEventListener(event, entry.current, entry.options);
         }
-        this.ensure(event).push(entry);
-        this.target.element.addEventListener(event, entry.current, entry.options);
     }
 
     public remove(event: string, entry?: HandlerEntry): void {
@@ -128,19 +116,20 @@ class HandlerRegistory {
             return;
         }
         const list = this._registory.get(event);
-        if (!list) return;
-        const remaining: HandlerEntry[] = [];
-        for (const e of list) {
-            if (e.equals(entry, "remove")) {
-                this.target.element.removeEventListener(event, e.current, e.options?.capture ?? false);
-            } else {
-                remaining.push(e);
+        if (list) {
+            const remaining: HandlerEntry[] = [];
+            for (const e of list) {
+                if (e.equals(entry, "remove")) {
+                    this.target.element.removeEventListener(event, e.current, e.options?.capture ?? false);
+                } else {
+                    remaining.push(e);
+                }
             }
-        }
-        if (remaining.length === 0) {
-            this._registory.delete(event);
-        } else {
-            this._registory.set(event, remaining);
+            if (remaining.length === 0) {
+                this._registory.delete(event);
+            } else {
+                this._registory.set(event, remaining);
+            }
         }
     }
 
