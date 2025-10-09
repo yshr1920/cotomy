@@ -1419,7 +1419,7 @@ export class CotomyWindow {
             this._mutationObserver = new MutationObserver(mutations => {
                 mutations.forEach(mutation => {
                     mutation.removedNodes.forEach(node => {
-                        if (node instanceof HTMLElement) {
+                        if (typeof HTMLElement !== "undefined" && node instanceof HTMLElement) {
                             const element = new CotomyElement(node);
                             element.trigger("removed");
                         }

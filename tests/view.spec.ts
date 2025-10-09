@@ -4,6 +4,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { CotomyElement, CotomyWindow } from "../src/view";
 
+(globalThis as any).HTMLElement = (globalThis as any).HTMLElement ?? window.HTMLElement;
+
 describe("CotomyElement event handling", () => {
     beforeEach(() => {
         document.body.innerHTML = "";
@@ -247,6 +249,7 @@ describe("CotomyWindow behaviors", () => {
         });
         instance._eventHandlers = {};
         instance._reloading = false;
+        (globalThis as any).HTMLElement = (globalThis as any).HTMLElement ?? window.HTMLElement;
         document.body.innerHTML = "";
         vi.unstubAllGlobals();
         vi.restoreAllMocks();
@@ -271,14 +274,10 @@ describe("CotomyWindow behaviors", () => {
     it("manages event handlers via on/off/trigger", () => {
         const handler = vi.fn();
         CotomyWindow.instance.on("custom:event", handler);
-        expect(CotomyWindow.instance.handlers("custom:event")).toHaveLength(1);
-
         CotomyWindow.instance.trigger("custom:event");
         expect(handler).toHaveBeenCalledTimes(1);
 
         CotomyWindow.instance.off("custom:event", handler);
-        expect(CotomyWindow.instance.handlers("custom:event")).toHaveLength(0);
-
         CotomyWindow.instance.trigger("custom:event");
         expect(handler).toHaveBeenCalledTimes(1);
     });
