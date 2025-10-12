@@ -55,7 +55,38 @@ describe("CotomyUrl", () => {
         url.redirect();
 
         expect(assignedHref).toBe("/next?y=2");
+    });
+
+    it("replace calls window.location.replace with correct url", () => {
+        const originalLocation = window.location;
+        const mockReplace = vi.fn();
+        const fakeLocation = {
+            origin: "https://example.test",
+            pathname: "/original",
+            search: "",
+            replace: mockReplace,
+        } as unknown as Location;
+
+        vi.stubGlobal("location", fakeLocation);
+
+        const url = new CotomyUrl("/replaced?x=1");
+        url.replace();
+
+        expect(mockReplace).toHaveBeenCalledWith("/replaced?x=1");
 
         vi.stubGlobal("location", originalLocation);
+    });
+
+    it("replaceState calls window.history.replaceState with correct params", () => {
+        const mockReplaceState = vi.fn();
+        const originalHistory = window.history;
+        vi.stubGlobal("history", { ...originalHistory, replaceState: mockReplaceState });
+
+        const url = new CotomyUrl("/state?z=9");
+        url.replaceState({ id: 123 }, "TestTitle");
+
+        expect(mockReplaceState).toHaveBeenCalledWith({ id: 123 }, "TestTitle", "/state?z=9");
+
+        vi.stubGlobal("history", originalHistory);
     });
 });
