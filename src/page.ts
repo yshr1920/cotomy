@@ -45,6 +45,14 @@ export class CotomyUrl {
     public redirect() {
         window.location.href = this.url;
     }
+
+    public replace(): void {
+        window.location.replace(this.url);
+    }
+
+    public replaceState(state: any = null, title: string = ""): void {
+        window.history.replaceState(state, title, this.url);
+    }
 }
 
 
