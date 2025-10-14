@@ -62,7 +62,7 @@ class TestFillForm extends CotomyEntityFillApiForm {
         return this._loadUrl ?? super.loadActionUrl();
     }
 
-    public override canLoad(): boolean {
+    protected override canLoad(): boolean {
         return this._loadable;
     }
 

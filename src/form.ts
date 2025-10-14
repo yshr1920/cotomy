@@ -396,7 +396,7 @@ export class CotomyEntityFillApiForm extends CotomyEntityApiForm {
         return new CotomyViewRenderer(this, this.bindNameGenerator());
     }
 
-    public canLoad(): boolean {
+    protected canLoad(): boolean {
         return this.hasEntityKey;
     }
 
