@@ -234,10 +234,27 @@ export class CotomyApiForm extends CotomyForm {
 
 export class CotomyEntityApiForm extends CotomyApiForm {
 
+    protected get entityKey(): string | undefined {
+        return this.attribute("data-cotomy-entity-key") ?? undefined;
+    }
+    
+    protected get requiresEntityKey(): boolean {
+        return this.attribute("data-cotomy-identify") !== "false";
+    }
+
+    protected get hasEntityKey(): boolean {
+        return !!this.entityKey;
+    }
+
     public actionUrl(): string {
-        const base = this.attribute("action")!;
-        const keys = this.externalKey ? [ this.externalKey ] : this.pathKeyInputs.map(e => encodeURIComponent(e.value));
-        return `${base}/${keys.join("/")}`;
+        const action = this.attribute("action")!;
+        const normalized = action.replace(/\/+$/, "");
+
+        if (!this.entityKey) {
+            return action.endsWith("/") ? action : `${normalized}/`;
+        }
+
+        return `${normalized}/${encodeURIComponent(this.entityKey)}`;
     }
 
     protected method(): string {
@@ -245,24 +262,17 @@ export class CotomyEntityApiForm extends CotomyApiForm {
             return this.attribute("method")!;
         }
 
-        if (this.externalKey) return "put";
-        if (this.pathKeyInputs.length > 0 && this.pathKeyInputs.every(e => e.readonly)) return "put";
-        if (this.keyInputs.length > 0 && this.keyInputs.every(e => e.readonly)) return "put";
-        return "post";
+        return this.hasEntityKey ? "put" : "post";
     }
 
 
     //#region データ識別
 
-    protected get externalKey(): string | undefined {
-        return this.attribute("data-cotomy-key") || undefined;
-    }
-
-    protected setExternalKey(response: CotomyApiResponse) {
-        if (this.requiresExternalKey && response.status === StatusCodes.CREATED) {
-            if (this.hasExternalKey) {
+    protected setEntityKey(response: CotomyApiResponse) {
+        if (this.requiresEntityKey && response.status === StatusCodes.CREATED) {
+            if (this.hasEntityKey) {
                 if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.FormLoad)) {
-                    console.warn("External key already exists, but server responded with 201 Created. Possible duplicate POST.");
+                    console.warn("Entity key already exists, but server responded with 201 Created. Possible duplicate POST.");
                 }
                 return;
             }
@@ -290,57 +300,21 @@ export class CotomyEntityApiForm extends CotomyApiForm {
 
             const addedParts = locationParts.slice(actionParts.length).filter(Boolean);
             if (addedParts.length === 1 && addedParts[0]) {
-                this.attribute("data-cotomy-key", addedParts[0]);
+                this.attribute("data-cotomy-entity-key", addedParts[0]);
             } else {
-                const msg = `Location does not contain a single external key segment.
+                const msg = `Location does not contain a single entity key segment.
                 action="${baseAction}", location="${locPath}", added=["${addedParts.join('","')}"]`;
                 throw new Error(msg);
             }
         }
-    }
-    
-    protected get requiresExternalKey(): boolean {
-        return this.attribute("data-cotomy-identify") !== "false" && this.keyInputs.length == 0 && this.pathKeyInputs.length == 0;
-    }
-
-    protected get hasExternalKey(): boolean {
-        return !!this.externalKey;
-    } 
-
-    protected get pathKeyInputs(): CotomyElement[] {
-        return this.find("[data-cotomy-keyindex]").sort((a, b) => {
-            const aIndex = parseInt(a.attribute("data-cotomy-keyindex") ?? "0");
-            const bIndex = parseInt(b.attribute("data-cotomy-keyindex") ?? "0");
-            return aIndex - bIndex;
-        });
-    }
-
-    protected get keyInputs(): CotomyElement[] {
-        return this.contains("[data-cotomy-key]") ? this.find("[data-cotomy-key]").sort((a, b) => {
-            const aIndex = parseInt(a.attribute("data-cotomy-key") ?? "0");
-            const bIndex = parseInt(b.attribute("data-cotomy-key") ?? "0");
-            return aIndex - bIndex;
-        }) : this.find("[name][data-cotomy-key]");
-    }
-
-    protected get usePathKey(): boolean {
-        const use = this.pathKeyInputs.length > 0 || this.requiresExternalKey;
-        if (use && this.hasExternalKey && CotomyDebugSettings.isEnabled(CotomyDebugFeature.FormLoad)) {
-            console.warn("Both externalKey and pathKeyInputs are present. Using externalKey and ignoring pathKeyInputs.");
-        }
-        return use;
-    }
-
-    public get pathKeyString(): string {
-        return this.externalKey || this.pathKeyInputs.map(e => e.value).join("/");
     }
 
     protected async submitToApiAsync(formData: FormData): Promise<CotomyApiResponse> {
         const response = await super.submitToApiAsync(formData);
 
         // APIのレスポンスからidを設定
-        if (this.requiresExternalKey && response.status === StatusCodes.CREATED) {
-            this.setExternalKey(response);
+        if (this.requiresEntityKey && response.status === StatusCodes.CREATED) {
+            this.setEntityKey(response);
         }
 
         return response;
@@ -423,10 +397,7 @@ export class CotomyEntityFillApiForm extends CotomyEntityApiForm {
     }
 
     protected async loadAsync(): Promise<CotomyApiResponse> {
-        const hasPathKeys = this.pathKeyInputs.length > 0 && this.pathKeyInputs.every(e => !!e.value);
-        const hasKeyInputs = this.keyInputs.length > 0 && this.keyInputs.every(e => !!e.value);
-
-        if (!this.hasExternalKey && !hasPathKeys && !hasKeyInputs) {
+        if (!this.hasEntityKey) {
             return new CotomyApiResponse();
         }
 
@@ -481,12 +452,7 @@ export class CotomyEntityFillApiForm extends CotomyEntityApiForm {
             await this.renderer().applyAsync(response);
         }
 
-        // 識別子の要素をreadonlyにする
-        this.pathKeyInputs.forEach(e => e.readonly = true);
-        this.keyInputs.forEach(e => e.readonly = true);
-
         // textareaを自動リサイズ
         this.find("textarea").forEach(e => e.input());
     }
 }
-

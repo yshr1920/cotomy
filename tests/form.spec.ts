@@ -28,7 +28,7 @@ class TestApiForm extends CotomyApiForm {
         this._client = client;
     }
 
-    protected override apiClient(): CotomyApi {
+    public override apiClient(): CotomyApi {
         return this._client ?? super.apiClient();
     }
 
@@ -42,12 +42,12 @@ class TestEntityForm extends CotomyEntityApiForm {
         super(form);
     }
 
-    public exposeSetExternalKey(response: CotomyApiResponse) {
-        return this.setExternalKey(response);
+    public exposeSetEntityKey(response: CotomyApiResponse) {
+        return this.setEntityKey(response);
     }
 
     public setKeyAttribute(value: string) {
-        this.attribute("data-cotomy-key", value);
+        this.attribute("data-cotomy-entity-key", value);
     }
 }
 
@@ -73,14 +73,13 @@ describe("CotomyApiForm", () => {
         input.value = "2024-06-01T12:30";
         form.element.appendChild(input);
 
-        const apiMock = {
-            submitAsync: vi.fn().mockResolvedValue(new CotomyApiResponse(new Response(null, { status: 200 })))
-        } as unknown as CotomyApi;
+        const submitAsync = vi.fn().mockResolvedValue(new CotomyApiResponse(new Response(null, { status: 200 })));
+        const apiMock = { submitAsync } as unknown as CotomyApi;
         form.setClient(apiMock);
 
         await form.submitAsync();
 
-        const sentFormData = apiMock.submitAsync.mock.calls[0][0].body as FormData;
+        const sentFormData = submitAsync.mock.calls[0][0].body as FormData;
         expect(sentFormData.get("scheduledAt")).toMatch(/2024-06-01T12:30(?:[:0]{0,3})?\+\d{2}:\d{2}/);
     });
 
@@ -118,24 +117,24 @@ describe("CotomyEntityApiForm", () => {
         vi.restoreAllMocks();
     });
 
-    it("infers method as PUT when external key exists", () => {
+    it("infers method as PUT when entity key exists", () => {
         const form = new TestEntityForm();
         form.setKeyAttribute("123");
 
-        expect((form as unknown as CotomyElement).attribute("data-cotomy-key")).toBe("123");
+        expect((form as unknown as CotomyElement).attribute("data-cotomy-entity-key")).toBe("123");
         expect((form as unknown as { method(): string }).method()).toBe("put");
     });
 
-    it("extracts external key from Location header when required", async () => {
+    it("extracts entity key from Location header when required", async () => {
         const form = new TestEntityForm();
         const response = new CotomyApiResponse(new Response(null, {
             status: 201,
             headers: { Location: "https://api.example.com/users/456" }
         }));
 
-        form.exposeSetExternalKey(response);
+        form.exposeSetEntityKey(response);
 
-        expect((form as unknown as CotomyElement).attribute("data-cotomy-key")).toBe("456");
+        expect((form as unknown as CotomyElement).attribute("data-cotomy-entity-key")).toBe("456");
     });
 });
 
@@ -160,7 +159,7 @@ describe("CotomyEntityFillApiForm", () => {
             <input type="checkbox" name="user[active]" />
         `;
         const form = new CotomyEntityFillApiForm(formElement);
-        form.attribute("data-cotomy-key", "123");
+        form.attribute("data-cotomy-entity-key", "123");
         document.body.appendChild(form.element);
         form.initialize();
 
@@ -183,7 +182,7 @@ describe("CotomyEntityFillApiForm", () => {
         const formElement = document.createElement("form");
         formElement.setAttribute("action", "/users");
         const form = new CotomyEntityFillApiForm(formElement);
-        form.attribute("data-cotomy-key", "123");
+        form.attribute("data-cotomy-entity-key", "123");
         document.body.appendChild(form.element);
         form.initialize();
 

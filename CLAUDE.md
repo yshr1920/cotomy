@@ -36,7 +36,7 @@ The project uses webpack to bundle TypeScript into UMD format for both browser a
 **CotomyForm** (`src/form.ts`) - Abstract base class for form management:
 - **CotomyQueryForm** - Handles GET requests with URL parameter management
 - **CotomyApiForm** - REST API integration with FormData handling
-- **CotomyEntityApiForm** - Entity-specific operations with path key support
+- **CotomyEntityApiForm** - Entity-specific operations backed by a single surrogate key
 - **CotomyEntityFillApiForm** - Auto-populates forms from API responses
 
 **CotomyApi** (`src/api.ts`) - HTTP client with comprehensive error handling:
@@ -54,10 +54,7 @@ The project uses webpack to bundle TypeScript into UMD format for both browser a
 
 **Scoped CSS**: Elements can have isolated CSS using `[scope]` selectors that get automatically replaced with unique scope IDs.
 
-**Form Identification**: Entity forms use three identification methods:
-1. External keys via `data-cotomy-key` attribute
-2. Path keys via `data-cotomy-keyindex` inputs 
-3. Regular key inputs via `data-cotomy-key` inputs
+**Form Identification**: Entity forms rely on a surrogate identifier provided through the `data-cotomy-entity-key` attribute. When absent, the form issues a `POST`; when present, it performs a `PUT`.
 
 **Data Binding**: Two-way binding system using:
 - `ICotomyBindNameGenerator` for name generation (bracket or dot notation)

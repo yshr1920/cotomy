@@ -20,6 +20,13 @@ npm i cotomy
 Cotomy will continue to expand with more detailed usage instructions and code examples added to the README in the future.  
 For the latest updates, please check the official documentation or repository regularly.
 
+### Entity API forms
+
+`CotomyEntityApiForm` targets REST endpoints that identify records with a single surrogate key.  
+Attach `data-cotomy-entity-key="<id>"` to the form when editing an existing entity; omit the attribute (or leave it empty) to issue a `POST` to the base `action` URL.  
+On `201 Created`, the form reads the `Location` header and stores the generated key back into `data-cotomy-entity-key`, enabling subsequent `PUT` submissions.  
+Composite or natural keys are no longer supported—migrate any legacy markup that relied on `data-cotomy-keyindex` or multiple key inputs to the new surrogate-key flow.
+
 The core of Cotomy is `CotomyElement`, which is constructed as a wrapper for `Element`.  
 By passing HTML and CSS strings to the constructor, it is possible to generate Element designs with a limited scope.
 
