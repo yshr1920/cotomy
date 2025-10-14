@@ -78,7 +78,7 @@ class TestFillForm extends CotomyEntityFillApiForm {
         this._client = client;
     }
 
-    protected override apiClient(): CotomyApi {
+    public override apiClient(): CotomyApi {
         return this._client ?? super.apiClient();
     }
 
@@ -240,12 +240,12 @@ describe("CotomyEntityFillApiForm", () => {
         form.setClient(apiMock);
         form.setLoadUrl("/custom");
 
-        await form.loadAsync();
+        await form.reloadAsync();
         expect(getAsync).not.toHaveBeenCalled();
 
         form.setLoadable(true);
 
-        await form.loadAsync();
+        await form.reloadAsync();
         expect(getAsync).toHaveBeenCalledTimes(1);
         expect(getAsync).toHaveBeenCalledWith("/custom");
     });
