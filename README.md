@@ -26,6 +26,7 @@ For the latest updates, please check the official documentation or repository re
 Attach `data-cotomy-entity-key="<id>"` to the form when editing an existing entity; omit the attribute (or leave it empty) to issue a `POST` to the base `action` URL.  
 On `201 Created`, the form reads the `Location` header and stores the generated key back into `data-cotomy-entity-key`, enabling subsequent `PUT` submissions.  
 Composite or natural keys are no longer supported—migrate any legacy markup that relied on `data-cotomy-keyindex` or multiple key inputs to the new surrogate-key flow.
+When you must integrate with endpoints that still expect natural identifiers, subclass `CotomyEntityApiForm`/`CotomyEntityFillApiForm`, override `loadable()` to supply your own load condition, and adjust `loadActionUrl()` (plus any submission hooks) to build the appropriate URL fragments.
 
 The core of Cotomy is `CotomyElement`, which is constructed as a wrapper for `Element`.  
 By passing HTML and CSS strings to the constructor, it is possible to generate Element designs with a limited scope.

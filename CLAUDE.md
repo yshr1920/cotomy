@@ -54,7 +54,7 @@ The project uses webpack to bundle TypeScript into UMD format for both browser a
 
 **Scoped CSS**: Elements can have isolated CSS using `[scope]` selectors that get automatically replaced with unique scope IDs.
 
-**Form Identification**: Entity forms rely on a surrogate identifier provided through the `data-cotomy-entity-key` attribute. When absent, the form issues a `POST`; when present, it performs a `PUT`.
+**Form Identification**: Entity forms rely on a surrogate identifier provided through the `data-cotomy-entity-key` attribute. When absent, the form issues a `POST`; when present, it performs a `PUT`. If you need a legacy identification scheme, override `loadable()` and `loadActionUrl()` in a subclass to control loading and endpoint resolution.
 
 **Data Binding**: Two-way binding system using:
 - `ICotomyBindNameGenerator` for name generation (bracket or dot notation)

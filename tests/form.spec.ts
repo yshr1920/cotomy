@@ -51,6 +51,42 @@ class TestEntityForm extends CotomyEntityApiForm {
     }
 }
 
+class TestFillForm extends CotomyEntityFillApiForm {
+    public constructor() {
+        const form = document.createElement("form");
+        form.setAttribute("action", "/users");
+        super(form);
+    }
+
+    public override loadActionUrl(): string {
+        return this._loadUrl ?? super.loadActionUrl();
+    }
+
+    public override loadable(): boolean {
+        return this._loadable;
+    }
+
+    public setLoadable(loadable: boolean) {
+        this._loadable = loadable;
+    }
+
+    public setLoadUrl(url: string) {
+        this._loadUrl = url;
+    }
+
+    public setClient(client: CotomyApi) {
+        this._client = client;
+    }
+
+    protected override apiClient(): CotomyApi {
+        return this._client ?? super.apiClient();
+    }
+
+    private _loadable = false;
+    private _loadUrl: string | null = null;
+    private _client: CotomyApi | null = null;
+}
+
 describe("CotomyApiForm", () => {
     beforeEach(() => {
         (globalThis as any).HTMLElement = (globalThis as any).HTMLElement ?? window.HTMLElement;
@@ -194,5 +230,23 @@ describe("CotomyEntityFillApiForm", () => {
 
         await expect(form.reloadAsync()).rejects.toBeInstanceOf(CotomyConflictException);
         expect(handler).toHaveBeenCalledTimes(1);
+    });
+
+    it("respects custom loadable logic before calling the API", async () => {
+        const getAsync = vi.fn().mockResolvedValue(new CotomyApiResponse(new Response("{}", { status: 200 })));
+        const apiMock = { getAsync } as unknown as CotomyApi;
+
+        const form = new TestFillForm();
+        form.setClient(apiMock);
+        form.setLoadUrl("/custom");
+
+        await form.loadAsync();
+        expect(getAsync).not.toHaveBeenCalled();
+
+        form.setLoadable(true);
+
+        await form.loadAsync();
+        expect(getAsync).toHaveBeenCalledTimes(1);
+        expect(getAsync).toHaveBeenCalledWith("/custom");
     });
 });
