@@ -396,12 +396,12 @@ export class CotomyEntityFillApiForm extends CotomyEntityApiForm {
         return new CotomyViewRenderer(this, this.bindNameGenerator());
     }
 
-    public loadable(): boolean {
+    public canLoad(): boolean {
         return this.hasEntityKey;
     }
 
     protected async loadAsync(): Promise<CotomyApiResponse> {
-        if (!this.loadable()) {
+        if (!this.canLoad()) {
             return new CotomyApiResponse();
         }
 
