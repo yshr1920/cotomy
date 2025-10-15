@@ -26,7 +26,7 @@
     "build:cjs": "webpack --config webpack.config.cjs --mode=production",
     "build:browser": "webpack --config webpack.config.browser.cjs",
     "dev": "webpack --config webpack.config.cjs --mode=development",
-    "clean": "rm -rf dist",
+    "clean": "rimraf dist",
     "test": "echo \"(optional) add test runner like vitest or jest\"",
     "prepare": "npm run build",
     "release": "npm run clean && npm run build && npm version patch && npm publish",
@@ -45,6 +45,7 @@
   "devDependencies": {
     "@types/jsdom": "^27.0.0",
     "jsdom": "^27.0.0",
+    "rimraf": "^6.0.1",
     "ts-loader": "^9.5.2",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4",
