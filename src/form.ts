@@ -235,7 +235,7 @@ export class CotomyApiForm extends CotomyForm {
 export class CotomyEntityApiForm extends CotomyApiForm {
 
     protected get entityKey(): string | undefined {
-        return this.attribute("data-cotomy-entity-key") ?? undefined;
+        return this.attribute("data-cotomy-entity-key") || undefined;
     }
     
     protected get requiresEntityKey(): boolean {
