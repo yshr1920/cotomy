@@ -20,6 +20,213 @@ npm i cotomy
 Cotomy will continue to expand with more detailed usage instructions and code examples added to the README in the future.  
 For the latest updates, please check the official documentation or repository regularly.
 
+## View Reference
+
+The View layer provides thin wrappers around DOM elements and window events.
+
+- `CotomyElement` — A wrapper around `HTMLElement` with convenient utilities for scoped CSS, querying, attributes/styles, geometry, and event handling.
+- `CotomyMetaElement` — Convenience wrapper for `<meta>` tags.
+- `CotomyWindow` — A singleton that exposes window-level events and helpers.
+
+### CotomyElement
+
+- Constructor
+  - `new CotomyElement(element: HTMLElement)`
+  - `new CotomyElement(html: string)` — Creates an element from HTML (single root required)
+  - `new CotomyElement({ html, css? })` — Creates from HTML and injects scoped CSS
+  - `new CotomyElement({ tagname, text?, css? })`
+- Scoped CSS
+  - `scopeId: string` — Unique attribute injected into the element for scoping
+  - `scopedSelector: string` — Selector string like `[__cotomy_scope__...]`
+  - `[scope]` placeholder in provided CSS is replaced by the element’s scope
+  - `stylable: boolean` — False for tags like `script`, `style`, `link`, `meta`
+- Static helpers
+  - `CotomyElement.encodeHtml(text)`
+  - `CotomyElement.first(selector, type?)`
+  - `CotomyElement.find(selector, type?)`
+  - `CotomyElement.contains(selector)` / `CotomyElement.containsById(id)`
+  - `CotomyElement.byId(id, type?)`
+  - `CotomyElement.empty(type?)` — Creates a hidden placeholder element
+- Identity & matching
+  - `id: string | null | undefined`
+  - `generateId(prefix = "__cotomy_elem__"): this`
+  - `is(selector: string): boolean` — Parent-aware matching helper
+  - `empty: boolean` — True for tags that cannot have children or have no content
+- Attributes, classes, styles
+  - `attribute(name)` / `attribute(name, value | null): this`
+  - `hasAttribute(name): boolean`
+  - `addClass(name): this` / `removeClass(name): this` / `toggleClass(name, force?): this` / `hasClass(name): boolean`
+  - `style(name)` / `style(name, value | null): this`
+- Content & value
+  - `text: string` (get/set)
+  - `html: string` (get/set)
+  - `value: string` — Works for inputs; falls back to `data-cotomy-value` otherwise
+  - `readonly: boolean` (get/set) — Uses native property if available, otherwise attribute
+  - `enabled: boolean` (get/set) — Toggles `disabled` attribute
+  - `setFocus(): void`
+- Tree traversal & manipulation
+  - `parent: CotomyElement`
+  - `parents: CotomyElement[]`
+  - `children(selector = "*", type?): T[]` (direct children only)
+  - `firstChild(selector = "*", type?)`
+  - `lastChild(selector = "*", type?)`
+  - `closest(selector, type?)`
+  - `find(selector, type?)` / `first(selector = "*", type?)` / `contains(selector)`
+  - `append(child): this` / `prepend(child): this` / `appendAll(children): this`
+  - `insertBefore(sibling): this` / `insertAfter(sibling): this`
+  - `appendTo(target): this` / `prependTo(target): this`
+  - `clear(): this` — Removes all descendants and text
+  - `remove(): void`
+- Geometry & visibility
+  - `visible: boolean`
+  - `width: number` (get/set px)
+  - `height: number` (get/set px)
+  - `innerWidth: number` / `innerHeight: number`
+  - `outerWidth: number` / `outerHeight: number` — Includes margins
+  - `scrollWidth: number` / `scrollHeight: number` / `scrollTop: number`
+  - `position(): { top, left }` — Relative to viewport
+  - `absolutePosition(): { top, left }` — Viewport + page scroll offset
+  - `screenPosition(): { top, left }`
+  - `rect(): { top, left, width, height }`
+  - `innerRect()` — Subtracts padding
+- Events
+  - Generic: `on(event, handler, options?)`, `off(event, handler?, options?)`, `once(event, handler, options?)`, `trigger(event[, Event])`
+  - Delegation: `onChild(event, selector, handler, options?)`
+  - Mouse: `click`, `dblclick`, `mouseover`, `mouseout`, `mousedown`, `mouseup`, `mousemove`, `mouseenter`, `mouseleave`
+  - Keyboard: `keydown`, `keyup`, `keypress`
+  - Inputs: `change`, `input`
+  - Focus: `focus`, `blur`, `focusin`, `focusout`
+  - Viewport: `inview`, `outview` (uses `IntersectionObserver`)
+  - Layout (custom): `resize`, `scroll`, `changelayout` — requires `listenLayoutEvents()` on the element
+  - File: `filedrop(handler: (files: File[]) => void)`
+
+Example (scoped CSS and events):
+
+```ts
+import { CotomyElement } from "cotomy";
+
+const panel = new CotomyElement({
+  html: `<div class="panel"><button class="ok">OK</button></div>`,
+  css: `
+    [scope] .panel { padding: 8px; }
+    [scope] .ok { color: green; }
+  `,
+});
+
+panel.onChild("click", ".ok", () => console.log("clicked!"));
+document.body.appendChild(panel.element);
+```
+
+### CotomyMetaElement
+
+- `CotomyMetaElement.get(name): CotomyMetaElement`
+- `content: string` — Reads `content` attribute.
+
+### CotomyWindow
+
+- Singleton
+  - `CotomyWindow.instance`
+  - `initialized: boolean` — Call `initialize()` once after DOM is ready
+  - `initialize(): void`
+- DOM helpers
+  - `body: CotomyElement`
+  - `append(element: CotomyElement)`
+  - `moveNext(focused: CotomyElement, shift = false)` — Move focus to next/previous focusable
+- Window events
+  - `on(event, handler)` / `off(event, handler?)` / `trigger(event)`
+  - `load(handler)` / `ready(handler)`
+  - `resize([handler])` / `scroll([handler])` / `changeLayout([handler])` / `pageshow([handler])`
+- Window state
+  - `scrollTop`, `scrollLeft`, `width`, `height`, `documentWidth`, `documentHeight`
+  - `reload(): void` (sets internal `reloading` flag), `reloading: boolean`
+
+Quick start:
+
+```ts
+import { CotomyWindow, CotomyElement } from "cotomy";
+
+CotomyWindow.instance.initialize();
+CotomyWindow.instance.ready(() => {
+  const el = new CotomyElement("<div>Hello</div>");
+  CotomyWindow.instance.append(el);
+});
+```
+
+## Form Reference
+
+The Form layer builds on `CotomyElement` for common form flows.
+
+- `CotomyForm` — Base class with submit lifecycle hooks
+- `CotomyQueryForm` — Submits to query string (GET)
+- `CotomyApiForm` — Submits via `CotomyApi` (handles `FormData`, errors, events)
+- `CotomyEntityApiForm` — REST entity helper with surrogate key support
+- `CotomyEntityFillApiForm` — Adds automatic field filling and simple view binding
+
+### CotomyForm (base)
+
+- Construction & basics
+  - Extends `CotomyElement` and expects a `<form>` element
+  - `initialize(): this` — Wires a `submit` listener that calls `submitAsync()`
+  - `initialized: boolean` — Set after `initialize()`
+  - `submitAsync(): Promise<void>` — Abstract in base
+- Routing & reload
+  - `method(): string` — Defaults to `get` in base; specialized in subclasses
+  - `actionUrl(): string` — Defaults to `action` attribute or current path
+  - `reloadAsync(): Promise<void>` — Page reload using `CotomyWindow`
+  - `autoReload: boolean` — Backed by `data-cotomy-autoreload` (default true)
+
+### CotomyQueryForm
+
+- Always uses `GET`
+- `submitAsync()` merges current query string with form inputs and navigates via `location.href`.
+
+### CotomyApiForm
+
+- API integration
+  - `apiClient(): CotomyApi` — Override to inject a client; default creates a new one
+  - `actionUrl(): string` — Uses `action` attribute
+  - `method(): string` — Defaults to `post`
+  - `formData(): FormData` — Builds from form, converts `datetime-local` to ISO (UTC offset)
+  - `submitAsync()` — Calls `submitToApiAsync(formData)`
+  - `submitToApiAsync(formData): Promise<CotomyApiResponse>` — Uses `CotomyApi.submitAsync`
+- Events
+  - `apiFailed(handler)` — Listens to `cotomy:apifailed`
+  - `submitFailed(handler)` — Listens to `cotomy:submitfailed`
+  - Both events bubble from the form element; payload is `CotomyApiFailedEvent`
+
+### CotomyEntityApiForm
+
+- Surrogate key flow
+  - `data-cotomy-entity-key` — Holds the entity identifier if present
+  - `data-cotomy-identify` — Defaults to true; when true and `201 Created` is returned, the form extracts the key from `Location` and stores it in `data-cotomy-entity-key`
+  - `actionUrl()` — Appends the key to the base `action` when present; otherwise normalizes trailing slash for collection URL
+  - `method()` — `put` when key exists; otherwise `post` (unless `method` attribute is explicitly set)
+
+### CotomyEntityFillApiForm
+
+- Data loading and field filling
+  - `initialize()` — Adds default fillers and triggers `loadAsync()` on `CotomyWindow.ready`
+  - `reloadAsync()` — Alias to `loadAsync()`
+  - `loadAsync(): Promise<CotomyApiResponse>` — Calls `CotomyApi.getAsync` when `canLoad()` is true
+  - `loadActionUrl(): string` — Defaults to `actionUrl()`; override for custom endpoints
+  - `canLoad(): boolean` — Defaults to `hasEntityKey`
+- Naming & binding
+  - `bindNameGenerator(): ICotomyBindNameGenerator` — Defaults to `CotomyBracketBindNameGenerator` (`user[name]`)
+  - `renderer(): CotomyViewRenderer` — Applies `[data-cotomy-bind]` to view elements
+  - `filler(type, (input, value))` — Register fillers; defaults provided for `datetime-local`, `checkbox`, `radio`
+  - Fills non-array, non-object fields by matching input/select/textarea `name`
+
+Example:
+
+```ts
+import { CotomyEntityFillApiForm } from "cotomy";
+
+const form = new CotomyEntityFillApiForm(document.querySelector("form")!);
+form.initialize();
+form.apiFailed(e => console.error("API failed", e.response.status));
+form.submitFailed(e => console.warn("Submit failed", e.response.status));
+```
+
 ### Entity API forms
 
 `CotomyEntityApiForm` targets REST endpoints that identify records with a single surrogate key.  
