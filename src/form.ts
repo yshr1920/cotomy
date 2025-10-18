@@ -24,7 +24,7 @@ export abstract class CotomyForm extends CotomyElement {
     }
 
     //#endregion
-    
+
 
 
     //#region フォームの再読み込み
@@ -54,7 +54,7 @@ export abstract class CotomyForm extends CotomyElement {
     public get initialized(): boolean {
         return this.hasAttribute("data-cotomy-initialized");
     }
-    
+
     public initialize(): this {
         if (!this.initialized) {
             this.on("submit", async e => {
@@ -237,7 +237,7 @@ export class CotomyEntityApiForm extends CotomyApiForm {
     protected get entityKey(): string | undefined {
         return this.attribute("data-cotomy-entity-key") || undefined;
     }
-    
+
     protected get requiresEntityKey(): boolean {
         return this.attribute("data-cotomy-identify") !== "false";
     }
@@ -288,10 +288,10 @@ export class CotomyEntityApiForm extends CotomyApiForm {
             const toPath = (u: string) => {
                 try { return new URL(u, location).pathname; } catch { return u; }
             };
-            
+
             const baseAction = normalize(toPath(this.attribute("action")!));
-            const locPath    = normalize(toPath(location));
-            const actionParts   = baseAction.split("/");
+            const locPath = normalize(toPath(location));
+            const actionParts = baseAction.split("/");
             const locationParts = locPath.split("/");
             const isPrefix = locationParts.length >= actionParts.length && actionParts.every((p, i) => p === locationParts[i]);
             if (!isPrefix) {
@@ -368,14 +368,6 @@ export class CotomyEntityFillApiForm extends CotomyEntityApiForm {
         return this;
     }
 
-
-    protected async submitToApiAsync(formData: globalThis.FormData): Promise<CotomyApiResponse> {
-        const response = await super.submitToApiAsync(formData);
-        if (response.ok) {
-            await this.fillAsync(response);
-        }
-        return response;
-    }
 
 
 
@@ -458,5 +450,13 @@ export class CotomyEntityFillApiForm extends CotomyEntityApiForm {
 
         // textareaを自動リサイズ
         this.find("textarea").forEach(e => e.input());
+    }
+
+    protected async submitToApiAsync(formData: globalThis.FormData): Promise<CotomyApiResponse> {
+        const response = await super.submitToApiAsync(formData);
+        if (response.ok) {
+            await this.fillAsync(response);
+        }
+        return response;
     }
 }
