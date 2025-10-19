@@ -176,6 +176,70 @@ describe("CotomyElement core behaviors", () => {
         expect(section.hasChildren(".child")).toBe(true);
     });
 
+    it("navigates siblings on the same level", () => {
+        const wrapper = new CotomyElement(document.createElement("div"));
+        wrapper.element.innerHTML = `
+            <ul id="list">
+                <li class="item first"></li>
+                <li class="item middle"></li>
+                <li class="item special"></li>
+                <li class="item last"></li>
+            </ul>`;
+        document.body.appendChild(wrapper.element);
+
+        const list = CotomyElement.byId("list")!;
+        const first = list.firstChild(".item")!;
+        const middle = list.children(".item")[1]!;
+        const special = list.children(".item")[2]!;
+        const last = list.children(".item")[3]!;
+
+        // previousSibling / nextSibling basic navigation
+        expect(middle.previousSibling(".item")?.element).toBe(first.element);
+        expect(middle.nextSibling(".item")?.element).toBe(special.element);
+
+        // edges
+        expect(first.previousSibling(".item")).toBeUndefined();
+        expect(last.nextSibling(".item")).toBeUndefined();
+
+        // selector filtering: only matching siblings are returned
+        expect(special.previousSibling(".special")).toBeUndefined();
+
+        // siblings collection excludes self and matches selector
+        const sibs = middle.siblings(".item");
+        expect(sibs.map(e => e.element)).toEqual([first.element, special.element, last.element]);
+
+        const specialSibs = special.siblings(".special");
+        expect(specialSibs).toHaveLength(0);
+
+        // typed constructor support
+        class MyElement extends CotomyElement {}
+        const typedPrev = special.previousSibling(".item", MyElement);
+        expect(typedPrev).toBeInstanceOf(MyElement);
+
+        const typedSibs = middle.siblings(".item", MyElement);
+        expect(typedSibs.every(e => e instanceof MyElement)).toBe(true);
+    });
+
+    it("matches selector with match() wrapper", () => {
+        const wrapper = new CotomyElement(document.createElement("div"));
+        wrapper.element.innerHTML = `
+            <section id="sec" class="box">
+                <div class="item a"></div>
+                <div class="item b"></div>
+            </section>`;
+        document.body.appendChild(wrapper.element);
+
+        const sec = CotomyElement.byId("sec")!;
+        expect(sec.match("section.box")).toBe(true);
+        expect(sec.match("section#sec")).toBe(true);
+        expect(sec.match("main")).toBe(false);
+
+        const a = sec.firstChild(".item")!;
+        expect(a.match(".item.a")).toBe(true);
+        expect(a.match(".item.b")).toBe(false);
+        expect(a.match("*")).toBe(true);
+    });
+
     it("handles id, selector matching, and layout flags", () => {
         const container = new CotomyElement(document.createElement("main"));
         const child = new CotomyElement(document.createElement("div"));

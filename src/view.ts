@@ -12,9 +12,7 @@ interface IEventTarget {
 
 type EventHandler = (e: Event) => void | Promise<void>;
 class HandlerEntry {
-    public constructor(public readonly handle: EventHandler,
-            public readonly wrapper?: EventHandler,
-            public readonly options?: AddEventListenerOptions) {
+    public constructor(public readonly handle: EventHandler, public readonly wrapper?: EventHandler, public readonly options?: AddEventListenerOptions) {
     }
 
     public get current(): EventHandler {
@@ -146,8 +144,6 @@ class EventRegistry {
         return this._instance ?? (this._instance = new EventRegistry());
     }
 
-    private constructor() {}
-
     private map(target: IEventTarget): HandlerRegistory {
         const scopeId = target.scopeId;
         let registry = this._registry.get(scopeId);
@@ -187,7 +183,7 @@ class EventRegistry {
 
 
 export class CotomyElement implements IEventTarget {
-    
+
     //#region Factory and Finder
 
     public static encodeHtml(text: string): string {
@@ -271,7 +267,7 @@ export class CotomyElement implements IEventTarget {
     }
 
     //#endregion
-    
+
 
 
     private _element: HTMLElement;
@@ -328,7 +324,7 @@ export class CotomyElement implements IEventTarget {
 
     //#endregion
 
-    
+
 
     //#region Scoped CSS
 
@@ -405,20 +401,20 @@ export class CotomyElement implements IEventTarget {
     public is(selector: string): boolean {
         const selectors = selector.split(/\s+(?![^\[]*\])|(?<=\>)\s+/);
         let element: HTMLElement | null = this.element;
-    
+
         for (let i = selectors.length - 1; i >= 0; i--) {
             let subSelector = selectors[i].trim();
             let directChild = false;
-    
+
             if (subSelector.startsWith(">")) {
                 directChild = true;
                 subSelector = subSelector.slice(1).trim();
             }
-    
+
             if (!element || !element.matches(subSelector)) {
                 return false;
             }
-    
+
             if (directChild) {
                 element = element.parentElement;
             } else {
@@ -429,8 +425,16 @@ export class CotomyElement implements IEventTarget {
                 }
             }
         }
-    
+
         return true;
+    }
+
+    public match(selector: string): boolean {
+        try {
+            return this.element.matches(selector);
+        } catch {
+            return false;
+        }
     }
 
     public get empty(): boolean {
@@ -522,17 +526,17 @@ export class CotomyElement implements IEventTarget {
         if (!this.attached) {
             return false;
         }
-        
+
         if (!this.element.offsetParent && !document.contains(this.element)) {
             return false;
         }
-    
+
         const rect = this.element.getBoundingClientRect();
         if (rect.width > 0 && rect.height > 0) {
             const style = this.getComputedStyle();
             return style.display !== "none" && style.visibility !== "hidden" && style.visibility !== "collapse";
         }
-    
+
         return false;
     }
 
@@ -842,6 +846,38 @@ export class CotomyElement implements IEventTarget {
         }
     }
 
+    public previousSibling<T extends CotomyElement = CotomyElement>(selector: string = "*", type?: new (el: HTMLElement) => T): T | undefined {
+        const element = this.element.previousElementSibling;
+        if (element !== null && element instanceof HTMLElement) {
+            const ctor = (type ?? CotomyElement) as new (el: HTMLElement) => T;
+            const ce = new ctor(element);
+            return ce.match(selector) ? ce : ce.previousSibling<T>(selector, type);
+        } else {
+            return undefined;
+        }
+    }
+
+    public nextSibling<T extends CotomyElement = CotomyElement>(selector: string = "*", type?: new (el: HTMLElement) => T): T | undefined {
+        const element = this.element.nextElementSibling;
+        if (element !== null && element instanceof HTMLElement) {
+            const ctor = (type ?? CotomyElement) as new (el: HTMLElement) => T;
+            const ce = new ctor(element);
+            return ce.match(selector) ? ce : ce.nextSibling<T>(selector, type);
+        } else {
+            return undefined;
+        }
+    }
+
+    public siblings<T extends CotomyElement = CotomyElement>(selector: string = "*", type?: new (el: HTMLElement) => T): T[] {
+        const parent = this.element.parentElement;
+        if (!parent) return [];
+        const ctor = (type ?? CotomyElement) as new (el: HTMLElement) => T;
+        return Array.from(parent.children).filter((e): e is HTMLElement => e instanceof HTMLElement
+                && e !== this.element).map(e => new ctor(e)).filter(e => e.match(selector));
+    }
+
+
+
     //#endregion
 
 
@@ -918,7 +954,7 @@ export class CotomyElement implements IEventTarget {
         EventRegistry.instance.on(event, this, entry);
         return this;
     }
-    
+
     public onChild(event: string, selector: string, handle: (e: Event) => void | Promise<void>): this;
     public onChild(event: string, selector: string, handle: (e: Event) => void | Promise<void>, options: AddEventListenerOptions): this;
     public onChild(event: string, selector: string, handle: (e: Event) => void | Promise<void>, options?: AddEventListenerOptions): this {
@@ -1328,7 +1364,7 @@ export class CotomyElement implements IEventTarget {
         }
         return this;
     }
-    
+
     public changelayout(): this;
     public changelayout(handle: (e: Event) => void | Promise<void>): this;
     public changelayout(handle?: (e: Event) => void | Promise<void>): this {
