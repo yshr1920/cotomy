@@ -876,8 +876,6 @@ export class CotomyElement implements IEventTarget {
                 && e !== this.element).map(e => new ctor(e)).filter(e => e.match(selector));
     }
 
-
-
     //#endregion
 
 
