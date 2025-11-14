@@ -413,6 +413,38 @@ export class CotomyEntityFillApiForm extends CotomyEntityApiForm {
         }
     }
 
+    protected applyValueToInputs(pname: string, value: any): void {
+        this.find(`input[name="${pname}" i]:not([data-cotomy-fill="false"]):not([multiple]),
+                textarea[name="${pname}" i]:not([data-cotomy-fill="false"]), 
+                select[name="${pname}" i]:not([data-cotomy-fill="false"]):not([multiple])`).forEach(input => {
+            if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Fill)) {
+                console.debug(`Filling input[name="${pname}"] with value:`, value);
+            }
+            const type = input.attribute("type")?.toLowerCase();
+            if (type && this._fillers[type]) {
+                this._fillers[type](input, value);
+            } else {
+                input.value = String(value || "");
+            }
+        });
+    }
+
+    protected async fillArrayAsync(bindNameGenerator: ICotomyBindNameGenerator, values: any[], propertyName: string): Promise<void> {
+        for (let index = 0; index < values.length; index++) {
+            const item = values[index];
+            const itemName = bindNameGenerator.createIndex(propertyName, index);
+            if (Array.isArray(item)) {
+                await this.fillArrayAsync(bindNameGenerator, item, itemName);
+                continue;
+            }
+            if (item && typeof item === "object") {
+                await this.fillObjectAsync(bindNameGenerator, item, itemName);
+                continue;
+            }
+            this.applyValueToInputs(itemName, item);
+        }
+    }
+
     protected async fillObjectAsync(bindNameGenerator: ICotomyBindNameGenerator, target: any, propertyName: string | undefined = undefined): Promise<void> {
         for (const [key, value] of Object.entries(target)) {
             if (key.endsWith('[]')) {
@@ -420,25 +452,16 @@ export class CotomyEntityFillApiForm extends CotomyEntityApiForm {
             }
 
             const pname = bindNameGenerator.create(key, propertyName);
-            if (Array.isArray(value)) continue;
+            if (Array.isArray(value)) {
+                await this.fillArrayAsync(bindNameGenerator, value, pname);
+                continue;
+            }
             if (value && typeof value === "object") {
                 await this.fillObjectAsync(bindNameGenerator, value, pname);
                 continue;
             }
 
-            this.find(`input[name="${pname}" i]:not([data-cotomy-fill="false"]):not([multiple]),
-                    textarea[name="${pname}" i]:not([data-cotomy-fill="false"]), 
-                    select[name="${pname}" i]:not([data-cotomy-fill="false"]):not([multiple])`).forEach(input => {
-                if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Fill)) {
-                    console.debug(`Filling input[name="${pname}"] with value:`, value);
-                }
-                const type = input.attribute("type")?.toLowerCase();
-                if (type && this._fillers[type]) {
-                    this._fillers[type](input, value);
-                } else {
-                    input.value = String(value || "");
-                }
-            });
+            this.applyValueToInputs(pname, value);
         }
     }
 

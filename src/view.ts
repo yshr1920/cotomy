@@ -390,6 +390,11 @@ export class CotomyElement implements IEventTarget {
         return this._element;
     }
 
+    public clone<T extends CotomyElement = CotomyElement>(type?: new (el: HTMLElement) => T): T {
+        const ctor = (type ?? CotomyElement) as new (el: HTMLElement) => T;
+        return new ctor(this.element.cloneNode(true) as HTMLElement);
+    }
+
     public get tagname(): string {
         return this.element.tagName.toLowerCase();
     }

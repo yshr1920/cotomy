@@ -233,17 +233,26 @@ export class CotomyApiResponse {
 
 export interface ICotomyBindNameGenerator {
     create(name: string, parent?: string): string;
+    createIndex(parent: string | undefined, index: number): string;
 }
 
 export class CotomyBracketBindNameGenerator implements ICotomyBindNameGenerator {
     create(name: string, parent?: string): string {
         return parent ? `${parent}[${name}]` : name;
     }
+
+    createIndex(parent: string | undefined, index: number): string {
+        return this.create(String(index), parent);
+    }
 }
 
 export class CotomyDotBindNameGenerator implements ICotomyBindNameGenerator {
     create(name: string, parent?: string): string {
         return parent ? `${parent}.${name}` : name;
+    }
+
+    createIndex(parent: string | undefined, index: number): string {
+        return parent ? `${parent}[${index}]` : `[${index}]`;
     }
 }
 
@@ -319,28 +328,51 @@ export class CotomyViewRenderer {
         return this;
     }
 
+    protected bindPrimitiveValue(propertyName: string, value: any): void {
+        this.element.find(`[data-cotomy-bind="${propertyName}" i]`).forEach(element => {
+            if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Bind)) {
+                console.debug(`Binding data to element [data-cotomy-bind="${propertyName}"]:`, value);
+            }
+            const type = element.attribute("data-cotomy-bindtype")?.toLowerCase();
+            if (type && this._renderers[type]) {
+                this._renderers[type](element, value);
+            } else {
+                element.text = String(value ?? "");
+            }
+        });
+    }
+
+    protected async applyArrayAsync(values: any[], propertyName: string): Promise<void> {
+        for (let index = 0; index < values.length; index++) {
+            const item = values[index];
+            const itemName = this.bindNameGenerator.createIndex(propertyName, index);
+            if (Array.isArray(item)) {
+                await this.applyArrayAsync(item, itemName);
+                continue;
+            }
+            if (item && typeof item === "object") {
+                await this.applyObjectAsync(item, itemName);
+                continue;
+            }
+            this.bindPrimitiveValue(itemName, item);
+        }
+    }
+
     protected async applyObjectAsync(target: any, propertyName: string | undefined = undefined): Promise<void> {
         if (!propertyName) {
             this.element.find("[data-cotomy-bind]").forEach(e => e.clear());
         }
         for (const [key, value] of Object.entries(await target)) {
             const pname = this.bindNameGenerator.create(key, propertyName);
-            if (Array.isArray(value)) continue;
+            if (Array.isArray(value)) {
+                await this.applyArrayAsync(value, pname);
+                continue;
+            }
             if (value && typeof value === "object") {
                 await this.applyObjectAsync(value, pname);
                 continue;
             }
-            this.element.find(`[data-cotomy-bind="${pname}" i]`).forEach(element => {
-                if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Bind)) {
-                    console.debug(`Binding data to element [data-cotomy-bind="${pname}"]:`, value);
-                }
-                const type = element.attribute("data-cotomy-bindtype")?.toLowerCase();
-                if (type && this._renderers[type]) {
-                    this._renderers[type](element, value);
-                } else {
-                    element.text = String(value ?? "");
-                }
-            });
+            this.bindPrimitiveValue(pname, value);
         }
     }
 

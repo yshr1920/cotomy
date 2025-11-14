@@ -295,6 +295,24 @@ describe("CotomyElement core behaviors", () => {
         element.remove();
         expect(document.body.contains(element.element)).toBe(false);
     });
+
+    it("clones the underlying DOM and supports typed clones", () => {
+        class CustomElement extends CotomyElement {}
+
+        const original = new CotomyElement(`<section class="wrapper"><p class="text">hello</p></section>`);
+        original.attribute("data-source", "root");
+
+        const typedClone = original.clone(CustomElement);
+        expect(typedClone).toBeInstanceOf(CustomElement);
+        expect(typedClone.element).not.toBe(original.element);
+        expect(typedClone.html).toBe(original.html);
+        expect(typedClone.attribute("data-source")).toBe("root");
+
+        const defaultClone = original.clone();
+        expect(defaultClone).toBeInstanceOf(CotomyElement);
+        original.firstChild(".text")!.text = "mutated";
+        expect(defaultClone.firstChild(".text")!.text).toBe("hello");
+    });
 });
 
 describe("CotomyWindow behaviors", () => {

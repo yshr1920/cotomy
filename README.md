@@ -75,6 +75,7 @@ The View layer provides thin wrappers around DOM elements and window events.
   - `append(child): this` / `prepend(child): this` / `appendAll(children): this`
   - `insertBefore(sibling): this` / `insertAfter(sibling): this`
   - `appendTo(target): this` / `prependTo(target): this`
+  - `clone(type?): CotomyElement` — Returns a deep-cloned element, optionally typed
   - `clear(): this` — Removes all descendants and text
   - `remove(): void`
 - Geometry & visibility
@@ -213,8 +214,15 @@ The Form layer builds on `CotomyElement` for common form flows.
 - Naming & binding
   - `bindNameGenerator(): ICotomyBindNameGenerator` — Defaults to `CotomyBracketBindNameGenerator` (`user[name]`)
   - `renderer(): CotomyViewRenderer` — Applies `[data-cotomy-bind]` to view elements
-  - `filler(type, (input, value))` — Register fillers; defaults provided for `datetime-local`, `checkbox`, `radio`
+- `filler(type, (input, value))` — Register fillers; defaults provided for `datetime-local`, `checkbox`, `radio`
   - Fills non-array, non-object fields by matching input/select/textarea `name`
+
+#### Array binding
+
+- Both `CotomyViewRenderer.applyAsync` and `CotomyEntityFillApiForm.fillAsync` resolve array elements by index via the active `ICotomyBindNameGenerator` (dot style → `items[0].name`, bracket style → `items[0][name]`).
+- Cotomy does **not** create or clone templates for you. Prepare the necessary DOM (e.g., table rows, list items, individual inputs) ahead of time, then call `fillAsync`/`applyAsync` to populate the values.
+- Primitive arrays (strings, numbers, booleans, etc.) are treated the same way—have matching `[data-cotomy-bind]`/`name` attributes ready for every index you want to show.
+- If you need dynamic row counts, generate the markup yourself before invoking Cotomy; the framework purposely avoids mutating the structure so it does not get in your way.
 
 Example:
 
