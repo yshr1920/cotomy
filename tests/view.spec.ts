@@ -72,7 +72,7 @@ describe("CotomyElement event handling", () => {
 
         const handler = vi.fn();
         parent.on("click", handler);
-        parent.onChild("click", ".child", handler);
+        parent.onSubTree("click", ".child", handler);
 
         child.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 

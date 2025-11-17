@@ -958,9 +958,9 @@ export class CotomyElement implements IEventTarget {
         return this;
     }
 
-    public onChild(event: string, selector: string, handle: (e: Event) => void | Promise<void>): this;
-    public onChild(event: string, selector: string, handle: (e: Event) => void | Promise<void>, options: AddEventListenerOptions): this;
-    public onChild(event: string, selector: string, handle: (e: Event) => void | Promise<void>, options?: AddEventListenerOptions): this {
+    public onSubTree(event: string, selector: string, handle: (e: Event) => void | Promise<void>): this;
+    public onSubTree(event: string, selector: string, handle: (e: Event) => void | Promise<void>, options: AddEventListenerOptions): this;
+    public onSubTree(event: string, selector: string, handle: (e: Event) => void | Promise<void>, options?: AddEventListenerOptions): this {
         const delegate: EventHandler = (e: Event) => {
             const target = e.target as HTMLElement | null;
             if (target && target.closest(selector)) {

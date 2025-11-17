@@ -92,7 +92,7 @@ The View layer provides thin wrappers around DOM elements and window events.
   - `innerRect()` — Subtracts padding
 - Events
   - Generic: `on(event, handler, options?)`, `off(event, handler?, options?)`, `once(event, handler, options?)`, `trigger(event[, Event])`
-  - Delegation: `onChild(event, selector, handler, options?)`
+  - Delegation: `onSubTree(event, selector, handler, options?)`
   - Mouse: `click`, `dblclick`, `mouseover`, `mouseout`, `mousedown`, `mouseup`, `mousemove`, `mouseenter`, `mouseleave`
   - Keyboard: `keydown`, `keyup`, `keypress`
   - Inputs: `change`, `input`
@@ -114,7 +114,7 @@ const panel = new CotomyElement({
   `,
 });
 
-panel.onChild("click", ".ok", () => console.log("clicked!"));
+panel.onSubTree("click", ".ok", () => console.log("clicked!"));
 document.body.appendChild(panel.element);
 ```
 
