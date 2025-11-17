@@ -1368,9 +1368,9 @@ export class CotomyElement implements IEventTarget {
         return this;
     }
 
-    public changelayout(): this;
-    public changelayout(handle: (e: Event) => void | Promise<void>): this;
-    public changelayout(handle?: (e: Event) => void | Promise<void>): this {
+    public changeLayout(): this;
+    public changeLayout(handle: (e: Event) => void | Promise<void>): this;
+    public changeLayout(handle?: (e: Event) => void | Promise<void>): this {
         this.listenLayoutEvents();
         if (handle) {
             this.element.addEventListener("cotomy:changelayout", async e => await handle(e));
