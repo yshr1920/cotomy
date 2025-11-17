@@ -158,7 +158,7 @@ describe("CotomyEntityApiForm", () => {
         form.setKeyAttribute("123");
 
         expect((form as unknown as CotomyElement).attribute("data-cotomy-entity-key")).toBe("123");
-        expect((form as unknown as { method(): string }).method()).toBe("put");
+        expect((form as unknown as { method: string }).method).toBe("put");
     });
 
     it("extracts entity key from Location header when required", async () => {
