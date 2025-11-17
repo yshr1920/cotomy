@@ -91,7 +91,7 @@ The View layer provides thin wrappers around DOM elements and window events.
   - `rect(): { top, left, width, height }`
   - `innerRect()` — Subtracts padding
 - Events
-  - Generic: `on(event, handler, options?)`, `off(event, handler?, options?)`, `once(event, handler, options?)`, `trigger(event[, Event])`
+  - Generic: `on(event, handler, options?)`, `off(event, handler?, options?)`, `once(event, handler, options?)`, `trigger(event[, Event])` — `trigger` emits bubbling events by default and can be customized by passing an `Event`
   - Delegation: `onSubTree(event, selector, handler, options?)`
   - Mouse: `click`, `dblclick`, `mouseover`, `mouseout`, `mousedown`, `mouseup`, `mousemove`, `mouseenter`, `mouseleave`
   - Keyboard: `keydown`, `keyup`, `keypress`
@@ -134,7 +134,7 @@ document.body.appendChild(panel.element);
   - `append(element: CotomyElement)`
   - `moveNext(focused: CotomyElement, shift = false)` — Move focus to next/previous focusable
 - Window events
-  - `on(event, handler)` / `off(event, handler?)` / `trigger(event)`
+  - `on(event, handler)` / `off(event, handler?)` / `trigger(event[, Event])` — CotomyWindow’s `trigger` also bubbles by default and accepts an `Event` to override the behavior
   - `load(handler)` / `ready(handler)`
   - `resize([handler])` / `scroll([handler])` / `changeLayout([handler])` / `pageshow([handler])`
 - Window state

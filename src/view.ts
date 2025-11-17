@@ -946,7 +946,7 @@ export class CotomyElement implements IEventTarget {
     public trigger(event: string): this;
     public trigger(event: string, e: Event): this;
     public trigger(event: string, e?: Event): this {
-        this.element.dispatchEvent(e ?? new Event(event));
+        this.element.dispatchEvent(e ?? new Event(event, { bubbles: true }));
         return this;
     }
 
@@ -1509,8 +1509,10 @@ export class CotomyWindow {
         }
     }
 
-    public trigger(event: string) {
-        window.dispatchEvent(new Event(event));
+    public trigger(event: string): void;
+    public trigger(event: string, e: Event): void;
+    public trigger(event: string, e?: Event): void {
+        window.dispatchEvent(e ?? new Event(event, { bubbles: true }));
     }
 
     public on(event: string, handle: (e: Event) => void | Promise<void>) {

@@ -78,6 +78,32 @@ describe("CotomyElement event handling", () => {
 
         expect(handler).toHaveBeenCalledTimes(2);
     });
+
+    it("bubbles triggered events by default", () => {
+        const parent = new CotomyElement(document.createElement("div"));
+        const child = new CotomyElement(document.createElement("button"));
+        parent.element.appendChild(child.element);
+
+        const handler = vi.fn();
+        parent.on("custom:event", handler);
+
+        child.trigger("custom:event");
+
+        expect(handler).toHaveBeenCalledTimes(1);
+    });
+
+    it("allows bubbling behavior to be overridden with a custom Event", () => {
+        const parent = new CotomyElement(document.createElement("div"));
+        const child = new CotomyElement(document.createElement("button"));
+        parent.element.appendChild(child.element);
+
+        const handler = vi.fn();
+        parent.on("custom:event", handler);
+
+        child.trigger("custom:event", new Event("custom:event", { bubbles: false }));
+
+        expect(handler).not.toHaveBeenCalled();
+    });
 });
 
 describe("CotomyElement core behaviors", () => {
@@ -362,6 +388,26 @@ describe("CotomyWindow behaviors", () => {
         CotomyWindow.instance.off("custom:event", handler);
         CotomyWindow.instance.trigger("custom:event");
         expect(handler).toHaveBeenCalledTimes(1);
+    });
+
+    it("dispatches window events with bubbling enabled by default", () => {
+        const handler = vi.fn((e: Event) => {
+            expect(e.bubbles).toBe(true);
+        });
+        CotomyWindow.instance.on("custom:event", handler);
+        CotomyWindow.instance.trigger("custom:event");
+        expect(handler).toHaveBeenCalledTimes(1);
+        CotomyWindow.instance.off("custom:event", handler);
+    });
+
+    it("accepts custom Event instances to control bubbling", () => {
+        const handler = vi.fn((e: Event) => {
+            expect(e.bubbles).toBe(false);
+        });
+        CotomyWindow.instance.on("custom:event", handler);
+        CotomyWindow.instance.trigger("custom:event", new Event("custom:event", { bubbles: false }));
+        expect(handler).toHaveBeenCalledTimes(1);
+        CotomyWindow.instance.off("custom:event", handler);
     });
 
     it("wires load and ready helpers", () => {
