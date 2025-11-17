@@ -8,18 +8,18 @@ import { CotomyElement, CotomyWindow } from "./view";
 
 
 export abstract class CotomyForm extends CotomyElement {
-    public generateId(prefix: string = "__cotomy_form__"): this {
+    public override generateId(prefix: string = "__cotomy_form__"): this {
         return super.generateId(prefix);
     }
 
 
     //#region フォームの基本情報
 
-    protected method(): string {
+    protected get method(): string {
         return this.attribute("method") ?? "get";
     }
 
-    public actionUrl(): string {
+    public get actionUrl(): string {
         return this.attribute("action") ?? location.pathname + location.search;
     }
 
@@ -82,13 +82,13 @@ export abstract class CotomyForm extends CotomyElement {
 
 
 export class CotomyQueryForm extends CotomyForm {
-    protected method(): string {
+    protected override get method(): string {
         return "get";   // QueryFormはGETメソッドを使用することが前提
     }
 
 
-    public async submitAsync(): Promise<void> {
-        const url = this.actionUrl();
+    public override async submitAsync(): Promise<void> {
+        const url = this.actionUrl;
 
         // クエリパラメータを連想配列にする
         const queryParams: { [key: string]: string } = {};
@@ -141,7 +141,7 @@ export class CotomyApiForm extends CotomyForm {
         return new CotomyApi();
     }
 
-    public actionUrl(): string {
+    public override get actionUrl(): string {
         return this.attribute("action")!;
     }
 
@@ -177,7 +177,7 @@ export class CotomyApiForm extends CotomyForm {
         }
     }
 
-    protected method(): string {
+    protected override get method(): string {
         return this.attribute("method") ?? "post";
     }
 
@@ -202,7 +202,7 @@ export class CotomyApiForm extends CotomyForm {
         return formData;
     };
 
-    public async submitAsync(): Promise<void> {
+    public override async submitAsync(): Promise<void> {
         const formData = this.formData();
         await this.submitToApiAsync(formData);
     }
@@ -212,8 +212,8 @@ export class CotomyApiForm extends CotomyForm {
 
         try {
             const response = await api.submitAsync({
-                method: this.method(),
-                action: this.actionUrl(),
+                method: this.method,
+                action: this.actionUrl,
                 body: formData,
             });
 
@@ -246,7 +246,7 @@ export class CotomyEntityApiForm extends CotomyApiForm {
         return !!this.entityKey;
     }
 
-    public actionUrl(): string {
+    public override get actionUrl(): string {
         const action = this.attribute("action")!;
         const normalized = action.replace(/\/+$/, "");
 
@@ -257,7 +257,7 @@ export class CotomyEntityApiForm extends CotomyApiForm {
         return `${normalized}/${encodeURIComponent(this.entityKey)}`;
     }
 
-    protected method(): string {
+    protected override get method(): string {
         if (this.hasAttribute("method") && this.attribute("method") !== "") {
             return this.attribute("method")!;
         }
@@ -309,7 +309,7 @@ export class CotomyEntityApiForm extends CotomyApiForm {
         }
     }
 
-    protected async submitToApiAsync(formData: FormData): Promise<CotomyApiResponse> {
+    protected override async submitToApiAsync(formData: FormData): Promise<CotomyApiResponse> {
         const response = await super.submitToApiAsync(formData);
 
         // APIのレスポンスからidを設定
@@ -333,7 +333,7 @@ export class CotomyEntityFillApiForm extends CotomyEntityApiForm {
         return this;
     }
 
-    public initialize(): this {
+    public override initialize(): this {
         if (!this.initialized) {
             super.initialize();
 
@@ -372,12 +372,12 @@ export class CotomyEntityFillApiForm extends CotomyEntityApiForm {
 
 
 
-    public async reloadAsync(): Promise<void> {
+    public override async reloadAsync(): Promise<void> {
         await this.loadAsync();
     }
 
     protected loadActionUrl(): string {
-        return this.actionUrl();
+        return this.actionUrl;
     }
 
     protected bindNameGenerator(): ICotomyBindNameGenerator {
@@ -475,7 +475,7 @@ export class CotomyEntityFillApiForm extends CotomyEntityApiForm {
         this.find("textarea").forEach(e => e.input());
     }
 
-    protected async submitToApiAsync(formData: globalThis.FormData): Promise<CotomyApiResponse> {
+    protected override async submitToApiAsync(formData: globalThis.FormData): Promise<CotomyApiResponse> {
         const response = await super.submitToApiAsync(formData);
         if (response.ok) {
             await this.fillAsync(response);

@@ -171,8 +171,8 @@ The Form layer builds on `CotomyElement` for common form flows.
   - `initialized: boolean` — Set after `initialize()`
   - `submitAsync(): Promise<void>` — Abstract in base
 - Routing & reload
-  - `method(): string` — Defaults to `get` in base; specialized in subclasses
-  - `actionUrl(): string` — Defaults to `action` attribute or current path
+  - `method: string` — Getter that defaults to `get` in base; specialized in subclasses
+  - `actionUrl: string` — Getter that defaults to the `action` attribute or current path
   - `reloadAsync(): Promise<void>` — Page reload using `CotomyWindow`
   - `autoReload: boolean` — Backed by `data-cotomy-autoreload` (default true)
 
@@ -185,8 +185,8 @@ The Form layer builds on `CotomyElement` for common form flows.
 
 - API integration
   - `apiClient(): CotomyApi` — Override to inject a client; default creates a new one
-  - `actionUrl(): string` — Uses `action` attribute
-  - `method(): string` — Defaults to `post`
+  - `actionUrl: string` — Uses `action` attribute
+  - `method: string` — Defaults to `post`
   - `formData(): FormData` — Builds from form, converts `datetime-local` to ISO (UTC offset)
   - `submitAsync()` — Calls `submitToApiAsync(formData)`
   - `submitToApiAsync(formData): Promise<CotomyApiResponse>` — Uses `CotomyApi.submitAsync`
@@ -200,8 +200,8 @@ The Form layer builds on `CotomyElement` for common form flows.
 - Surrogate key flow
   - `data-cotomy-entity-key` — Holds the entity identifier if present
   - `data-cotomy-identify` — Defaults to true; when true and `201 Created` is returned, the form extracts the key from `Location` and stores it in `data-cotomy-entity-key`
-  - `actionUrl()` — Appends the key to the base `action` when present; otherwise normalizes trailing slash for collection URL
-  - `method()` — `put` when key exists; otherwise `post` (unless `method` attribute is explicitly set)
+  - `actionUrl` — Appends the key to the base `action` when present; otherwise normalizes trailing slash for collection URL
+  - `method` — `put` when key exists; otherwise `post` (unless `method` attribute is explicitly set)
 
 ### CotomyEntityFillApiForm
 
@@ -209,7 +209,7 @@ The Form layer builds on `CotomyElement` for common form flows.
   - `initialize()` — Adds default fillers and triggers `loadAsync()` on `CotomyWindow.ready`
   - `reloadAsync()` — Alias to `loadAsync()`
   - `loadAsync(): Promise<CotomyApiResponse>` — Calls `CotomyApi.getAsync` when `canLoad()` is true
-  - `loadActionUrl(): string` — Defaults to `actionUrl()`; override for custom endpoints
+  - `loadActionUrl(): string` — Defaults to `actionUrl`; override for custom endpoints
   - `canLoad(): boolean` — Defaults to `hasEntityKey`
 - Naming & binding
   - `bindNameGenerator(): ICotomyBindNameGenerator` — Defaults to `CotomyBracketBindNameGenerator` (`user[name]`)
