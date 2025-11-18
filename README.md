@@ -43,6 +43,7 @@ The View layer provides thin wrappers around DOM elements and window events.
 - Static helpers
   - `CotomyElement.encodeHtml(text)`
   - `CotomyElement.first(selector, type?)`
+  - `CotomyElement.last(selector, type?)`
   - `CotomyElement.find(selector, type?)`
   - `CotomyElement.contains(selector)` / `CotomyElement.containsById(id)`
   - `CotomyElement.byId(id, type?)`
@@ -71,7 +72,7 @@ The View layer provides thin wrappers around DOM elements and window events.
   - `firstChild(selector = "*", type?)`
   - `lastChild(selector = "*", type?)`
   - `closest(selector, type?)`
-  - `find(selector, type?)` / `first(selector = "*", type?)` / `contains(selector)`
+  - `find(selector, type?)` / `first(selector = "*", type?)` / `last(selector = "*", type?)` / `contains(selector)`
   - `append(child): this` / `prepend(child): this` / `appendAll(children): this`
   - `insertBefore(sibling): this` / `insertAfter(sibling): this`
   - `appendTo(target): this` / `prependTo(target): this`

@@ -152,6 +152,9 @@ describe("CotomyElement core behaviors", () => {
         const first = CotomyElement.first(".item");
         expect(first?.text).toBe("a");
 
+        const last = CotomyElement.last(".item");
+        expect(last?.text).toBe("b");
+
         const items = CotomyElement.find(".item");
         expect(items).toHaveLength(2);
 
@@ -196,6 +199,8 @@ describe("CotomyElement core behaviors", () => {
         expect(children).toHaveLength(2);
         expect(section.firstChild(".child")?.element).toBe(children[0].element);
         expect(section.lastChild(".child")?.element).toBe(children[1].element);
+        expect(section.first(".child")?.element).toBe(children[0].element);
+        expect(section.last(".child")?.element).toBe(children[1].element);
         expect(children[0].parent.element).toBe(section.element);
         expect(children[0].parents[0].element).toBe(section.element);
         expect(children[0].closest("section")?.element).toBe(section.element);

@@ -243,6 +243,11 @@ export class CotomyElement implements IEventTarget {
         return new ctor(<HTMLElement>element);
     }
 
+    public static last<T extends CotomyElement = CotomyElement>(selector: string, type?: new (el: HTMLElement) => T): T | undefined {
+        const elements = this.find<T>(selector, type);
+        return elements.pop();
+    }
+
     public static find<T extends CotomyElement = CotomyElement>(selector: string, type?: new (el: HTMLElement) => T): T[] {
         const elements = document.querySelectorAll(selector);
         const ctor = (type ?? CotomyElement) as new (el: HTMLElement) => T;
@@ -895,6 +900,11 @@ export class CotomyElement implements IEventTarget {
     public first<T extends CotomyElement = CotomyElement>(selector: string = "*", type?: new (el: HTMLElement) => T): T | undefined {
         const elements = this.find(selector, type);
         return <T>elements.shift() ?? undefined;
+    }
+
+    public last<T extends CotomyElement = CotomyElement>(selector: string = "*", type?: new (el: HTMLElement) => T): T | undefined {
+        const elements = this.find(selector, type);
+        return <T>elements.pop() ?? undefined;
     }
 
     public contains(selector: string): boolean {
