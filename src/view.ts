@@ -303,15 +303,30 @@ export class CotomyElement implements IEventTarget {
                 }
             }
         }
-        this.removed(() => {
-            this._element = CotomyElement.createHTMLElement(/* html */ `<div data-cotomy-invalidated style="display: none;"></div>`);
-            EventRegistry.instance.clear(this);
-        });
+        if (!this.instanceId) {
+            this.attribute("data-cotomy-instance", `__cotomy_instance_${cuid()}`);
+            this.removed(() => {
+                this._element = CotomyElement.createHTMLElement(/* html */ `<div data-cotomy-invalidated style="display: none;"></div>`);
+                EventRegistry.instance.clear(this);
+            });
+            this.on("cotomy:transitstart", () => {
+                this.attribute("data-cotomy-moving", "");
+                this.find("[data-cotomy-instance]").forEach(e => e.attribute("data-cotomy-moving", ""));
+            });
+            this.on("cotomy:transitend", () => {
+                this.attribute("data-cotomy-moving", null);
+                this.find("[data-cotomy-instance]").forEach(e => e.attribute("data-cotomy-moving", null));
+            });
+        }
     }
 
 
 
     //#region tag identifier
+
+    private get instanceId(): string | null | undefined {
+        return this.attribute("data-cotomy-instance");
+    }
 
     private _scopeId: string | null = null;
 
@@ -911,13 +926,26 @@ export class CotomyElement implements IEventTarget {
         return this.find(selector).length > 0;
     }
 
+    private static runWithMoveEvents(target: CotomyElement, operation: () => void): void {
+        target.trigger("cotomy:transitstart");
+        try {
+            operation();
+        } finally {
+            target.trigger("cotomy:transitend");
+        }
+    }
+
     public prepend(prepend: CotomyElement): this {
-        this._element.prepend(prepend.element);
+        CotomyElement.runWithMoveEvents(prepend, () => {
+            this.element.prepend(prepend.element);
+        });
         return this;
     }
 
     public append(target: CotomyElement): this {
-        this.element.append(target.element);
+        CotomyElement.runWithMoveEvents(target, () => {
+            this.element.append(target.element);
+        });
         return this;
     }
 
@@ -927,22 +955,30 @@ export class CotomyElement implements IEventTarget {
     }
 
     public insertBefore(append: CotomyElement): this {
-        this.element.before(append.element);
+        CotomyElement.runWithMoveEvents(append, () => {
+            this.element.before(append.element);
+        });
         return this;
     }
 
     public insertAfter(append: CotomyElement): this {
-        this.element.after(append.element);
+        CotomyElement.runWithMoveEvents(append, () => {
+            this.element.after(append.element);
+        });
         return this;
     }
 
     public appendTo(target: CotomyElement): this {
-        target.element.append(this.element);
+        CotomyElement.runWithMoveEvents(this, () => {
+            target.element.append(this.element);
+        });
         return this;
     }
 
     public prependTo(target: CotomyElement): this {
-        target.element.prepend(this.element);
+        CotomyElement.runWithMoveEvents(this, () => {
+            target.element.prepend(this.element);
+        });
         return this;
     }
 
@@ -1470,7 +1506,9 @@ export class CotomyWindow {
                     mutation.removedNodes.forEach(node => {
                         if (typeof HTMLElement !== "undefined" && node instanceof HTMLElement) {
                             const element = new CotomyElement(node);
-                            element.trigger("removed");
+                            if (!element.hasAttribute("data-cotomy-moving") && !element.attached) {
+                                element.trigger("removed");
+                            }
                         }
                     });
                 });

@@ -346,6 +346,77 @@ describe("CotomyElement core behaviors", () => {
     });
 });
 
+describe("CotomyElement move lifecycle", () => {
+    beforeEach(() => {
+        document.body.innerHTML = "";
+        document.head.innerHTML = "";
+        vi.restoreAllMocks();
+    });
+
+    afterEach(() => {
+        vi.restoreAllMocks();
+    });
+
+    it("dispatches transit events during append operations", () => {
+        const container = new CotomyElement(document.createElement("div"));
+        const moving = new CotomyElement(document.createElement("span"));
+        document.body.append(container.element, moving.element);
+
+        const moveStart = vi.fn();
+        const moveEnd = vi.fn();
+        moving.on("cotomy:transitstart", moveStart);
+        moving.on("cotomy:transitend", moveEnd);
+
+        container.append(moving);
+
+        expect(moveStart).toHaveBeenCalledTimes(1);
+        expect(moveEnd).toHaveBeenCalledTimes(1);
+        expect(moveStart.mock.invocationCallOrder[0]).toBeLessThan(moveEnd.mock.invocationCallOrder[0]);
+    });
+
+    it("fires transitend even if the DOM operation throws", () => {
+        const container = new CotomyElement(document.createElement("div"));
+        const moving = new CotomyElement(document.createElement("span"));
+        const moveStart = vi.fn();
+        const moveEnd = vi.fn();
+        moving.on("cotomy:transitstart", moveStart);
+        moving.on("cotomy:transitend", moveEnd);
+
+        const appendSpy = vi.spyOn(container.element, "append").mockImplementation(() => {
+            throw new Error("append failed");
+        });
+
+        expect(() => container.append(moving)).toThrow("append failed");
+        expect(moveStart).toHaveBeenCalledTimes(1);
+        expect(moveEnd).toHaveBeenCalledTimes(1);
+
+        appendSpy.mockRestore();
+    });
+
+    it("suppresses removed events while moving but still fires after detaching", async () => {
+        CotomyWindow.instance.initialize();
+        document.body.innerHTML = "";
+
+        const source = new CotomyElement(document.createElement("div"));
+        const destination = new CotomyElement(document.createElement("div"));
+        document.body.append(source.element, destination.element);
+
+        const moving = new CotomyElement(document.createElement("span"));
+        source.append(moving);
+
+        const removedHandler = vi.fn();
+        moving.removed(removedHandler);
+
+        destination.append(moving);
+        await Promise.resolve();
+        expect(removedHandler).not.toHaveBeenCalled();
+
+        moving.remove();
+        await Promise.resolve();
+        expect(removedHandler).toHaveBeenCalledTimes(1);
+    });
+});
+
 describe("CotomyWindow behaviors", () => {
     const instance = CotomyWindow.instance as unknown as {
         _eventHandlers: { [event: string]: Array<(e: Event) => void> };

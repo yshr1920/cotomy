@@ -100,6 +100,8 @@ The View layer provides thin wrappers around DOM elements and window events.
   - Focus: `focus`, `blur`, `focusin`, `focusout`
   - Viewport: `inview`, `outview` (uses `IntersectionObserver`)
   - Layout (custom): `resize`, `scroll`, `changelayout` — requires `listenLayoutEvents()` on the element
+  - Move lifecycle: `cotomy:transitstart`, `cotomy:transitend` — emitted automatically by `append`, `prepend`, `insertBefore/After`, `appendTo`, and `prependTo`. While moving, the element (and its descendants) receive a temporary `data-cotomy-moving` attribute so removal observers know the node is still in transit.
+  - Removal: `removed` — fired when an element actually leaves the DOM (MutationObserver-backed). Because `cotomy:transitstart`/`transitend` manage the `data-cotomy-moving` flag, `removed` only runs for true detachments, making it safe for cleanup.
   - File: `filedrop(handler: (files: File[]) => void)`
 
 Example (scoped CSS and events):
