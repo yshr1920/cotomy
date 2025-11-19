@@ -79,6 +79,23 @@ describe("CotomyElement event handling", () => {
         expect(handler).toHaveBeenCalledTimes(2);
     });
 
+    it("delegates multiple events via onSubTree", () => {
+        const parent = new CotomyElement(document.createElement("div"));
+        document.body.appendChild(parent.element);
+
+        const child = document.createElement("button");
+        child.classList.add("child");
+        parent.element.appendChild(child);
+
+        const handler = vi.fn();
+        parent.onSubTree(["click", "custom:event"], ".child", handler);
+
+        child.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+        child.dispatchEvent(new Event("custom:event", { bubbles: true }));
+
+        expect(handler).toHaveBeenCalledTimes(2);
+    });
+
     it("bubbles triggered events by default", () => {
         const parent = new CotomyElement(document.createElement("div"));
         const child = new CotomyElement(document.createElement("button"));
@@ -103,6 +120,40 @@ describe("CotomyElement event handling", () => {
         child.trigger("custom:event", new Event("custom:event", { bubbles: false }));
 
         expect(handler).not.toHaveBeenCalled();
+    });
+
+    it("allows on/off to register and remove multiple events at once", () => {
+        const element = new CotomyElement(document.createElement("div"));
+        document.body.appendChild(element.element);
+
+        const handler = vi.fn();
+        element.on(["custom:first", "custom:second"], handler);
+
+        element.trigger("custom:first");
+        element.trigger("custom:second");
+
+        expect(handler).toHaveBeenCalledTimes(2);
+
+        element.off(["custom:first", "custom:second"], handler);
+        element.trigger("custom:first");
+        element.trigger("custom:second");
+
+        expect(handler).toHaveBeenCalledTimes(2);
+    });
+
+    it("supports once handlers for multiple events", () => {
+        const element = new CotomyElement(document.createElement("div"));
+        document.body.appendChild(element.element);
+
+        const handler = vi.fn();
+        element.once(["custom:first", "custom:second"], handler);
+
+        element.trigger("custom:first");
+        element.trigger("custom:first");
+        element.trigger("custom:second");
+        element.trigger("custom:second");
+
+        expect(handler).toHaveBeenCalledTimes(2);
     });
 });
 
@@ -464,6 +515,21 @@ describe("CotomyWindow behaviors", () => {
         CotomyWindow.instance.off("custom:event", handler);
         CotomyWindow.instance.trigger("custom:event");
         expect(handler).toHaveBeenCalledTimes(1);
+    });
+
+    it("allows multiple window events to be registered at once", () => {
+        const handler = vi.fn();
+        CotomyWindow.instance.on(["custom:first", "custom:second"], handler);
+
+        window.dispatchEvent(new Event("custom:first"));
+        window.dispatchEvent(new Event("custom:second"));
+
+        expect(handler).toHaveBeenCalledTimes(2);
+
+        CotomyWindow.instance.off(["custom:first", "custom:second"], handler);
+        window.dispatchEvent(new Event("custom:first"));
+
+        expect(handler).toHaveBeenCalledTimes(2);
     });
 
     it("dispatches window events with bubbling enabled by default", () => {

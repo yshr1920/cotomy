@@ -996,48 +996,60 @@ export class CotomyElement implements IEventTarget {
         return this;
     }
 
-    public on(event: string, handle: (e: Event) => void | Promise<void>): this;
-    public on(event: string, handle: (e: Event) => void | Promise<void>, options: AddEventListenerOptions): this;
-    public on(event: string, handle: (e: Event) => void | Promise<void>, options?: AddEventListenerOptions): this {
-        const entry = new HandlerEntry(handle, undefined, options);
-        EventRegistry.instance.on(event, this, entry);
+    public on(event: string | string[], handle: (e: Event) => void | Promise<void>): this;
+    public on(event: string | string[], handle: (e: Event) => void | Promise<void>, options: AddEventListenerOptions): this;
+    public on(event: string | string[], handle: (e: Event) => void | Promise<void>, options?: AddEventListenerOptions): this {
+        const events = Array.isArray(event) ? event : [event];
+        events.forEach(eventName => {
+            const entry = new HandlerEntry(handle, undefined, options);
+            EventRegistry.instance.on(eventName, this, entry);
+        });
         return this;
     }
 
-    public onSubTree(event: string, selector: string, handle: (e: Event) => void | Promise<void>): this;
-    public onSubTree(event: string, selector: string, handle: (e: Event) => void | Promise<void>, options: AddEventListenerOptions): this;
-    public onSubTree(event: string, selector: string, handle: (e: Event) => void | Promise<void>, options?: AddEventListenerOptions): this {
+    public onSubTree(event: string | string[], selector: string, handle: (e: Event) => void | Promise<void>): this;
+    public onSubTree(event: string | string[], selector: string, handle: (e: Event) => void | Promise<void>, options: AddEventListenerOptions): this;
+    public onSubTree(event: string | string[], selector: string, handle: (e: Event) => void | Promise<void>, options?: AddEventListenerOptions): this {
         const delegate: EventHandler = (e: Event) => {
             const target = e.target as HTMLElement | null;
             if (target && target.closest(selector)) {
                 return handle(e);
             }
         };
-        const entry = new HandlerEntry(handle, delegate, options);
-        EventRegistry.instance.on(event, this, entry);
+        const events = Array.isArray(event) ? event : [event];
+        events.forEach(eventName => {
+            const entry = new HandlerEntry(handle, delegate, options);
+            EventRegistry.instance.on(eventName, this, entry);
+        });
         return this;
     }
 
-    public once(event: string, handle: (e: Event) => void | Promise<void>): this;
-    public once(event: string, handle: (e: Event) => void | Promise<void>, options: AddEventListenerOptions): this;
-    public once(event: string, handle: (e: Event) => void | Promise<void>, options?: AddEventListenerOptions): this {
+    public once(event: string | string[], handle: (e: Event) => void | Promise<void>): this;
+    public once(event: string | string[], handle: (e: Event) => void | Promise<void>, options: AddEventListenerOptions): this;
+    public once(event: string | string[], handle: (e: Event) => void | Promise<void>, options?: AddEventListenerOptions): this {
         const mergedOptions: AddEventListenerOptions = { ...(options ?? {}), once: true };
-        const entry = new HandlerEntry(handle, undefined, mergedOptions);
         this.off(event, handle, mergedOptions);
-        EventRegistry.instance.on(event, this, entry);
+        const events = Array.isArray(event) ? event : [event];
+        events.forEach(eventName => {
+            const entry = new HandlerEntry(handle, undefined, mergedOptions);
+            EventRegistry.instance.on(eventName, this, entry);
+        });
         return this;
     }
 
-    public off(event: string): this;
-    public off(event: string, handle: (e: Event) => void | Promise<void>): this;
-    public off(event: string, handle: (e: Event) => void | Promise<void>, options: AddEventListenerOptions): this;
-    public off(event: string, handle?: (e: Event) => void | Promise<void>, options?: AddEventListenerOptions): this {
-        if (handle) {
-            const entry = new HandlerEntry(handle, undefined, options);
-            EventRegistry.instance.off(event, this, entry);
-        } else {
-            EventRegistry.instance.off(event, this);
-        }
+    public off(event: string | string[]): this;
+    public off(event: string | string[], handle: (e: Event) => void | Promise<void>): this;
+    public off(event: string | string[], handle: (e: Event) => void | Promise<void>, options: AddEventListenerOptions): this;
+    public off(event: string | string[], handle?: (e: Event) => void | Promise<void>, options?: AddEventListenerOptions): this {
+        const events = Array.isArray(event) ? event : [event];
+        events.forEach(eventName => {
+            if (handle) {
+                const entry = new HandlerEntry(handle, undefined, options);
+                EventRegistry.instance.off(eventName, this, entry);
+            } else {
+                EventRegistry.instance.off(eventName, this);
+            }
+        });
         return this;
     }
 
@@ -1563,22 +1575,33 @@ export class CotomyWindow {
         window.dispatchEvent(e ?? new Event(event, { bubbles: true }));
     }
 
-    public on(event: string, handle: (e: Event) => void | Promise<void>) {
-        if (!this._eventHandlers[event]) this._eventHandlers[event] = [];
-        this._eventHandlers[event].push(handle);
-        window.addEventListener(event, handle);
+    public on(event: string | string[], handle: (e: Event) => void | Promise<void>) {
+        const events = Array.isArray(event) ? event : [event];
+        events.forEach(eventName => {
+            if (!this._eventHandlers[eventName]) this._eventHandlers[eventName] = [];
+            this._eventHandlers[eventName].push(handle);
+            window.addEventListener(eventName, handle);
+        });
     }
 
-    public off(event: string, handle?: (e: Event) => void | Promise<void>) {
-        if (handle) {
-            window.removeEventListener(event, handle);
-            this._eventHandlers[event] = this._eventHandlers[event]?.filter(h => h !== handle) ?? [];
-        } else {
-            for (const h of this._eventHandlers[event] ?? []) {
-                window.removeEventListener(event, h);
+    public off(event: string | string[], handle?: (e: Event) => void | Promise<void>) {
+        const events = Array.isArray(event) ? event : [event];
+        events.forEach(eventName => {
+            if (handle) {
+                window.removeEventListener(eventName, handle);
+                const handlers = this._eventHandlers[eventName]?.filter(h => h !== handle) ?? [];
+                if (handlers.length > 0) {
+                    this._eventHandlers[eventName] = handlers;
+                } else {
+                    delete this._eventHandlers[eventName];
+                }
+            } else {
+                for (const h of this._eventHandlers[eventName] ?? []) {
+                    window.removeEventListener(eventName, h);
+                }
+                delete this._eventHandlers[eventName];
             }
-            delete this._eventHandlers[event];
-        }
+        });
     }
 
     public load(handle: (e: Event) => void | Promise<void>) {

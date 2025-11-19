@@ -92,8 +92,8 @@ The View layer provides thin wrappers around DOM elements and window events.
   - `rect(): { top, left, width, height }`
   - `innerRect()` — Subtracts padding
 - Events
-  - Generic: `on(event, handler, options?)`, `off(event, handler?, options?)`, `once(event, handler, options?)`, `trigger(event[, Event])` — `trigger` emits bubbling events by default and can be customized by passing an `Event`
-  - Delegation: `onSubTree(event, selector, handler, options?)`
+  - Generic: `on(eventOrEvents, handler, options?)`, `off(eventOrEvents, handler?, options?)`, `once(eventOrEvents, handler, options?)`, `trigger(event[, Event])` — `eventOrEvents` accepts either a single event name or an array for batch registration/removal. `trigger` emits bubbling events by default and can be customized by passing an `Event`.
+  - Delegation: `onSubTree(eventOrEvents, selector, handler, options?)` — `eventOrEvents` can also be an array for listening to multiple delegated events at once.
   - Mouse: `click`, `dblclick`, `mouseover`, `mouseout`, `mousedown`, `mouseup`, `mousemove`, `mouseenter`, `mouseleave`
   - Keyboard: `keydown`, `keyup`, `keypress`
   - Inputs: `change`, `input`
@@ -137,7 +137,7 @@ document.body.appendChild(panel.element);
   - `append(element: CotomyElement)`
   - `moveNext(focused: CotomyElement, shift = false)` — Move focus to next/previous focusable
 - Window events
-  - `on(event, handler)` / `off(event, handler?)` / `trigger(event[, Event])` — CotomyWindow’s `trigger` also bubbles by default and accepts an `Event` to override the behavior
+  - `on(eventOrEvents, handler)` / `off(eventOrEvents, handler?)` / `trigger(event[, Event])` — `eventOrEvents` accepts a single event name or an array. CotomyWindow’s `trigger` also bubbles by default and accepts an `Event` to override the behavior.
   - `load(handler)` / `ready(handler)`
   - `resize([handler])` / `scroll([handler])` / `changeLayout([handler])` / `pageshow([handler])`
 - Window state
