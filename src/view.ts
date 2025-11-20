@@ -183,7 +183,6 @@ class EventRegistry {
 
 
 export class CotomyElement implements IEventTarget {
-
     //#region Factory and Finder
 
     public static encodeHtml(text: string): string {
@@ -304,7 +303,7 @@ export class CotomyElement implements IEventTarget {
             }
         }
         if (!this.instanceId) {
-            this.attribute("data-cotomy-instance", `__cotomy_instance_${cuid()}`);
+            this.attribute("data-cotomy-instance", cuid());
             this.removed(() => {
                 this._element = CotomyElement.createHTMLElement(/* html */ `<div data-cotomy-invalidated style="display: none;"></div>`);
                 EventRegistry.instance.clear(this);
@@ -328,18 +327,11 @@ export class CotomyElement implements IEventTarget {
         return this.attribute("data-cotomy-instance");
     }
 
-    private _scopeId: string | null = null;
-
     public get scopeId(): string {
-        if (!this._scopeId) {
-            this._scopeId = `__cotomy_scope__${cuid()}`;
-            this.attribute(this._scopeId, "");
+        if (!this.hasAttribute("data-cotomy-scopeid")) {
+            this.attribute("data-cotomy-scopeid", cuid());
         }
-        return this._scopeId;
-    }
-
-    public get scopedSelector(): string {
-        return `[${this.scopeId}]`;
+        return this.attribute("data-cotomy-scopeid")!;
     }
 
     //#endregion
@@ -361,7 +353,7 @@ export class CotomyElement implements IEventTarget {
             const cssid = this.scopedCssElementId;
             CotomyElement.find(`#${cssid}`).forEach(e => e.remove());
             const element = document.createElement("style");
-            const writeCss = css.replace(/\[scope\]/g, `[${this.scopeId}]`);
+            const writeCss = css.replace(/\[scope\]/g, `[data-cotomy-scopeid="${this.scopeId}"]`);
             const node = document.createTextNode(writeCss);
             element.appendChild(node);
             element.id = cssid;
@@ -412,7 +404,10 @@ export class CotomyElement implements IEventTarget {
 
     public clone<T extends CotomyElement = CotomyElement>(type?: new (el: HTMLElement) => T): T {
         const ctor = (type ?? CotomyElement) as new (el: HTMLElement) => T;
-        return new ctor(this.element.cloneNode(true) as HTMLElement);
+        const cloned = new ctor(this.element.cloneNode(true) as HTMLElement);
+        cloned.attribute("data-cotomy-scopeid", null);
+        cloned.find("[data-cotomy-scopeid]").forEach(e => e.attribute("data-cotomy-scopeid", null));
+        return cloned;
     }
 
     public get tagname(): string {

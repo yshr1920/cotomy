@@ -183,15 +183,26 @@ describe("CotomyElement core behaviors", () => {
         const scope = styled.scopeId;
         const styleElement = document.head.querySelector(`#css-${scope}`) as HTMLStyleElement | null;
         expect(styleElement).not.toBeNull();
-        expect(styleElement?.textContent).toContain(`[${scope}] .styled { color: red; }`);
+        expect(styleElement?.textContent).toContain(`[data-cotomy-scopeid="${scope}"] .styled { color: red; }`);
     });
 
-    it("exposes scope data and scoped selector", () => {
+    it("exposes scope data via attribute", () => {
         const element = new CotomyElement(document.createElement("div"));
         const scope = element.scopeId;
-        expect(scope).toMatch(/__cotomy_scope__/);
-        expect(element.scopedSelector).toBe(`[${scope}]`);
-        expect(element.element.hasAttribute(scope)).toBe(true);
+        expect(scope).toMatch(/^c[a-z0-9]+$/);
+        expect(element.attribute("data-cotomy-scopeid")).toBe(scope);
+    });
+
+    it("assigns fresh scope ids when cloning, including descendants", () => {
+        const original = new CotomyElement({ html: `<section class="root"><span class="child"></span></section>` });
+        const originalChild = original.first(".child");
+        const cloned = original.clone();
+        const clonedChild = cloned.first(".child");
+
+        expect(cloned.scopeId).not.toBe(original.scopeId);
+        expect(cloned.attribute("data-cotomy-scopeid")).toBe(cloned.scopeId);
+        expect(clonedChild?.scopeId).not.toBe(originalChild?.scopeId);
+        expect(clonedChild?.attribute("data-cotomy-scopeid")).toBe(clonedChild?.scopeId);
     });
 
     it("supports static element lookup helpers", () => {

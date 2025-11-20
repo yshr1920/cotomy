@@ -36,10 +36,9 @@ The View layer provides thin wrappers around DOM elements and window events.
   - `new CotomyElement({ html, css? })` — Creates from HTML and injects scoped CSS
   - `new CotomyElement({ tagname, text?, css? })`
 - Scoped CSS
-  - `scopeId: string` — Unique attribute injected into the element for scoping
-  - `scopedSelector: string` — Selector string like `[__cotomy_scope__...]`
-  - `[scope]` placeholder in provided CSS is replaced by the element’s scope
-  - `stylable: boolean` — False for tags like `script`, `style`, `link`, `meta`
+  - `scopeId: string` - Returns the value stored in the element's `data-cotomy-scopeid` attribute
+  - `[scope]` placeholder in provided CSS is replaced by `[data-cotomy-scopeid="..."]`
+  - `stylable: boolean` - False for tags like `script`, `style`, `link`, `meta`
 - Static helpers
   - `CotomyElement.encodeHtml(text)`
   - `CotomyElement.first(selector, type?)`
@@ -76,7 +75,7 @@ The View layer provides thin wrappers around DOM elements and window events.
   - `append(child): this` / `prepend(child): this` / `appendAll(children): this`
   - `insertBefore(sibling): this` / `insertAfter(sibling): this`
   - `appendTo(target): this` / `prependTo(target): this`
-  - `clone(type?): CotomyElement` — Returns a deep-cloned element, optionally typed
+  - `clone(type?): CotomyElement` - Returns a deep-cloned element, optionally typed, and reassigns new `data-cotomy-scopeid` values to the clone and all descendants so scoped CSS and event registries stay isolated
   - `clear(): this` — Removes all descendants and text
   - `remove(): void`
 - Geometry & visibility
@@ -120,6 +119,17 @@ const panel = new CotomyElement({
 panel.onSubTree("click", ".ok", () => console.log("clicked!"));
 document.body.appendChild(panel.element);
 ```
+
+## Testing
+
+The scoped CSS replacement and scope-id isolation logic are covered by `tests/view.spec.ts`. Run the focused specs below to verify the behavior:
+
+```bash
+npx vitest run tests/view.spec.ts -t "constructs from multiple sources and applies scoped css"
+npx vitest run tests/view.spec.ts -t "assigns fresh scope ids when cloning, including descendants"
+```
+
+The first command ensures `[scope]` expands to `[data-cotomy-scopeid="..."]` in injected styles, while the second confirms that cloning reassigns new `data-cotomy-scopeid` attributes to the cloned tree.
 
 ### CotomyMetaElement
 
