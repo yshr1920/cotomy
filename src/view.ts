@@ -538,8 +538,9 @@ export class CotomyElement implements IEventTarget {
 
     //#region Elementの操作
 
-    public setFocus() {
+    public setFocus(): this {
         this.element.focus();
+        return this;
     }
 
     public get visible(): boolean {
@@ -576,7 +577,7 @@ export class CotomyElement implements IEventTarget {
         return this.element.hasAttribute("data-cotomy-invalidated");
     }
 
-    public remove() {
+    public remove(): void {
         if (!this.invalidated) {
             this._element.remove();
         }
@@ -1467,7 +1468,7 @@ export class CotomyWindow {
         return this._body.attached;
     }
 
-    public initialize() {
+    public initialize(): this {
         if (!this.initialized) {
             if (!document.body) {
                 throw new Error("<body> element not found. DOM may not be ready.");
@@ -1522,6 +1523,7 @@ export class CotomyWindow {
             });
             this._mutationObserver.observe(this.body.element, { childList: true, subtree: true });
         }
+        return this;
     }
 
     public get reloading(): boolean {
@@ -1539,8 +1541,9 @@ export class CotomyWindow {
         return this._body;
     }
 
-    public append(e: CotomyElement) {
+    public append(e: CotomyElement): this {
         this._body.append(e);
+        return this;
     }
 
     public moveNext(focused: CotomyElement, shift: boolean = false) {
@@ -1564,22 +1567,24 @@ export class CotomyWindow {
         }
     }
 
-    public trigger(event: string): void;
-    public trigger(event: string, e: Event): void;
-    public trigger(event: string, e?: Event): void {
+    public trigger(event: string): this;
+    public trigger(event: string, e: Event): this;
+    public trigger(event: string, e?: Event): this {
         window.dispatchEvent(e ?? new Event(event, { bubbles: true }));
+        return this;
     }
 
-    public on(event: string | string[], handle: (e: Event) => void | Promise<void>) {
+    public on(event: string | string[], handle: (e: Event) => void | Promise<void>): this {
         const events = Array.isArray(event) ? event : [event];
         events.forEach(eventName => {
             if (!this._eventHandlers[eventName]) this._eventHandlers[eventName] = [];
             this._eventHandlers[eventName].push(handle);
             window.addEventListener(eventName, handle);
         });
+        return this;
     }
 
-    public off(event: string | string[], handle?: (e: Event) => void | Promise<void>) {
+    public off(event: string | string[], handle?: (e: Event) => void | Promise<void>): this {
         const events = Array.isArray(event) ? event : [event];
         events.forEach(eventName => {
             if (handle) {
@@ -1597,53 +1602,54 @@ export class CotomyWindow {
                 delete this._eventHandlers[eventName];
             }
         });
+        return this;
     }
 
-    public load(handle: (e: Event) => void | Promise<void>) {
-        this.on("load", handle);
+    public load(handle: (e: Event) => void | Promise<void>): this {
+        return this.on("load", handle);
     }
 
-    public ready(handle: ((e: Event) => void | Promise<void>)) {
-        this.on("cotomy:ready", handle);
+    public ready(handle: ((e: Event) => void | Promise<void>)): this {
+        return this.on("cotomy:ready", handle);
     }
 
-    public resize(): void;
-    public resize(handle: (event: Event) => void | Promise<void>): void;
-    public resize(handle?: (event: Event) => void | Promise<void>): void {
+    public resize(): this;
+    public resize(handle: (event: Event) => void | Promise<void>): this;
+    public resize(handle?: (event: Event) => void | Promise<void>): this {
         if (handle) {
-            this.on("resize", handle);
+            return this.on("resize", handle);
         } else {
-            this.trigger("resize");
+            return this.trigger("resize");
         }
     }
 
-    public scroll(): void;
-    public scroll(handle: (event: Event) => void | Promise<void>): void;
-    public scroll(handle?: (event: Event) => void | Promise<void>): void {
+    public scroll(): this;
+    public scroll(handle: (event: Event) => void | Promise<void>): this;
+    public scroll(handle?: (event: Event) => void | Promise<void>): this {
         if (handle) {
-            this.on("scroll", handle);
+            return this.on("scroll", handle);
         } else {
-            this.trigger("scroll");
+            return this.trigger("scroll");
         }
     }
 
-    public changeLayout(): void;
-    public changeLayout(handle: (event: Event) => void | Promise<void>): void;
-    public changeLayout(handle?: (event: Event) => void | Promise<void>): void {
+    public changeLayout(): this;
+    public changeLayout(handle: (event: Event) => void | Promise<void>): this;
+    public changeLayout(handle?: (event: Event) => void | Promise<void>): this {
         if (handle) {
-            this.on("cotomy:changelayout", handle);
+            return this.on("cotomy:changelayout", handle);
         } else {
-            this.trigger("cotomy:changelayout");
+            return this.trigger("cotomy:changelayout");
         }
     }
 
-    public pageshow(): void;
-    public pageshow(handle: (event: PageTransitionEvent) => void | Promise<void>): void;
-    public pageshow(handle?: (event: PageTransitionEvent) => void | Promise<void>): void {
+    public pageshow(): this;
+    public pageshow(handle: (event: PageTransitionEvent) => void | Promise<void>): this;
+    public pageshow(handle?: (event: PageTransitionEvent) => void | Promise<void>): this {
         if (handle) {
-            this.on("pageshow", handle as (e: Event) => void | Promise<void>);
+            return this.on("pageshow", handle as (e: Event) => void | Promise<void>);
         } else {
-            this.trigger("pageshow");
+            return this.trigger("pageshow");
         }
     }
 

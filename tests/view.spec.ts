@@ -385,8 +385,9 @@ describe("CotomyElement core behaviors", () => {
         expect(element.element.childElementCount).toBe(0);
 
         document.body.appendChild(element.element);
-        element.remove();
+        const removalResult = element.remove();
         expect(document.body.contains(element.element)).toBe(false);
+        expect(removalResult).toBeUndefined();
     });
 
     it("clones the underlying DOM and supports typed clones", () => {
@@ -606,6 +607,23 @@ describe("CotomyWindow behaviors", () => {
         CotomyWindow.instance.pageshow(handler);
         window.dispatchEvent(new Event("pageshow"));
         expect(handler).toHaveBeenCalledTimes(1);
+    });
+
+    it("returns itself for chainable window helpers", () => {
+        const handler = vi.fn();
+        const element = new CotomyElement(document.createElement("div"));
+
+        expect(CotomyWindow.instance.initialize()).toBe(CotomyWindow.instance);
+        expect(CotomyWindow.instance.append(element)).toBe(CotomyWindow.instance);
+        expect(CotomyWindow.instance.on("chain:event", handler)).toBe(CotomyWindow.instance);
+        expect(CotomyWindow.instance.trigger("chain:event")).toBe(CotomyWindow.instance);
+        expect(CotomyWindow.instance.off("chain:event", handler)).toBe(CotomyWindow.instance);
+        expect(CotomyWindow.instance.load(handler)).toBe(CotomyWindow.instance);
+        expect(CotomyWindow.instance.ready(handler)).toBe(CotomyWindow.instance);
+        expect(CotomyWindow.instance.resize()).toBe(CotomyWindow.instance);
+        expect(CotomyWindow.instance.scroll()).toBe(CotomyWindow.instance);
+        expect(CotomyWindow.instance.changeLayout()).toBe(CotomyWindow.instance);
+        expect(CotomyWindow.instance.pageshow()).toBe(CotomyWindow.instance);
     });
 
     it("moves focus to the next focusable element", () => {

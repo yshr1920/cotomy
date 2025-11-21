@@ -77,7 +77,7 @@ The View layer provides thin wrappers around DOM elements and window events.
   - `appendTo(target): this` / `prependTo(target): this`
   - `clone(type?): CotomyElement` - Returns a deep-cloned element, optionally typed, and reassigns new `data-cotomy-scopeid` values to the clone and all descendants so scoped CSS and event registries stay isolated
   - `clear(): this` — Removes all descendants and text
-  - `remove(): void`
+  - `remove(): void` — Explicitly non-chainable after removal
 - Geometry & visibility
   - `visible: boolean`
   - `width: number` (get/set px)
@@ -141,15 +141,15 @@ The first command ensures `[scope]` expands to `[data-cotomy-scopeid="..."]` in 
 - Singleton
   - `CotomyWindow.instance`
   - `initialized: boolean` — Call `initialize()` once after DOM is ready
-  - `initialize(): void`
+  - `initialize(): this`
 - DOM helpers
   - `body: CotomyElement`
-  - `append(element: CotomyElement)`
+  - `append(element: CotomyElement): this`
   - `moveNext(focused: CotomyElement, shift = false)` — Move focus to next/previous focusable
 - Window events
-  - `on(eventOrEvents, handler)` / `off(eventOrEvents, handler?)` / `trigger(event[, Event])` — `eventOrEvents` accepts a single event name or an array. CotomyWindow’s `trigger` also bubbles by default and accepts an `Event` to override the behavior.
-  - `load(handler)` / `ready(handler)`
-  - `resize([handler])` / `scroll([handler])` / `changeLayout([handler])` / `pageshow([handler])`
+  - `on(eventOrEvents, handler): this` / `off(eventOrEvents, handler?): this` / `trigger(event[, Event]): this` — `eventOrEvents` accepts a single event name or an array. CotomyWindow’s `trigger` also bubbles by default and accepts an `Event` to override the behavior.
+  - `load(handler): this` / `ready(handler): this`
+  - `resize([handler]): this` / `scroll([handler]): this` / `changeLayout([handler]): this` / `pageshow([handler]): this`
 - Window state
   - `scrollTop`, `scrollLeft`, `width`, `height`, `documentWidth`, `documentHeight`
   - `reload(): void` (sets internal `reloading` flag), `reloading: boolean`
