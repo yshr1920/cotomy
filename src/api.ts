@@ -277,7 +277,12 @@ export class CotomyViewRenderer {
         return this;
     }
 
-    public get initialized(): boolean {
+    protected get renderers(): { [key: string]: (element: CotomyElement, value: any) => void } {
+        this.initialize();
+        return this._renderers;
+    }
+
+    protected get initialized(): boolean {
         return this._builded;
     }
 
@@ -323,6 +328,16 @@ export class CotomyViewRenderer {
                 }
             });
 
+            this.renderer("date", (element, value) => {
+                if (value) {
+                    const date = new Date(value);
+                    if (!isNaN(date.getTime())) {
+                        const format = element.attribute("data-cotomy-format") ?? "YYYY/MM/DD";
+                        element.text = dayjs(date).format(format);
+                    }
+                }
+            });
+
             this._builded = true;
         }
         return this;
@@ -334,8 +349,8 @@ export class CotomyViewRenderer {
                 console.debug(`Binding data to element [data-cotomy-bind="${propertyName}"]:`, value);
             }
             const type = element.attribute("data-cotomy-bindtype")?.toLowerCase();
-            if (type && this._renderers[type]) {
-                this._renderers[type](element, value);
+            if (type && this.renderers[type]) {
+                this.renderers[type](element, value);
             } else {
                 element.text = String(value ?? "");
             }
@@ -377,10 +392,6 @@ export class CotomyViewRenderer {
     }
 
     public async applyAsync(respose: CotomyApiResponse): Promise<this> {
-        if (!this.initialized) {
-            this.initialize();
-        }
-
         if (!respose.available) {
             throw new Error("Response is not available.");
         }

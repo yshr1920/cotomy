@@ -1,16 +1,20 @@
 /// <reference types="vitest" />
 // @vitest-environment jsdom
 
+import dayjs from "dayjs";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
     CotomyApi,
     CotomyApiResponse,
+    CotomyBracketBindNameGenerator,
     CotomyForbiddenException,
     CotomyInvalidFormDataBodyException,
     CotomyNotFoundException,
     CotomyRequestInvalidException,
-    CotomyResponseJsonParseException
+    CotomyResponseJsonParseException,
+    CotomyViewRenderer
 } from "../src/api";
+import { CotomyElement } from "../src/view";
 
 describe("CotomyApiResponse", () => {
     afterEach(() => {
@@ -177,5 +181,45 @@ describe("CotomyApi", () => {
 
         await expect(api.postAsync("/invalid", { bad: true }))
             .rejects.toBeInstanceOf(CotomyRequestInvalidException);
+    });
+});
+
+describe("CotomyViewRenderer date bind type", () => {
+    const createRenderer = () => {
+        const root = new CotomyElement(`<div><span data-cotomy-bind="eventDate" data-cotomy-bindtype="date"></span></div>`);
+        const renderer = new CotomyViewRenderer(root, new CotomyBracketBindNameGenerator());
+        (renderer as any).initialize();
+        return { root, renderer };
+    };
+
+    it("formats dates with the default pattern", () => {
+        const { root, renderer } = createRenderer();
+        const value = "2024-02-03T10:00:00Z";
+
+        (renderer as any).bindPrimitiveValue("eventDate", value);
+
+        const target = root.first(`[data-cotomy-bind="eventDate"]`)!;
+        expect(target.text).toBe(dayjs(new Date(value)).format("YYYY/MM/DD"));
+    });
+
+    it("respects data-cotomy-format overrides", () => {
+        const { root, renderer } = createRenderer();
+        const value = "2024-03-15T15:30:00Z";
+        const target = root.first(`[data-cotomy-bind="eventDate"]`)!;
+        target.attribute("data-cotomy-format", "MMM D, YYYY");
+
+        (renderer as any).bindPrimitiveValue("eventDate", value);
+
+        expect(target.text).toBe(dayjs(new Date(value)).format("MMM D, YYYY"));
+    });
+
+    it("keeps existing text when the input date is invalid", () => {
+        const { root, renderer } = createRenderer();
+        const target = root.first(`[data-cotomy-bind="eventDate"]`)!;
+        target.text = "placeholder";
+
+        (renderer as any).bindPrimitiveValue("eventDate", "not-a-date");
+
+        expect(target.text).toBe("placeholder");
     });
 });

@@ -230,6 +230,28 @@ The Form layer builds on `CotomyElement` for common form flows.
 - `filler(type, (input, value))` — Register fillers; defaults provided for `datetime-local`, `checkbox`, `radio`
   - Fills non-array, non-object fields by matching input/select/textarea `name`
 
+#### View binding renderers
+
+`CotomyViewRenderer` includes a few built-in helpers for `[data-cotomy-bindtype]`:
+
+- `mail`, `tel`, `url` — Wrap the value in a corresponding anchor tag.
+- `number` — Uses `Intl.NumberFormat` with `data-cotomy-locale`/`data-cotomy-currency` inheritance.
+- `utc` — Treats the value as UTC (or appends `Z` when missing) and formats with `data-cotomy-format` (default `YYYY/MM/DD HH:mm`).
+- `date` — Renders local dates with `data-cotomy-format` (default `YYYY/MM/DD`) when the input is a valid `Date` value.
+
+Example:
+
+```ts
+const view = new CotomyViewRenderer(
+  new CotomyElement(document.querySelector("#profile")!),
+  new CotomyBracketBindNameGenerator()
+);
+
+await view.applyAsync(apiResponse); // apiResponse is CotomyApiResponse from CotomyApi
+// <span data-cotomy-bind="user.birthday" data-cotomy-bindtype="date" data-cotomy-format="MMM D, YYYY"></span>
+// → renders localized date text if the API payload contains user.birthday
+```
+
 #### Array binding
 
 - Both `CotomyViewRenderer.applyAsync` and `CotomyEntityFillApiForm.fillAsync` resolve array elements by index via the active `ICotomyBindNameGenerator` (dot style → `items[0].name`, bracket style → `items[0][name]`).
