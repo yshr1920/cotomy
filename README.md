@@ -215,6 +215,7 @@ The Form layer builds on `CotomyElement` for common form flows.
   - `data-cotomy-identify` — Defaults to true; when true and `201 Created` is returned, the form extracts the key from `Location` and stores it in `data-cotomy-entity-key`
   - `actionUrl` — Appends the key to the base `action` when present; otherwise normalizes trailing slash for collection URL
   - `method` — `put` when key exists; otherwise `post` (unless `method` attribute is explicitly set)
+- `entityKey: string | undefined` — Read-only accessor for the current `data-cotomy-entity-key` value
 
 ### CotomyEntityFillApiForm
 

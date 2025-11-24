@@ -13,7 +13,7 @@ import {
     CotomyEntityApiForm,
     CotomyEntityFillApiForm
 } from "../src/form";
-import { CotomyElement, CotomyWindow } from "../src/view";
+import { CotomyWindow } from "../src/view";
 
 (globalThis as any).HTMLElement = (globalThis as any).HTMLElement ?? window.HTMLElement;
 
@@ -157,7 +157,7 @@ describe("CotomyEntityApiForm", () => {
         const form = new TestEntityForm();
         form.setKeyAttribute("123");
 
-        expect((form as unknown as CotomyElement).attribute("data-cotomy-entity-key")).toBe("123");
+        expect(form.entityKey).toBe("123");
         expect((form as unknown as { method: string }).method).toBe("put");
     });
 
@@ -170,7 +170,7 @@ describe("CotomyEntityApiForm", () => {
 
         form.exposeSetEntityKey(response);
 
-        expect((form as unknown as CotomyElement).attribute("data-cotomy-entity-key")).toBe("456");
+        expect(form.entityKey).toBe("456");
     });
 });
 
