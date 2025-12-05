@@ -404,9 +404,19 @@ export class CotomyElement implements IEventTarget {
 
     public clone<T extends CotomyElement = CotomyElement>(type?: new (el: HTMLElement) => T): T {
         const ctor = (type ?? CotomyElement) as new (el: HTMLElement) => T;
-        const cloned = new ctor(this.element.cloneNode(true) as HTMLElement);
-        cloned.attribute("data-cotomy-scopeid", null);
-        cloned.find("[data-cotomy-scopeid]").forEach(e => e.attribute("data-cotomy-scopeid", null));
+        const ATTRIBUTES_TO_STRIP = ["data-cotomy-instance", "data-cotomy-scopeid", "data-cotomy-moving"];
+        const clonedElement = this.element.cloneNode(true) as HTMLElement;
+
+        if (clonedElement.hasAttribute("data-cotomy-invalidated")) {
+            throw new Error("Cannot clone an invalidated CotomyElement.");
+        }
+
+        ATTRIBUTES_TO_STRIP.forEach(attr => {
+            clonedElement.removeAttribute(attr);
+            clonedElement.querySelectorAll(`[${attr}]`).forEach(el => el.removeAttribute(attr));
+        });
+
+        const cloned = new ctor(clonedElement);
         return cloned;
     }
 

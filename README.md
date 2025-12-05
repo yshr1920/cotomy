@@ -75,7 +75,7 @@ The View layer provides thin wrappers around DOM elements and window events.
   - `append(child): this` / `prepend(child): this` / `appendAll(children): this`
   - `insertBefore(sibling): this` / `insertAfter(sibling): this`
   - `appendTo(target): this` / `prependTo(target): this`
-  - `clone(type?): CotomyElement` - Returns a deep-cloned element, optionally typed, and reassigns new `data-cotomy-scopeid` values to the clone and all descendants so scoped CSS and event registries stay isolated
+  - `clone(type?): CotomyElement` - Returns a deep-cloned element, optionally typed, and reassigns new `data-cotomy-instance`/`data-cotomy-scopeid` values (and strips `data-cotomy-moving`). Cloning an invalidated element (`data-cotomy-invalidated`) throws.
   - `clear(): this` — Removes all descendants and text
   - `remove(): void` — Explicitly non-chainable after removal
 - Geometry & visibility
@@ -127,9 +127,12 @@ The scoped CSS replacement and scope-id isolation logic are covered by `tests/vi
 ```bash
 npx vitest run tests/view.spec.ts -t "constructs from multiple sources and applies scoped css"
 npx vitest run tests/view.spec.ts -t "assigns fresh scope ids when cloning, including descendants"
+npx vitest run tests/view.spec.ts -t "regenerates instance ids and lifecycle hooks when cloning"
+npx vitest run tests/view.spec.ts -t "strips moving flags when cloning"
+npx vitest run tests/view.spec.ts -t "throws when cloning an invalidated element"
 ```
 
-The first command ensures `[scope]` expands to `[data-cotomy-scopeid="..."]` in injected styles, while the second confirms that cloning reassigns new `data-cotomy-scopeid` attributes to the cloned tree.
+The first command ensures `[scope]` expands to `[data-cotomy-scopeid="..."]` in injected styles, the second confirms that cloning reassigns new `data-cotomy-scopeid` attributes to the cloned tree, the third verifies fresh `data-cotomy-instance` values and lifecycle hooks, and the last two cover stripping transit flags and rejecting invalidated nodes during cloning.
 
 ### CotomyMetaElement
 

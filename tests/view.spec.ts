@@ -205,6 +205,26 @@ describe("CotomyElement core behaviors", () => {
         expect(clonedChild?.attribute("data-cotomy-scopeid")).toBe(clonedChild?.scopeId);
     });
 
+    it("regenerates instance ids and lifecycle hooks when cloning", () => {
+        const original = new CotomyElement({ html: `<section class="root"><span class="child"></span></section>` });
+        const originalChild = original.first(".child")!;
+        const originalInstanceId = original.attribute("data-cotomy-instance");
+        const originalChildInstanceId = originalChild.attribute("data-cotomy-instance");
+
+        const cloned = original.clone();
+        const clonedChild = cloned.first(".child")!;
+
+        expect(cloned.attribute("data-cotomy-instance")).toBeDefined();
+        expect(cloned.attribute("data-cotomy-instance")).not.toBe(originalInstanceId);
+        expect(clonedChild.attribute("data-cotomy-instance")).toBeDefined();
+        expect(clonedChild.attribute("data-cotomy-instance")).not.toBe(originalChildInstanceId);
+
+        cloned.trigger("cotomy:transitstart");
+        expect(cloned.attribute("data-cotomy-moving")).toBe("");
+        cloned.trigger("cotomy:transitend");
+        expect(cloned.attribute("data-cotomy-moving")).toBeUndefined();
+    });
+
     it("supports static element lookup helpers", () => {
         document.body.innerHTML = `<div id="root"><span class="item">a</span><span class="item">b</span></div>`;
 
@@ -406,6 +426,19 @@ describe("CotomyElement core behaviors", () => {
         expect(defaultClone).toBeInstanceOf(CotomyElement);
         original.firstChild(".text")!.text = "mutated";
         expect(defaultClone.firstChild(".text")!.text).toBe("hello");
+    });
+
+    it("strips moving flags when cloning", () => {
+        const original = new CotomyElement(`<div data-cotomy-moving=""><span class="child" data-cotomy-moving=""></span></div>`);
+        const cloned = original.clone();
+
+        expect(cloned.attribute("data-cotomy-moving")).toBeUndefined();
+        expect(cloned.first(".child")?.attribute("data-cotomy-moving")).toBeUndefined();
+    });
+
+    it("throws when cloning an invalidated element", () => {
+        const invalidated = new CotomyElement(`<div data-cotomy-invalidated></div>`);
+        expect(() => invalidated.clone()).toThrow("Cannot clone an invalidated CotomyElement.");
     });
 });
 
