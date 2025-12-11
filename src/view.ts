@@ -654,6 +654,7 @@ export class CotomyElement implements IEventTarget {
     public get scrollTop(): number {
         return this.element.scrollTop;
     }
+
     public get position(): { top: number; left: number } {
         const rect = this.element.getBoundingClientRect();
         return { top: rect.top, left: rect.left };
@@ -748,6 +749,18 @@ export class CotomyElement implements IEventTarget {
 
     public get isRightViewport(): boolean {
         return this.element.getBoundingClientRect().left > window.innerWidth;
+    }
+
+    public comesBefore(target: CotomyElement): boolean {
+        const pos = this.element.compareDocumentPosition(target.element);
+        if (pos & Node.DOCUMENT_POSITION_DISCONNECTED) return false;
+        return (pos & Node.DOCUMENT_POSITION_FOLLOWING) !== 0;
+    }
+
+    public comesAfter(target: CotomyElement): boolean {
+        const pos = this.element.compareDocumentPosition(target.element);
+        if (pos & Node.DOCUMENT_POSITION_DISCONNECTED) return false;
+        return (pos & Node.DOCUMENT_POSITION_PRECEDING) !== 0;
     }
 
     //#endregion

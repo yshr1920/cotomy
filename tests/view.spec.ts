@@ -440,6 +440,33 @@ describe("CotomyElement core behaviors", () => {
         const invalidated = new CotomyElement(`<div data-cotomy-invalidated></div>`);
         expect(() => invalidated.clone()).toThrow("Cannot clone an invalidated CotomyElement.");
     });
+
+    it("compares document order with comesBefore/comesAfter", () => {
+        const container = new CotomyElement(document.createElement("div"));
+        container.element.innerHTML = `
+            <section id="parent">
+                <div class="first"></div>
+                <div class="second"></div>
+            </section>`;
+        document.body.appendChild(container.element);
+
+        const parent = CotomyElement.byId("parent")!;
+        const first = parent.firstChild(".first")!;
+        const second = parent.firstChild(".second")!;
+
+        expect(first.comesBefore(second)).toBe(true);
+        expect(second.comesAfter(first)).toBe(true);
+
+        expect(parent.comesBefore(first)).toBe(true); // parent is before its child in document order
+        expect(first.comesAfter(parent)).toBe(true);
+
+        expect(first.comesBefore(first)).toBe(false);
+        expect(first.comesAfter(first)).toBe(false);
+
+        const detached = new CotomyElement(document.createElement("div"));
+        expect(first.comesBefore(detached)).toBe(false);
+        expect(first.comesAfter(detached)).toBe(false);
+    });
 });
 
 describe("CotomyElement move lifecycle", () => {

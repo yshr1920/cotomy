@@ -75,6 +75,7 @@ The View layer provides thin wrappers around DOM elements and window events.
   - `append(child): this` / `prepend(child): this` / `appendAll(children): this`
   - `insertBefore(sibling): this` / `insertAfter(sibling): this`
   - `appendTo(target): this` / `prependTo(target): this`
+  - `comesBefore(target): boolean` / `comesAfter(target): boolean` — Checks DOM order (returns `false` for the same element or disconnected nodes)
   - `clone(type?): CotomyElement` - Returns a deep-cloned element, optionally typed, and reassigns new `data-cotomy-instance`/`data-cotomy-scopeid` values (and strips `data-cotomy-moving`). Cloning an invalidated element (`data-cotomy-invalidated`) throws.
   - `clear(): this` — Removes all descendants and text
   - `remove(): void` — Explicitly non-chainable after removal
@@ -130,6 +131,7 @@ npx vitest run tests/view.spec.ts -t "assigns fresh scope ids when cloning, incl
 npx vitest run tests/view.spec.ts -t "regenerates instance ids and lifecycle hooks when cloning"
 npx vitest run tests/view.spec.ts -t "strips moving flags when cloning"
 npx vitest run tests/view.spec.ts -t "throws when cloning an invalidated element"
+npx vitest run tests/view.spec.ts -t "compares document order with comesBefore/comesAfter"
 ```
 
 The first command ensures `[scope]` expands to `[data-cotomy-scopeid="..."]` in injected styles, the second confirms that cloning reassigns new `data-cotomy-scopeid` attributes to the cloned tree, the third verifies fresh `data-cotomy-instance` values and lifecycle hooks, and the last two cover stripping transit flags and rejecting invalidated nodes during cloning.
