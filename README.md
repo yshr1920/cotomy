@@ -48,6 +48,7 @@ The View layer provides thin wrappers around DOM elements and window events.
   - `CotomyElement.byId(id, type?)`
   - `CotomyElement.empty(type?)` — Creates a hidden placeholder element
 - Identity & matching
+  - `instanceId: string | null | undefined` — Public getter backed by `data-cotomy-instance`
   - `id: string | null | undefined`
   - `generateId(prefix = "__cotomy_elem__"): this`
   - `is(selector: string): boolean` — Parent-aware matching helper

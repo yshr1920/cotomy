@@ -323,7 +323,7 @@ export class CotomyElement implements IEventTarget {
 
     //#region tag identifier
 
-    private get instanceId(): string | null | undefined {
+    public get instanceId(): string | null | undefined {
         return this.attribute("data-cotomy-instance");
     }
 

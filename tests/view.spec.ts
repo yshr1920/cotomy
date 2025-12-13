@@ -193,6 +193,17 @@ describe("CotomyElement core behaviors", () => {
         expect(element.attribute("data-cotomy-scopeid")).toBe(scope);
     });
 
+    it("exposes instanceId publicly and respects existing attributes", () => {
+        const existing = document.createElement("div");
+        existing.setAttribute("data-cotomy-instance", "custom-instance");
+        const wrappedExisting = new CotomyElement(existing);
+        expect(wrappedExisting.instanceId).toBe("custom-instance");
+
+        const generated = new CotomyElement(document.createElement("div"));
+        expect(generated.instanceId).toMatch(/^c[a-z0-9]+$/);
+        expect(generated.attribute("data-cotomy-instance")).toBe(generated.instanceId);
+    });
+
     it("assigns fresh scope ids when cloning, including descendants", () => {
         const original = new CotomyElement({ html: `<section class="root"><span class="child"></span></section>` });
         const originalChild = original.first(".child");
