@@ -302,7 +302,15 @@ export class CotomyElement implements IEventTarget {
                 }
             }
         }
-        if (!this.instanceId) {
+        this.setInstanceId();
+    }
+
+
+
+    //#region tag identifier
+
+    private setInstanceId() {
+        if (!this.hasAttribute("data-cotomy-instance")) {
             this.attribute("data-cotomy-instance", cuid());
             this.removed(() => {
                 this._element = CotomyElement.createHTMLElement(/* html */ `<div data-cotomy-invalidated style="display: none;"></div>`);
@@ -319,12 +327,8 @@ export class CotomyElement implements IEventTarget {
         }
     }
 
-
-
-    //#region tag identifier
-
-    public get instanceId(): string | null | undefined {
-        return this.attribute("data-cotomy-instance");
+    public get instanceId(): string {
+        return this.attribute("data-cotomy-instance")!;
     }
 
     public get scopeId(): string {

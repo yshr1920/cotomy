@@ -198,8 +198,11 @@ describe("CotomyElement core behaviors", () => {
         existing.setAttribute("data-cotomy-instance", "custom-instance");
         const wrappedExisting = new CotomyElement(existing);
         expect(wrappedExisting.instanceId).toBe("custom-instance");
+        expect(typeof wrappedExisting.instanceId).toBe("string");
 
         const generated = new CotomyElement(document.createElement("div"));
+        expect(typeof generated.instanceId).toBe("string");
+        expect(generated.instanceId.length).toBeGreaterThan(0);
         expect(generated.instanceId).toMatch(/^c[a-z0-9]+$/);
         expect(generated.attribute("data-cotomy-instance")).toBe(generated.instanceId);
     });
