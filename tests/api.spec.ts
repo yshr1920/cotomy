@@ -223,3 +223,46 @@ describe("CotomyViewRenderer date bind type", () => {
         expect(target.text).toBe("placeholder");
     });
 });
+
+describe("CotomyViewRenderer number bind type", () => {
+    const createRenderer = (html: string) => {
+        const root = new CotomyElement(html);
+        const renderer = new CotomyViewRenderer(root, new CotomyBracketBindNameGenerator());
+        (renderer as any).initialize();
+        return { root, renderer };
+    };
+
+    it("formats numbers with fixed fraction digits when data-cotomy-fraction-digits is set", () => {
+        const { root, renderer } = createRenderer(
+            `<div><span data-cotomy-bind="amount" data-cotomy-bindtype="number" data-cotomy-fraction-digits="2"></span></div>`
+        );
+
+        (renderer as any).bindPrimitiveValue("amount", 0);
+
+        const target = root.first(`[data-cotomy-bind="amount"]`)!;
+        expect(target.text).toBe("0.00");
+    });
+
+    it("formats currency with overridden fraction digits when data-cotomy-fraction-digits is set", () => {
+        const { root, renderer } = createRenderer(
+            `<div><span data-cotomy-bind="amount" data-cotomy-bindtype="number" data-cotomy-currency="JPY" data-cotomy-fraction-digits="2"></span></div>`
+        );
+
+        (renderer as any).bindPrimitiveValue("amount", 1234.5);
+
+        const target = root.first(`[data-cotomy-bind="amount"]`)!;
+        expect(target.text).toContain("1,234.50");
+    });
+
+    it("uses currency defaults when fraction digits are not provided", () => {
+        const { root, renderer } = createRenderer(
+            `<div><span data-cotomy-bind="amount" data-cotomy-bindtype="number" data-cotomy-currency="JPY"></span></div>`
+        );
+
+        (renderer as any).bindPrimitiveValue("amount", 1234.56);
+
+        const target = root.first(`[data-cotomy-bind="amount"]`)!;
+        expect(target.text).not.toContain(".56");
+        expect(target.text).not.toContain(".");
+    });
+});

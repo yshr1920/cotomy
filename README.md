@@ -243,6 +243,7 @@ The Form layer builds on `CotomyElement` for common form flows.
 
 - `mail`, `tel`, `url` — Wrap the value in a corresponding anchor tag.
 - `number` — Uses `Intl.NumberFormat` with `data-cotomy-locale`/`data-cotomy-currency` inheritance.
+  - `data-cotomy-fraction-digits="2"` — Forces fixed fraction digits (sets both `minimumFractionDigits` and `maximumFractionDigits`). Works with or without `data-cotomy-currency` (e.g. `0` → `0.00`).
 - `utc` — Treats the value as UTC (or appends `Z` when missing) and formats with `data-cotomy-format` (default `YYYY/MM/DD HH:mm`).
 - `date` — Renders local dates with `data-cotomy-format` (default `YYYY/MM/DD`) when the input is a valid `Date` value.
 

@@ -311,9 +311,18 @@ export class CotomyViewRenderer {
                     // ISO 4217 通貨コード
                     const currency = element.attribute("data-cotomy-currency")
                             || element.closest("[data-cotomy-currency]")?.attribute("data-cotomy-currency");
-                    element.text = currency
-                            ? new Intl.NumberFormat(this.locale, { style: "currency", currency: currency }).format(value)
-                            : new Intl.NumberFormat(this.locale).format(value);
+                    const fractionDigitsAttribute = element.attribute("data-cotomy-fraction-digits")
+                            || element.closest("[data-cotomy-fraction-digits]")?.attribute("data-cotomy-fraction-digits");
+                    const fractionDigits = fractionDigitsAttribute ? Number.parseInt(fractionDigitsAttribute, 10) : undefined;
+                    const hasFractionDigits = Number.isFinite(fractionDigits)
+                            && fractionDigits && fractionDigits >= 0 && fractionDigits <= 20;
+
+                    const options: Intl.NumberFormatOptions = {
+                        ...(currency ? { style: "currency", currency } : {}),
+                        ...(hasFractionDigits ? { minimumFractionDigits: fractionDigits, maximumFractionDigits: fractionDigits } : {}),
+                    };
+
+                    element.text = new Intl.NumberFormat(this.locale, options).format(value);
                 }
             });
 
