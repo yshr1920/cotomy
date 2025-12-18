@@ -1,6 +1,6 @@
 {
   "name": "cotomy",
-  "version": "0.3.14",
+  "version": "0.3.15",
   "main": "dist/cjs/index.cjs",
   "module": "dist/esm/index.js",
   "types": "dist/types/index.d.ts",
