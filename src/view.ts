@@ -182,6 +182,29 @@ class EventRegistry {
 
 
 
+export class CotomyScrollOptions {
+    public behavior: ScrollBehavior = "smooth";
+    public onlyIfNeeded: boolean = true;
+    public block: ScrollLogicalPosition = "nearest";
+    public inline: ScrollLogicalPosition = "nearest";
+
+    public constructor(init: Partial<CotomyScrollOptions> = {}) {
+        if (init.behavior !== undefined) this.behavior = init.behavior;
+        if (init.onlyIfNeeded !== undefined) this.onlyIfNeeded = init.onlyIfNeeded;
+        if (init.block !== undefined) this.block = init.block;
+        if (init.inline !== undefined) this.inline = init.inline;
+    }
+
+    public resolveBehavior(): ScrollBehavior {
+        return this.behavior;
+    }
+
+    public static from(options?: CotomyScrollOptions | Partial<CotomyScrollOptions>): CotomyScrollOptions {
+        if (options instanceof CotomyScrollOptions) return options;
+        return new CotomyScrollOptions(options ?? {});
+    }
+}
+
 export class CotomyElement implements IEventTarget {
     //#region Factory and Finder
 
@@ -755,6 +778,149 @@ export class CotomyElement implements IEventTarget {
 
     public get isRightViewport(): boolean {
         return this.element.getBoundingClientRect().left > window.innerWidth;
+    }
+
+    private static isScrollableOverflow(value: string): boolean {
+        const overflow = (value ?? "").toLowerCase();
+        return overflow === "auto" || overflow === "scroll";
+    }
+
+    private static findNearestScrollableAncestor(element: HTMLElement): HTMLElement | null {
+        let current: HTMLElement | null = element.parentElement;
+        while (current) {
+            if (current === document.body || current === document.documentElement) {
+                return null;
+            }
+
+            const style = window.getComputedStyle(current);
+            const overflowY = style.overflowY;
+            const overflowX = style.overflowX;
+
+            const canScrollY = CotomyElement.isScrollableOverflow(overflowY) && current.scrollHeight > current.clientHeight;
+            const canScrollX = CotomyElement.isScrollableOverflow(overflowX) && current.scrollWidth > current.clientWidth;
+
+            if (canScrollY || canScrollX) {
+                return current;
+            }
+            current = current.parentElement;
+        }
+        return null;
+    }
+
+    private static computeAlignedScroll(
+        viewStart: number,
+        viewSize: number,
+        elementStart: number,
+        elementEnd: number,
+        align: ScrollLogicalPosition,
+        onlyIfNeeded: boolean
+    ): number | null {
+        const viewEnd = viewStart + viewSize;
+
+        // 既に完全に表示範囲内ならスクロール不要
+        if (onlyIfNeeded && elementStart >= viewStart && elementEnd <= viewEnd) {
+            return null;
+        }
+
+        if (align === "start") {
+            return elementStart;
+        }
+        if (align === "end") {
+            return elementEnd - viewSize;
+        }
+        if (align === "center") {
+            const elementSize = elementEnd - elementStart;
+            return elementStart - (viewSize - elementSize) / 2;
+        }
+
+        // nearest
+        if (elementStart < viewStart) {
+            return elementStart;
+        }
+        if (elementEnd > viewEnd) {
+            return elementEnd - viewSize;
+        }
+        return null;
+    }
+
+    public scrollIn(options: CotomyScrollOptions | Partial<CotomyScrollOptions> = {}): this {
+        if (!this.attached) return this;
+
+        const resolved = CotomyScrollOptions.from(options);
+        const behavior = resolved.resolveBehavior();
+        const onlyIfNeeded = resolved.onlyIfNeeded;
+        const block = resolved.block;
+        const inline = resolved.inline;
+
+        const scrollable = CotomyElement.findNearestScrollableAncestor(this.element);
+        if (scrollable) {
+            const elementRect = this.element.getBoundingClientRect();
+            const containerRect = scrollable.getBoundingClientRect();
+
+            const elementTopInContainer = elementRect.top - containerRect.top + scrollable.scrollTop;
+            const elementBottomInContainer = elementRect.bottom - containerRect.top + scrollable.scrollTop;
+            const elementLeftInContainer = elementRect.left - containerRect.left + scrollable.scrollLeft;
+            const elementRightInContainer = elementRect.right - containerRect.left + scrollable.scrollLeft;
+
+            const targetTop = CotomyElement.computeAlignedScroll(
+                scrollable.scrollTop,
+                scrollable.clientHeight,
+                elementTopInContainer,
+                elementBottomInContainer,
+                block,
+                onlyIfNeeded
+            );
+            const targetLeft = CotomyElement.computeAlignedScroll(
+                scrollable.scrollLeft,
+                scrollable.clientWidth,
+                elementLeftInContainer,
+                elementRightInContainer,
+                inline,
+                onlyIfNeeded
+            );
+
+            if (!onlyIfNeeded || targetTop !== null || targetLeft !== null) {
+                const nextTop = targetTop ?? scrollable.scrollTop;
+                const nextLeft = targetLeft ?? scrollable.scrollLeft;
+                (scrollable as any).scrollTo?.({ top: nextTop, left: nextLeft, behavior });
+                if (!(scrollable as any).scrollTo) {
+                    scrollable.scrollTop = nextTop;
+                    scrollable.scrollLeft = nextLeft;
+                }
+            }
+            return this;
+        }
+
+        const rect = this.element.getBoundingClientRect();
+        const currentTop = window.scrollY || document.documentElement.scrollTop;
+        const currentLeft = window.scrollX || document.documentElement.scrollLeft;
+
+        const elementTop = currentTop + rect.top;
+        const elementBottom = currentTop + rect.bottom;
+        const elementLeft = currentLeft + rect.left;
+        const elementRight = currentLeft + rect.right;
+
+        const targetTop = CotomyElement.computeAlignedScroll(currentTop, window.innerHeight, elementTop, elementBottom, block, onlyIfNeeded);
+        const targetLeft = CotomyElement.computeAlignedScroll(currentLeft, window.innerWidth, elementLeft, elementRight, inline, onlyIfNeeded);
+
+        if (!onlyIfNeeded || targetTop !== null || targetLeft !== null) {
+            window.scrollTo({ top: targetTop ?? currentTop, left: targetLeft ?? currentLeft, behavior });
+        }
+        return this;
+    }
+
+    public scrollTo(target: string | CotomyElement | HTMLElement, options: CotomyScrollOptions | Partial<CotomyScrollOptions> = {}): this {
+        if (typeof target === "string") {
+            const element = this.first(target);
+            element?.scrollIn(options);
+            return this;
+        }
+        if (target instanceof CotomyElement) {
+            target.scrollIn(options);
+            return this;
+        }
+        new CotomyElement(target).scrollIn(options);
+        return this;
     }
 
     public comesBefore(target: CotomyElement): boolean {
@@ -1660,6 +1826,22 @@ export class CotomyWindow {
         } else {
             return this.trigger("scroll");
         }
+    }
+
+    public scrollTo(target: string | CotomyElement | HTMLElement, options: CotomyScrollOptions | Partial<CotomyScrollOptions> = {}): this {
+        if (typeof target === "string") {
+            const element = CotomyElement.first(target);
+            element?.scrollIn(options);
+            return this;
+        }
+
+        if (target instanceof CotomyElement) {
+            target.scrollIn(options);
+            return this;
+        }
+
+        new CotomyElement(target).scrollIn(options);
+        return this;
     }
 
     public changeLayout(): this;

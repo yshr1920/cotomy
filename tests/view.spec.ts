@@ -483,6 +483,157 @@ describe("CotomyElement core behaviors", () => {
     });
 });
 
+describe("Scrolling helpers", () => {
+    beforeEach(() => {
+        document.body.innerHTML = "";
+        document.head.innerHTML = "";
+    });
+
+    afterEach(() => {
+        vi.restoreAllMocks();
+    });
+
+    it("scrollIn scrolls the nearest scrollable container by default (smooth)", () => {
+        const container = document.createElement("div");
+        container.style.overflowY = "auto";
+        const target = document.createElement("div");
+        container.appendChild(target);
+        document.body.appendChild(container);
+
+        Object.defineProperty(container, "clientHeight", { configurable: true, value: 200 });
+        Object.defineProperty(container, "scrollHeight", { configurable: true, value: 1000 });
+        Object.defineProperty(container, "clientWidth", { configurable: true, value: 300 });
+        Object.defineProperty(container, "scrollWidth", { configurable: true, value: 300 });
+        container.scrollTop = 0;
+        container.scrollLeft = 0;
+
+        const scrollSpy = vi.fn();
+        (container as any).scrollTo = scrollSpy;
+
+        container.getBoundingClientRect = () =>
+            ({
+                top: 100,
+                bottom: 300,
+                left: 0,
+                right: 300,
+                width: 300,
+                height: 200,
+                x: 0,
+                y: 100,
+                toJSON: () => ({})
+            } as DOMRect);
+        target.getBoundingClientRect = () =>
+            ({
+                top: 280,
+                bottom: 330,
+                left: 0,
+                right: 100,
+                width: 100,
+                height: 50,
+                x: 0,
+                y: 280,
+                toJSON: () => ({})
+            } as DOMRect);
+
+        const wrapped = new CotomyElement(target);
+        expect(wrapped.scrollIn()).toBe(wrapped);
+
+        expect(scrollSpy).toHaveBeenCalledTimes(1);
+        expect(scrollSpy).toHaveBeenCalledWith({ top: 30, left: 0, behavior: "smooth" });
+    });
+
+    it("scrollIn scrolls window when there is no scrollable ancestor", () => {
+        const originalInnerHeight = window.innerHeight;
+        const originalScrollY = window.scrollY;
+        const originalScrollX = window.scrollX;
+
+        Object.defineProperty(window, "innerHeight", { configurable: true, value: 600 });
+        Object.defineProperty(window, "innerWidth", { configurable: true, value: 800 });
+        Object.defineProperty(window, "scrollY", { configurable: true, value: 0 });
+        Object.defineProperty(window, "scrollX", { configurable: true, value: 0 });
+
+        const scrollSpy = vi.spyOn(window, "scrollTo").mockImplementation(() => undefined);
+
+        const el = document.createElement("div");
+        document.body.appendChild(el);
+        el.getBoundingClientRect = () =>
+            ({
+                top: 1200,
+                bottom: 1300,
+                left: 0,
+                right: 100,
+                width: 100,
+                height: 100,
+                x: 0,
+                y: 1200,
+                toJSON: () => ({})
+            } as DOMRect);
+
+        new CotomyElement(el).scrollIn();
+
+        expect(scrollSpy).toHaveBeenCalledTimes(1);
+        expect(scrollSpy).toHaveBeenCalledWith({ top: 700, left: 0, behavior: "smooth" });
+
+        Object.defineProperty(window, "innerHeight", { configurable: true, value: originalInnerHeight });
+        Object.defineProperty(window, "scrollY", { configurable: true, value: originalScrollY });
+        Object.defineProperty(window, "scrollX", { configurable: true, value: originalScrollX });
+    });
+
+    it("CotomyWindow.scrollTo accepts selector and allows disabling smooth", () => {
+        const originalScrollY = window.scrollY;
+        const originalScrollX = window.scrollX;
+
+        Object.defineProperty(window, "innerHeight", { configurable: true, value: 600 });
+        Object.defineProperty(window, "innerWidth", { configurable: true, value: 800 });
+        Object.defineProperty(window, "scrollY", { configurable: true, value: 0 });
+        Object.defineProperty(window, "scrollX", { configurable: true, value: 0 });
+
+        const scrollSpy = vi.spyOn(window, "scrollTo").mockImplementation(() => undefined);
+
+        const el = document.createElement("div");
+        el.id = "target";
+        document.body.appendChild(el);
+        el.getBoundingClientRect = () =>
+            ({
+                top: 1200,
+                bottom: 1300,
+                left: 0,
+                right: 100,
+                width: 100,
+                height: 100,
+                x: 0,
+                y: 1200,
+                toJSON: () => ({})
+            } as DOMRect);
+
+        CotomyWindow.instance.scrollTo("#target", { behavior: "auto", onlyIfNeeded: false });
+
+        expect(scrollSpy).toHaveBeenCalledTimes(1);
+        expect(scrollSpy).toHaveBeenCalledWith({ top: 700, left: 0, behavior: "auto" });
+
+        Object.defineProperty(window, "scrollY", { configurable: true, value: originalScrollY });
+        Object.defineProperty(window, "scrollX", { configurable: true, value: originalScrollX });
+    });
+
+    it("CotomyElement.scrollTo searches descendants when target is a selector", () => {
+        const container = document.createElement("div");
+        const target = document.createElement("div");
+        target.id = "nested";
+        container.appendChild(target);
+        document.body.appendChild(container);
+
+        const scrollInSpy = vi.spyOn(CotomyElement.prototype, "scrollIn").mockImplementation(function () {
+            return this;
+        });
+
+        const wrappedContainer = new CotomyElement(container);
+        wrappedContainer.scrollTo("#nested", { onlyIfNeeded: false });
+
+        expect(scrollInSpy).toHaveBeenCalledTimes(1);
+        expect(scrollInSpy.mock.instances[0].element).toBe(target);
+    });
+});
+
 describe("CotomyElement move lifecycle", () => {
     beforeEach(() => {
         document.body.innerHTML = "";

@@ -87,6 +87,8 @@ The View layer provides thin wrappers around DOM elements and window events.
   - `innerWidth: number` / `innerHeight: number`
   - `outerWidth: number` / `outerHeight: number` — Includes margins
   - `scrollWidth: number` / `scrollHeight: number` / `scrollTop: number`
+  - `scrollIn(options?: CotomyScrollOptions | Partial<CotomyScrollOptions>): this` — Scrolls the nearest scrollable container (or window) to reveal the element
+  - `scrollTo(target, options?: CotomyScrollOptions | Partial<CotomyScrollOptions>): this` — Convenience wrapper; if `target` is a selector it searches descendants then calls `scrollIn()`
   - `position(): { top, left }` — Relative to viewport
   - `absolutePosition(): { top, left }` — Viewport + page scroll offset
   - `screenPosition(): { top, left }`
@@ -151,6 +153,7 @@ The first command ensures `[scope]` expands to `[data-cotomy-scopeid="..."]` in 
 - DOM helpers
   - `body: CotomyElement`
   - `append(element: CotomyElement): this`
+  - `scrollTo(target, options?: CotomyScrollOptions | Partial<CotomyScrollOptions>): this` — Scrolls to reveal a target (`selector | CotomyElement | HTMLElement`)
   - `moveNext(focused: CotomyElement, shift = false)` — Move focus to next/previous focusable
 - Window events
   - `on(eventOrEvents, handler): this` / `off(eventOrEvents, handler?): this` / `trigger(event[, Event]): this` — `eventOrEvents` accepts a single event name or an array. CotomyWindow’s `trigger` also bubbles by default and accepts an `Event` to override the behavior.
