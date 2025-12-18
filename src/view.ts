@@ -738,6 +738,43 @@ export class CotomyElement implements IEventTarget {
         };
     }
 
+    private static overlapsRect(
+        left: { top: number; left: number; width: number; height: number },
+        right: { top: number; left: number; width: number; height: number }
+    ): boolean {
+        if (left.width <= 0 || left.height <= 0 || right.width <= 0 || right.height <= 0) {
+            return false;
+        }
+        const leftRight = left.left + left.width;
+        const leftBottom = left.top + left.height;
+        const rightRight = right.left + right.width;
+        const rightBottom = right.top + right.height;
+
+        return left.left < rightRight
+                && leftRight > right.left
+                && left.top < rightBottom
+                && leftBottom > right.top;
+    }
+
+    public overlaps(target: CotomyElement): boolean {
+        if (!this.attached || !target.attached) {
+            return false;
+        }
+        if (this.element === target.element) {
+            return false;
+        }
+        return CotomyElement.overlapsRect(this.rect, target.rect);
+    }
+
+    public get overlapElements(): CotomyElement[] {
+        if (!this.attached) {
+            return [];
+        }
+        return CotomyElement.find("[data-cotomy-instance]")
+            .filter(e => e.element !== this.element)
+            .filter(e => this.overlaps(e));
+    }
+
 
     public get padding(): { top: number; right: number; bottom: number; left: number } {
         const style = this.getComputedStyle();

@@ -207,6 +207,62 @@ describe("CotomyElement core behaviors", () => {
         expect(generated.attribute("data-cotomy-instance")).toBe(generated.instanceId);
     });
 
+    it("detects overlaps between CotomyElements using rect wrappers", () => {
+        const mockRect = (element: HTMLElement, rect: { top: number; left: number; width: number; height: number }) => {
+            const right = rect.left + rect.width;
+            const bottom = rect.top + rect.height;
+            vi.spyOn(element, "getBoundingClientRect").mockReturnValue({
+                ...rect,
+                right,
+                bottom,
+                x: rect.left,
+                y: rect.top,
+                toJSON: () => ({})
+            } as any);
+        };
+
+        const a = new CotomyElement(document.createElement("div"));
+        const b = new CotomyElement(document.createElement("div"));
+        const c = new CotomyElement(document.createElement("div"));
+        document.body.append(a.element, b.element, c.element);
+
+        mockRect(a.element, { top: 0, left: 0, width: 10, height: 10 });
+        mockRect(b.element, { top: 5, left: 5, width: 10, height: 10 });
+        mockRect(c.element, { top: 20, left: 20, width: 10, height: 10 });
+
+        expect(a.overlaps(b)).toBe(true);
+        expect(a.overlaps(c)).toBe(false);
+        expect(a.overlaps(a)).toBe(false);
+
+        const overlaps = a.overlapElements.map(e => e.element);
+        expect(overlaps).toEqual([b.element]);
+    });
+
+    it("returns empty overlaps when detached", () => {
+        const mockRect = (element: HTMLElement, rect: { top: number; left: number; width: number; height: number }) => {
+            const right = rect.left + rect.width;
+            const bottom = rect.top + rect.height;
+            vi.spyOn(element, "getBoundingClientRect").mockReturnValue({
+                ...rect,
+                right,
+                bottom,
+                x: rect.left,
+                y: rect.top,
+                toJSON: () => ({})
+            } as any);
+        };
+
+        const detached = new CotomyElement(document.createElement("div"));
+        const attached = new CotomyElement(document.createElement("div"));
+        document.body.append(attached.element);
+
+        mockRect(detached.element, { top: 0, left: 0, width: 10, height: 10 });
+        mockRect(attached.element, { top: 0, left: 0, width: 10, height: 10 });
+
+        expect(detached.overlapElements).toEqual([]);
+        expect(detached.overlaps(attached)).toBe(false);
+    });
+
     it("assigns fresh scope ids when cloning, including descendants", () => {
         const original = new CotomyElement({ html: `<section class="root"><span class="child"></span></section>` });
         const originalChild = original.first(".child");

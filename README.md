@@ -94,6 +94,8 @@ The View layer provides thin wrappers around DOM elements and window events.
   - `screenPosition(): { top, left }`
   - `rect(): { top, left, width, height }`
   - `innerRect()` — Subtracts padding
+  - `overlaps(target: CotomyElement): boolean` — True if the two elements' `rect` values overlap (AABB)
+  - `overlapElements: CotomyElement[]` — Returns other CotomyElements (by `data-cotomy-instance`) that overlap this element
 - Events
   - Generic: `on(eventOrEvents, handler, options?)`, `off(eventOrEvents, handler?, options?)`, `once(eventOrEvents, handler, options?)`, `trigger(event[, Event])` — `eventOrEvents` accepts either a single event name or an array for batch registration/removal. `trigger` emits bubbling events by default and can be customized by passing an `Event`.
   - Delegation: `onSubTree(eventOrEvents, selector, handler, options?)` — `eventOrEvents` can also be an array for listening to multiple delegated events at once.
