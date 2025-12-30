@@ -6,7 +6,7 @@ import { CotomyDebugFeature, CotomyDebugSettings } from "./debug";
 //#region イベントハンドラ管理要
 
 interface IEventTarget {
-    get scopeId(): string;
+    get instanceId(): string;
     element: HTMLElement;
 }
 
@@ -145,11 +145,11 @@ class EventRegistry {
     }
 
     private map(target: IEventTarget): HandlerRegistory {
-        const scopeId = target.scopeId;
-        let registry = this._registry.get(scopeId);
+        const instanceId = target.instanceId;
+        let registry = this._registry.get(instanceId);
         if (!registry) {
             registry = new HandlerRegistory(target);
-            this._registry.set(scopeId, registry);
+            this._registry.set(instanceId, registry);
         }
         return registry;
     }
@@ -160,7 +160,7 @@ class EventRegistry {
     }
 
     public off(event: string, target: IEventTarget, entry?: HandlerEntry): void {
-        const registry = this._registry.get(target.scopeId);
+        const registry = this._registry.get(target.instanceId);
         if (!registry) return;
         if (entry) {
             registry.remove(event, entry);
@@ -168,12 +168,12 @@ class EventRegistry {
             registry.remove(event);
         }
         if (registry.empty) {
-            this._registry.delete(target.scopeId);
+            this._registry.delete(target.instanceId);
         }
     }
 
     public clear(target: IEventTarget): void {
-        this._registry.delete(target.scopeId);
+        this._registry.delete(target.instanceId);
     }
 }
 
@@ -301,6 +301,7 @@ export class CotomyElement implements IEventTarget {
 
     private _element: HTMLElement;
     private _parentElement: CotomyElement | null = null;
+    private _scopedCss?: string;
 
     public constructor(element: HTMLElement | { html: string, css?: string } | { tagname: string, text?: string, css?: string } | string) {
         if (element instanceof HTMLElement) {
@@ -379,6 +380,7 @@ export class CotomyElement implements IEventTarget {
 
     private useScopedCss(css: string): this {
         if (css && this.stylable) {
+            this._scopedCss = css;
             const cssid = this.scopedCssElementId;
             CotomyElement.find(`#${cssid}`).forEach(e => e.remove());
             const element = document.createElement("style");
@@ -391,10 +393,21 @@ export class CotomyElement implements IEventTarget {
             head.append(new CotomyElement(element));
 
             this.removed(() => {
-                CotomyElement.find(`#${cssid}`).forEach(e => e.remove());
+                const hasSameScope = document.querySelector(`[data-cotomy-scopeid="${this.scopeId}"]`) !== null;
+                if (!hasSameScope) {
+                    CotomyElement.find(`#${cssid}`).forEach(e => e.remove());
+                }
             });
         }
         return this;
+    }
+
+    private ensureScopedCss(): void {
+        if (!this._scopedCss || !this.stylable) return;
+        const cssid = this.scopedCssElementId;
+        if (!document.getElementById(cssid)) {
+            this.useScopedCss(this._scopedCss);
+        }
     }
 
     //#endregion
@@ -433,7 +446,7 @@ export class CotomyElement implements IEventTarget {
 
     public clone<T extends CotomyElement = CotomyElement>(type?: new (el: HTMLElement) => T): T {
         const ctor = (type ?? CotomyElement) as new (el: HTMLElement) => T;
-        const ATTRIBUTES_TO_STRIP = ["data-cotomy-instance", "data-cotomy-scopeid", "data-cotomy-moving"];
+        const ATTRIBUTES_TO_STRIP = ["data-cotomy-instance", "data-cotomy-moving"];
         const clonedElement = this.element.cloneNode(true) as HTMLElement;
 
         if (clonedElement.hasAttribute("data-cotomy-invalidated")) {
@@ -446,6 +459,7 @@ export class CotomyElement implements IEventTarget {
         });
 
         const cloned = new ctor(clonedElement);
+        (cloned as unknown as CotomyElement)._scopedCss = this._scopedCss;
         return cloned;
     }
 
@@ -1167,6 +1181,7 @@ export class CotomyElement implements IEventTarget {
         CotomyElement.runWithMoveEvents(prepend, () => {
             this.element.prepend(prepend.element);
         });
+        prepend.ensureScopedCss();
         return this;
     }
 
@@ -1174,6 +1189,7 @@ export class CotomyElement implements IEventTarget {
         CotomyElement.runWithMoveEvents(target, () => {
             this.element.append(target.element);
         });
+        target.ensureScopedCss();
         return this;
     }
 
@@ -1186,6 +1202,7 @@ export class CotomyElement implements IEventTarget {
         CotomyElement.runWithMoveEvents(append, () => {
             this.element.before(append.element);
         });
+        append.ensureScopedCss();
         return this;
     }
 
@@ -1193,6 +1210,7 @@ export class CotomyElement implements IEventTarget {
         CotomyElement.runWithMoveEvents(append, () => {
             this.element.after(append.element);
         });
+        append.ensureScopedCss();
         return this;
     }
 
@@ -1200,6 +1218,7 @@ export class CotomyElement implements IEventTarget {
         CotomyElement.runWithMoveEvents(this, () => {
             target.element.append(this.element);
         });
+        this.ensureScopedCss();
         return this;
     }
 
@@ -1207,6 +1226,7 @@ export class CotomyElement implements IEventTarget {
         CotomyElement.runWithMoveEvents(this, () => {
             target.element.prepend(this.element);
         });
+        this.ensureScopedCss();
         return this;
     }
 

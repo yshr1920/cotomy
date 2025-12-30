@@ -38,6 +38,7 @@ The View layer provides thin wrappers around DOM elements and window events.
 - Scoped CSS
   - `scopeId: string` - Returns the value stored in the element's `data-cotomy-scopeid` attribute
   - `[scope]` placeholder in provided CSS is replaced by `[data-cotomy-scopeid="..."]`
+  - Scoped CSS text is kept on the instance; if the `<style id="css-${scopeId}">` is missing when the element is attached, it will be re-generated automatically
   - `stylable: boolean` - False for tags like `script`, `style`, `link`, `meta`
 - Static helpers
   - `CotomyElement.encodeHtml(text)`
@@ -77,7 +78,7 @@ The View layer provides thin wrappers around DOM elements and window events.
   - `insertBefore(sibling): this` / `insertAfter(sibling): this`
   - `appendTo(target): this` / `prependTo(target): this`
   - `comesBefore(target): boolean` / `comesAfter(target): boolean` — Checks DOM order (returns `false` for the same element or disconnected nodes)
-  - `clone(type?): CotomyElement` - Returns a deep-cloned element, optionally typed, and reassigns new `data-cotomy-instance`/`data-cotomy-scopeid` values (and strips `data-cotomy-moving`). Cloning an invalidated element (`data-cotomy-invalidated`) throws.
+  - `clone(type?): CotomyElement` - Returns a deep-cloned element, optionally typed, and reassigns a new `data-cotomy-instance` while preserving the `data-cotomy-scopeid` for scoped CSS sharing (strips `data-cotomy-moving`). Cloning an invalidated element (`data-cotomy-invalidated`) throws.
   - `clear(): this` — Removes all descendants and text
   - `remove(): void` — Explicitly non-chainable after removal
 - Geometry & visibility
@@ -107,6 +108,7 @@ The View layer provides thin wrappers around DOM elements and window events.
   - Layout (custom): `resize`, `scroll`, `changelayout` — requires `listenLayoutEvents()` on the element
   - Move lifecycle: `cotomy:transitstart`, `cotomy:transitend` — emitted automatically by `append`, `prepend`, `insertBefore/After`, `appendTo`, and `prependTo`. While moving, the element (and its descendants) receive a temporary `data-cotomy-moving` attribute so removal observers know the node is still in transit.
   - Removal: `removed` — fired when an element actually leaves the DOM (MutationObserver-backed). Because `cotomy:transitstart`/`transitend` manage the `data-cotomy-moving` flag, `removed` only runs for true detachments, making it safe for cleanup.
+  - Registry isolation: イベントレジストリは `data-cotomy-instance`（インスタンスID）単位で管理され、クローンは新しいインスタンスIDを持つため、同じ `scopeId` を共有していてもリスナーが混線しません。
   - File: `filedrop(handler: (files: File[]) => void)`
 
 Example (scoped CSS and events):
@@ -128,18 +130,20 @@ document.body.appendChild(panel.element);
 
 ## Testing
 
-The scoped CSS replacement and scope-id isolation logic are covered by `tests/view.spec.ts`. Run the focused specs below to verify the behavior:
+Scoped CSS sharing/re-hydrationとインスタンス単位のイベント管理は `tests/view.spec.ts` に含まれています。主に確認したい場合は以下のコマンドで個別に実行できます:
 
 ```bash
-npx vitest run tests/view.spec.ts -t "constructs from multiple sources and applies scoped css"
-npx vitest run tests/view.spec.ts -t "assigns fresh scope ids when cloning, including descendants"
-npx vitest run tests/view.spec.ts -t "regenerates instance ids and lifecycle hooks when cloning"
-npx vitest run tests/view.spec.ts -t "strips moving flags when cloning"
-npx vitest run tests/view.spec.ts -t "throws when cloning an invalidated element"
-npx vitest run tests/view.spec.ts -t "compares document order with comesBefore/comesAfter"
+npm test -- --run tests/view.spec.ts -t "constructs from multiple sources and applies scoped css"
+npm test -- --run tests/view.spec.ts -t "preserves scope ids when cloning, including descendants"
+npm test -- --run tests/view.spec.ts -t "regenerates instance ids and lifecycle hooks when cloning"
+npm test -- --run tests/view.spec.ts -t "keeps event handlers isolated by instance even when sharing scope"
+npm test -- --run tests/view.spec.ts -t "rehydrates scoped css when a clone shares scope after the original was removed"
+npm test -- --run tests/view.spec.ts -t "strips moving flags when cloning"
+npm test -- --run tests/view.spec.ts -t "throws when cloning an invalidated element"
+npm test -- --run tests/view.spec.ts -t "compares document order with comesBefore/comesAfter"
 ```
 
-The first command ensures `[scope]` expands to `[data-cotomy-scopeid="..."]` in injected styles, the second confirms that cloning reassigns new `data-cotomy-scopeid` attributes to the cloned tree, the third verifies fresh `data-cotomy-instance` values and lifecycle hooks, and the last two cover stripping transit flags and rejecting invalidated nodes during cloning.
+普段は `npm test` で全体を実行できます。上記のコマンドでは `[scope]` 展開、スコープID共有のクローン挙動、インスタンス単位のイベント隔離、クローン後のスコープCSS再生成、移動フラグの除去、無効化要素のクローン拒否、DOM順序判定などをピンポイントで確認できます。
 
 ### CotomyMetaElement
 

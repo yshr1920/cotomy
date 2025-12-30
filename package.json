@@ -27,7 +27,7 @@
     "build:browser": "webpack --config webpack.config.browser.cjs",
     "dev": "webpack --config webpack.config.cjs --mode=development",
     "clean": "rimraf dist",
-    "test": "echo \"(optional) add test runner like vitest or jest\"",
+    "test": "vitest run",
     "prepare": "npm run build",
     "release": "npm run clean && npm run build && npm version patch && npm publish",
     "check": "tsc --noEmit",

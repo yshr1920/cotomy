@@ -263,16 +263,21 @@ describe("CotomyElement core behaviors", () => {
         expect(detached.overlaps(attached)).toBe(false);
     });
 
-    it("assigns fresh scope ids when cloning, including descendants", () => {
+    it("preserves scope ids when cloning, including descendants", () => {
         const original = new CotomyElement({ html: `<section class="root"><span class="child"></span></section>` });
         const originalChild = original.first(".child");
+
+        // force scope ids to be materialized on both original and child
+        const originalScope = original.scopeId;
+        const originalChildScope = originalChild?.scopeId;
+
         const cloned = original.clone();
         const clonedChild = cloned.first(".child");
 
-        expect(cloned.scopeId).not.toBe(original.scopeId);
-        expect(cloned.attribute("data-cotomy-scopeid")).toBe(cloned.scopeId);
-        expect(clonedChild?.scopeId).not.toBe(originalChild?.scopeId);
-        expect(clonedChild?.attribute("data-cotomy-scopeid")).toBe(clonedChild?.scopeId);
+        expect(cloned.scopeId).toBe(originalScope);
+        expect(cloned.attribute("data-cotomy-scopeid")).toBe(originalScope);
+        expect(clonedChild?.scopeId).toBe(originalChildScope);
+        expect(clonedChild?.attribute("data-cotomy-scopeid")).toBe(originalChildScope);
     });
 
     it("regenerates instance ids and lifecycle hooks when cloning", () => {
@@ -504,6 +509,47 @@ describe("CotomyElement core behaviors", () => {
 
         expect(cloned.attribute("data-cotomy-moving")).toBeUndefined();
         expect(cloned.first(".child")?.attribute("data-cotomy-moving")).toBeUndefined();
+    });
+
+    it("keeps event handlers isolated by instance even when sharing scope", () => {
+        const original = new CotomyElement(`<div></div>`);
+        const clone = original.clone();
+        document.body.append(original.element, clone.element);
+
+        const handler = vi.fn();
+        original.on("click", handler);
+
+        // off() on a different instance (but same scope) should not remove the original handler
+        clone.off("click", handler);
+
+        clone.element.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+        expect(handler).toHaveBeenCalledTimes(0);
+
+        original.element.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+        expect(handler).toHaveBeenCalledTimes(1);
+    });
+
+    it("rehydrates scoped css when a clone shares scope after the original was removed", async () => {
+        CotomyWindow.instance.initialize();
+
+        const original = new CotomyElement({ html: `<div class="styled"></div>`, css: `[scope] .styled { color: red; }` });
+        const scope = original.scopeId;
+        const clone = original.clone();
+
+        document.body.append(original.element);
+        expect(document.getElementById(`css-${scope}`)).not.toBeNull();
+
+        original.remove();
+        await new Promise(resolve => setTimeout(resolve, 0)); // wait for MutationObserver to dispatch "removed"
+        expect(document.getElementById(`css-${scope}`)).toBeNull();
+
+        const wrapper = new CotomyElement(document.createElement("div"));
+        wrapper.append(clone);
+        document.body.appendChild(wrapper.element);
+
+        const styleElement = document.getElementById(`css-${scope}`) as HTMLStyleElement | null;
+        expect(styleElement).not.toBeNull();
+        expect(styleElement?.textContent).toContain(`[data-cotomy-scopeid="${scope}"] .styled { color: red; }`);
     });
 
     it("throws when cloning an invalidated element", () => {
