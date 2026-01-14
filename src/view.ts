@@ -195,7 +195,7 @@ export class CotomyScrollOptions {
         if (init.inline !== undefined) this.inline = init.inline;
     }
 
-    public resolveBehavior(): ScrollBehavior {
+    public get resolveBehavior(): ScrollBehavior {
         return this.behavior;
     }
 
@@ -898,7 +898,7 @@ export class CotomyElement implements IEventTarget {
         if (!this.attached) return this;
 
         const resolved = CotomyScrollOptions.from(options);
-        const behavior = resolved.resolveBehavior();
+        const behavior = resolved.resolveBehavior;
         const onlyIfNeeded = resolved.onlyIfNeeded;
         const block = resolved.block;
         const inline = resolved.inline;

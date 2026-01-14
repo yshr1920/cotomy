@@ -6,6 +6,7 @@ import {
     CotomyApi,
     CotomyApiResponse,
     CotomyConflictException,
+    ICotomyBindNameGenerator,
     CotomyRequestInvalidException
 } from "../src/api";
 import {
@@ -58,11 +59,11 @@ class TestFillForm extends CotomyEntityFillApiForm {
         super(form);
     }
 
-    public override loadActionUrl(): string {
-        return this._loadUrl ?? super.loadActionUrl();
+    protected override get loadActionUrl(): string {
+        return this._loadUrl ?? super.loadActionUrl;
     }
 
-    protected override canLoad(): boolean {
+    protected override get canLoad(): boolean {
         return this._loadable;
     }
 
@@ -73,6 +74,7 @@ class TestFillForm extends CotomyEntityFillApiForm {
     public setLoadUrl(url: string) {
         this._loadUrl = url;
     }
+
 
     public setClient(client: CotomyApi) {
         this._client = client;
@@ -85,6 +87,10 @@ class TestFillForm extends CotomyEntityFillApiForm {
     private _loadable = false;
     private _loadUrl: string | null = null;
     private _client: CotomyApi | null = null;
+
+    protected override bindNameGenerator(): ICotomyBindNameGenerator {
+        return super.bindNameGenerator();
+    }
 }
 
 describe("CotomyApiForm", () => {
@@ -212,6 +218,39 @@ describe("CotomyEntityFillApiForm", () => {
         const activeInput = form.find('input[name="user[active]"]')[0];
         expect(nameInput.value).toBe("Alice");
         expect(activeInput.attribute("checked")).toBe("");
+    });
+
+    it("uses bindNameGenerator result for renderer", () => {
+        class CustomBindNameGenerator implements ICotomyBindNameGenerator {
+            public create(name: string, parent?: string): string {
+                return parent ? `${parent}.${name}` : name;
+            }
+
+            public createIndex(parent: string | undefined, index: number): string {
+                return parent ? `${parent}[${index}]` : `[${index}]`;
+            }
+        }
+
+        class CustomBindForm extends CotomyEntityFillApiForm {
+            public constructor() {
+                const form = document.createElement("form");
+                form.setAttribute("action", "/users");
+                super(form);
+            }
+
+            public exposeGenerator(): ICotomyBindNameGenerator {
+                return this._generator;
+            }
+
+            protected override bindNameGenerator(): ICotomyBindNameGenerator {
+                return this._generator;
+            }
+
+            private _generator = new CustomBindNameGenerator();
+        }
+
+        const form = new CustomBindForm();
+        expect(form.renderer().bindNameGenerator).toBe(form.exposeGenerator());
     });
 
     it("suppresses API failure by dispatching event and rethrowing when necessary", async () => {

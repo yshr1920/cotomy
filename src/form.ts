@@ -376,7 +376,7 @@ export class CotomyEntityFillApiForm extends CotomyEntityApiForm {
         await this.loadAsync();
     }
 
-    protected loadActionUrl(): string {
+    protected get loadActionUrl(): string {
         return this.actionUrl;
     }
 
@@ -388,18 +388,18 @@ export class CotomyEntityFillApiForm extends CotomyEntityApiForm {
         return new CotomyViewRenderer(this, this.bindNameGenerator());
     }
 
-    protected canLoad(): boolean {
+    protected get canLoad(): boolean {
         return this.hasEntityKey;
     }
 
     protected async loadAsync(): Promise<CotomyApiResponse> {
-        if (!this.canLoad()) {
+        if (!this.canLoad) {
             return new CotomyApiResponse();
         }
 
         const api = this.apiClient();
         try {
-            const response = await api.getAsync(this.loadActionUrl());
+            const response = await api.getAsync(this.loadActionUrl);
             await this.fillAsync(response);
             return response;
         } catch (error) {

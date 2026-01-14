@@ -110,12 +110,12 @@ export class CotomyPageController {
         return form as T;
     }
 
-    protected forms(): CotomyForm[] {
+    protected get forms(): CotomyForm[] {
         return Object.values(this._forms);
     }
 
     protected async restoreAsync(): Promise<void> {
-        for (const f of this.forms()) {
+        for (const f of this.forms) {
             if (CotomyWindow.instance.reloading) {
                 break;
             }
@@ -165,4 +165,3 @@ export class CotomyPageController {
         return new CotomyUrl();
     }
 }
-
