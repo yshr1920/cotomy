@@ -179,11 +179,27 @@ describe("CotomyElement core behaviors", () => {
         const byConfig = new CotomyElement({ tagname: "span", text: "hello" });
         expect(byConfig.text).toBe("hello");
 
-        const styled = new CotomyElement({ html: `<div class="styled"></div>`, css: `[scope] .styled { color: red; }` });
+        const styled = new CotomyElement({ html: `<div class="styled"></div>`, css: `[root] .styled { color: red; }` });
         const scope = styled.scopeId;
         const styleElement = document.head.querySelector(`#css-${scope}`) as HTMLStyleElement | null;
         expect(styleElement).not.toBeNull();
         expect(styleElement?.textContent).toContain(`[data-cotomy-scopeid="${scope}"] .styled { color: red; }`);
+    });
+
+    it("treats [scope] and [root] as equivalent in scoped css", () => {
+        const styled = new CotomyElement({ html: `<div class="styled"></div>`, css: `[scope] .styled { color: blue; }` });
+        const scope = styled.scopeId;
+        const styleElement = document.head.querySelector(`#css-${scope}`) as HTMLStyleElement | null;
+        expect(styleElement).not.toBeNull();
+        expect(styleElement?.textContent).toContain(`[data-cotomy-scopeid="${scope}"] .styled { color: blue; }`);
+    });
+
+    it("auto-prefixes [root] when no scope placeholder is present", () => {
+        const styled = new CotomyElement({ html: `<div class="styled"></div>`, css: `.styled { color: green; }` });
+        const scope = styled.scopeId;
+        const styleElement = document.head.querySelector(`#css-${scope}`) as HTMLStyleElement | null;
+        expect(styleElement).not.toBeNull();
+        expect(styleElement?.textContent).toContain(`[data-cotomy-scopeid="${scope}"] .styled { color: green; }`);
     });
 
     it("exposes scope data via attribute", () => {

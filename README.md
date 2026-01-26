@@ -37,7 +37,9 @@ The View layer provides thin wrappers around DOM elements and window events.
   - `new CotomyElement({ tagname, text?, css? })`
 - Scoped CSS
   - `scopeId: string` - Returns the value stored in the element's `data-cotomy-scopeid` attribute
-  - `[scope]` placeholder in provided CSS is replaced by `[data-cotomy-scopeid="..."]`
+  - `[root]` placeholder in provided CSS is replaced by `[data-cotomy-scopeid="..."]`
+  - `[scope]` is deprecated and will be removed in a future release (use `[root]` instead)
+  - If neither `[root]` nor `[scope]` is present, `[root]` is treated as if it were prefixed automatically
   - Scoped CSS text is kept on the instance; if the `<style id="css-${scopeId}">` is missing when the element is attached, it will be re-generated automatically
   - `stylable: boolean` - False for tags like `script`, `style`, `link`, `meta`
 - Static helpers
@@ -119,8 +121,8 @@ import { CotomyElement } from "cotomy";
 const panel = new CotomyElement({
   html: `<div class="panel"><button class="ok">OK</button></div>`,
   css: `
-    [scope] .panel { padding: 8px; }
-    [scope] .ok { color: green; }
+    [root] .panel { padding: 8px; }
+    [root] .ok { color: green; }
   `,
 });
 
@@ -143,7 +145,7 @@ npm test -- --run tests/view.spec.ts -t "throws when cloning an invalidated elem
 npm test -- --run tests/view.spec.ts -t "compares document order with comesBefore/comesAfter"
 ```
 
-普段は `npm test` で全体を実行できます。上記のコマンドでは `[scope]` 展開、スコープID共有のクローン挙動、インスタンス単位のイベント隔離、クローン後のスコープCSS再生成、移動フラグの除去、無効化要素のクローン拒否、DOM順序判定などをピンポイントで確認できます。
+普段は `npm test` で全体を実行できます。上記のコマンドでは `[root]/[scope]` 展開、スコープID共有のクローン挙動、インスタンス単位のイベント隔離、クローン後のスコープCSS再生成、移動フラグの除去、無効化要素のクローン拒否、DOM順序判定などをピンポイントで確認できます。
 
 ### CotomyMetaElement
 
@@ -306,10 +308,10 @@ By passing HTML and CSS strings to the constructor, it is possible to generate E
               </div>
             `,
         css: /* css */`
-            [scope] {
+            [root] {
               display: block;
             }
-            [scope] > p {
+            [root] > p {
               text-align: center;
             }
           `
