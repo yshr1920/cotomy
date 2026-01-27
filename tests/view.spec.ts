@@ -501,6 +501,46 @@ describe("CotomyElement core behaviors", () => {
         expect(removalResult).toBeUndefined();
     });
 
+    it("accepts HTML inputs in append/prepend and appendAll", () => {
+        const container = new CotomyElement("<div></div>");
+        const middle = new CotomyElement(`<div class="middle"></div>`);
+
+        container.append("<div class=\"tail\"></div>");
+        container.prepend("<div class=\"head\"></div>");
+        container.appendAll([
+            "<div class=\"first\"></div>",
+            middle,
+            { html: `<div class="last"></div>`, css: `[scope] .last { color: blue; }` }
+        ]);
+
+        expect(container.element.firstElementChild?.className).toBe("head");
+        expect(container.element.lastElementChild?.className).toBe("last");
+        expect(container.firstChild(".middle")!.element).toBe(middle.element);
+
+        const last = container.firstChild(".last")!;
+        expect(document.getElementById(`css-${last.scopeId}`)).not.toBeNull();
+    });
+
+    it("accepts HTML inputs in insertBefore/insertAfter", () => {
+        const container = new CotomyElement(`<div><span id="anchor"></span></div>`);
+        document.body.appendChild(container.element);
+
+        const anchor = container.firstChild("#anchor")!;
+        anchor.insertAfter({ html: `<div class="styled"></div>`, css: `[scope] .styled { color: red; }` });
+        anchor.insertBefore("<div class=\"before\"></div>");
+
+        const inserted = container.firstChild(".styled")!;
+        expect(anchor.element.nextElementSibling).toBe(inserted.element);
+        expect(inserted.element.previousElementSibling?.id).toBe("anchor");
+
+        const before = container.firstChild(".before")!;
+        expect(before.element.nextElementSibling?.id).toBe("anchor");
+
+        const styleElement = document.getElementById(`css-${inserted.scopeId}`) as HTMLStyleElement | null;
+        expect(styleElement).not.toBeNull();
+        expect(styleElement?.textContent).toContain(`[data-cotomy-scopeid="${inserted.scopeId}"] .styled { color: red; }`);
+    });
+
     it("clones the underlying DOM and supports typed clones", () => {
         class CustomElement extends CotomyElement {}
 
@@ -859,6 +899,11 @@ describe("CotomyWindow behaviors", () => {
         const element = new CotomyElement(document.createElement("div"));
         CotomyWindow.instance.append(element);
         expect(document.body.lastElementChild).toBe(element.element);
+    });
+
+    it("appends HTML inputs to body", () => {
+        CotomyWindow.instance.append("<div id=\"from-window\"></div>");
+        expect(document.body.querySelector("#from-window")).not.toBeNull();
     });
 
     it("manages event handlers via on/off/trigger", () => {

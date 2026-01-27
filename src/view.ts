@@ -1179,40 +1179,48 @@ export class CotomyElement implements IEventTarget {
         }
     }
 
-    public prepend(prepend: CotomyElement): this {
-        CotomyElement.runWithMoveEvents(prepend, () => {
-            this.element.prepend(prepend.element);
+    private static toElement(target: CotomyElement | string | { html: string, css?: string }): CotomyElement {
+        return target instanceof CotomyElement ? target : new CotomyElement(target);
+    }
+
+    public prepend(prepend: CotomyElement | string | { html: string, css?: string }): this {
+        const e = CotomyElement.toElement(prepend);
+        CotomyElement.runWithMoveEvents(e, () => {
+            this.element.prepend(e.element);
         });
-        prepend.ensureScopedCss();
+        e.ensureScopedCss();
         return this;
     }
 
-    public append(target: CotomyElement): this {
-        CotomyElement.runWithMoveEvents(target, () => {
-            this.element.append(target.element);
+    public append(target: CotomyElement | string | { html: string, css?: string }): this {
+        const e = CotomyElement.toElement(target);
+        CotomyElement.runWithMoveEvents(e, () => {
+            this.element.append(e.element);
         });
-        target.ensureScopedCss();
+        e.ensureScopedCss();
         return this;
     }
 
-    public appendAll(targets: CotomyElement[]): this {
+    public appendAll(targets: Array<CotomyElement | string | { html: string, css?: string }>): this {
         targets.forEach(e => this.append(e));
         return this;
     }
 
-    public insertBefore(append: CotomyElement): this {
-        CotomyElement.runWithMoveEvents(append, () => {
-            this.element.before(append.element);
+    public insertBefore(append: CotomyElement | string | { html: string, css?: string }): this {
+        const e = CotomyElement.toElement(append);
+        CotomyElement.runWithMoveEvents(e, () => {
+            this.element.before(e.element);
         });
-        append.ensureScopedCss();
+        e.ensureScopedCss();
         return this;
     }
 
-    public insertAfter(append: CotomyElement): this {
-        CotomyElement.runWithMoveEvents(append, () => {
-            this.element.after(append.element);
+    public insertAfter(append: CotomyElement | string | { html: string, css?: string }): this {
+        const e = CotomyElement.toElement(append);
+        CotomyElement.runWithMoveEvents(e, () => {
+            this.element.after(e.element);
         });
-        append.ensureScopedCss();
+        e.ensureScopedCss();
         return this;
     }
 
@@ -1795,7 +1803,7 @@ export class CotomyWindow {
         return this._body;
     }
 
-    public append(e: CotomyElement): this {
+    public append(e: CotomyElement | string | { html: string, css?: string }): this {
         this._body.append(e);
         return this;
     }

@@ -76,8 +76,8 @@ The View layer provides thin wrappers around DOM elements and window events.
   - `lastChild(selector = "*", type?)`
   - `closest(selector, type?)`
   - `find(selector, type?)` / `first(selector = "*", type?)` / `last(selector = "*", type?)` / `contains(selector)`
-  - `append(child): this` / `prepend(child): this` / `appendAll(children): this`
-  - `insertBefore(sibling): this` / `insertAfter(sibling): this`
+  - `append(child): this` / `prepend(child): this` / `appendAll(children): this` — accepts `CotomyElement`, HTML string, or `{ html, css? }`
+  - `insertBefore(sibling): this` / `insertAfter(sibling): this` — accepts `CotomyElement`, HTML string, or `{ html, css? }`
   - `appendTo(target): this` / `prependTo(target): this`
   - `comesBefore(target): boolean` / `comesAfter(target): boolean` — Checks DOM order (returns `false` for the same element or disconnected nodes)
   - `clone(type?): CotomyElement` - Returns a deep-cloned element, optionally typed, and reassigns a new `data-cotomy-instance` while preserving the `data-cotomy-scopeid` for scoped CSS sharing (strips `data-cotomy-moving`). Cloning an invalidated element (`data-cotomy-invalidated`) throws.
@@ -160,7 +160,7 @@ npm test -- --run tests/view.spec.ts -t "compares document order with comesBefor
   - `initialize(): this`
 - DOM helpers
   - `body: CotomyElement`
-  - `append(element: CotomyElement): this`
+  - `append(element: CotomyElement | string | { html: string, css?: string }): this`
   - `scrollTo(target, options?: CotomyScrollOptions | Partial<CotomyScrollOptions>): this` — Scrolls to reveal a target (`selector | CotomyElement | HTMLElement`)
   - `moveNext(focused: CotomyElement, shift = false)` — Move focus to next/previous focusable
 - Window events
