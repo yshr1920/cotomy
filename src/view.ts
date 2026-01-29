@@ -616,16 +616,32 @@ export class CotomyElement implements IEventTarget {
         return false;
     }
 
+    public get disabled(): boolean {
+        if ("disabled" in this.element) {
+            if (this.match(":disabled")) return true;
+            return <boolean>this.element.disabled;
+        }
+        return this.element.hasAttribute("disabled");
+    }
+
+    public set disabled(value: boolean) {
+        if ("disabled" in this.element) {
+            this.element.disabled = value;
+            return;
+        }
+        if (value) {
+            this.attribute("disabled", "");
+        } else {
+            this.attribute("disabled", null);
+        }
+    }
+
     public get enabled(): boolean {
-        return !(this.element.hasAttribute("disabled") && this.element.getAttribute("disabled") !== null);
+        return !this.disabled;
     }
 
     public set enabled(value: boolean) {
-        if (value) {
-            this.element.removeAttribute("disabled");
-        } else {
-            this.element.setAttribute("disabled", "disabled");
-        }
+        this.disabled = !value;
     }
 
     private get invalidated(): boolean {

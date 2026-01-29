@@ -66,6 +66,7 @@ The View layer provides thin wrappers around DOM elements and window events.
   - `html: string` (get/set)
   - `value: string` — Works for inputs; falls back to `data-cotomy-value` otherwise
   - `readonly: boolean` (get/set) — Uses native property if available, otherwise attribute
+  - `disabled: boolean` (get/set) — Uses native property if available (respects `fieldset[disabled]`), otherwise attribute
   - `enabled: boolean` (get/set) — Toggles `disabled` attribute
   - `setFocus(): void`
 - Tree traversal & manipulation

@@ -477,11 +477,35 @@ describe("CotomyElement core behaviors", () => {
         expect(div.hasAttribute("readonly")).toBe(false);
 
         const button = new CotomyElement(document.createElement("button"));
+        expect(button.disabled).toBe(false);
         expect(button.enabled).toBe(true);
+        button.disabled = true;
+        expect(button.disabled).toBe(true);
+        expect(button.hasAttribute("disabled")).toBe(true);
+        expect(button.enabled).toBe(false);
+        button.disabled = false;
+        expect(button.disabled).toBe(false);
+        expect(button.hasAttribute("disabled")).toBe(false);
         button.enabled = false;
         expect(button.enabled).toBe(false);
+        expect(button.disabled).toBe(true);
         button.enabled = true;
         expect(button.enabled).toBe(true);
+        expect(button.disabled).toBe(false);
+
+        const disabledWrapper = document.createElement("div");
+        disabledWrapper.setAttribute("disabled", "");
+        const nestedButton = new CotomyElement(document.createElement("button"));
+        disabledWrapper.appendChild(nestedButton.element);
+        document.body.appendChild(disabledWrapper);
+        expect(nestedButton.disabled).toBe(false);
+
+        const fieldset = document.createElement("fieldset");
+        fieldset.setAttribute("disabled", "");
+        const fieldsetButton = new CotomyElement(document.createElement("button"));
+        fieldset.appendChild(fieldsetButton.element);
+        document.body.appendChild(fieldset);
+        expect(fieldsetButton.disabled).toBe(true);
     });
 
     it("updates textual content and supports clear/remove operations", () => {
