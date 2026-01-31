@@ -1015,13 +1015,12 @@ export class CotomyElement implements IEventTarget {
     }
 
     public attribute(name: string): string | null | undefined;
-    public attribute(name: string, value: string | number | undefined): this;
-    public attribute(name: string, value: null): this;
-    public attribute(name: string, value?: string | number | undefined | null): string | null | undefined | this {
+    public attribute(name: string, value: string | number | null | undefined): this;
+    public attribute(name: string, value?: string | number | null | undefined): string | null | undefined | this {
         if (arguments.length === 1) {
             // getter
             return this.element.hasAttribute(name) ? this.element.getAttribute(name) : undefined;
-        } else if (value === null) {
+        } else if (value == null) {
             // remove
             this.element.removeAttribute(name);
             return this;
@@ -1052,10 +1051,8 @@ export class CotomyElement implements IEventTarget {
     }
 
     public style(name: string): string;
-    public style(name: string, value: string): this;
-    public style(name: string, value: null): this;
-    public style(name: string, value: undefined): this;
-    public style(name: string, value?: string | null): string | this {
+    public style(name: string, value: string | null | undefined): this;
+    public style(name: string, value?: string | null | undefined): string | this {
         if (arguments.length === 1) {
             // getter
             return this.element.style.getPropertyValue(name);

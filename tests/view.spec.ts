@@ -346,6 +346,10 @@ describe("CotomyElement core behaviors", () => {
         expect(element.attribute("data-sample")).toBe("123");
         element.attribute("data-sample", null);
         expect(element.attribute("data-sample")).toBeUndefined();
+        element.attribute("data-sample", "456");
+        expect(element.attribute("data-sample")).toBe("456");
+        element.attribute("data-sample", undefined);
+        expect(element.attribute("data-sample")).toBeUndefined();
 
         element.addClass("one").addClass("two");
         expect(element.hasClass("one")).toBe(true);
@@ -359,6 +363,10 @@ describe("CotomyElement core behaviors", () => {
         element.style("color", "red");
         expect(element.style("color")).toBe("red");
         element.style("color", null);
+        expect(element.style("color")).toBe("");
+        element.style("color", "blue");
+        expect(element.style("color")).toBe("blue");
+        element.style("color", undefined);
         expect(element.style("color")).toBe("");
     });
 

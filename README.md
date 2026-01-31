@@ -57,10 +57,10 @@ The View layer provides thin wrappers around DOM elements and window events.
   - `is(selector: string): boolean` — Parent-aware matching helper
   - `empty: boolean` — True for tags that cannot have children or have no content
 - Attributes, classes, styles
-  - `attribute(name)` / `attribute(name, value | null): this`
+  - `attribute(name)` / `attribute(name, value | null | undefined): this` — `null`/`undefined` removes the attribute
   - `hasAttribute(name): boolean`
   - `addClass(name): this` / `removeClass(name): this` / `toggleClass(name, force?): this` / `hasClass(name): boolean`
-  - `style(name)` / `style(name, value | null): this`
+  - `style(name)` / `style(name, value | null | undefined): this` — `null`/`undefined` removes the style
 - Content & value
   - `text: string` (get/set)
   - `html: string` (get/set)
