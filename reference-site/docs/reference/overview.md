@@ -1,8 +1,9 @@
 ---
 sidebar_position: 1
+title: Overview
 ---
 
-# Reference
+# Overview
 
 This section is the entry point for the Cotomy reference documentation.
 
