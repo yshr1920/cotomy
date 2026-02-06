@@ -93,7 +93,7 @@ Cotomy is not intended for:
 
 ## How to Use This Reference
 
-Use the sidebar to navigate to each class and utility.  
+Use the sidebar to navigate to each class, interface, and utility.  
 Each page describes its purpose, methods, and expected behavior.
 
 
@@ -102,31 +102,3 @@ Each page describes its purpose, methods, and expected behavior.
 ## Quick Example
 
 Below is a minimal example showing how Cotomy structures common UI tasks.
-
-### HTML
-
-```html
-<form id="userForm">
-  <input name="name" />
-  <input name="email" />
-  <button>Save</button>
-</form>
-```
-
-```javascript
-const view = new View("#userForm");
-
-view.form.submitAsync("/api/user/save", {
-  done: () => view.message("Saved"),
-  error: (e) => view.error(e)
-});
-```
-
-### What Happens Here
-    •The form is automatically bound to structured submission logic
-    •Input values are collected and sent to the API
-    •Response handling is centralized
-    •No manual DOM querying or fetch boilerplate is required
-
-Cotomy reduces repetitive UI plumbing while keeping full control in your hands.
-
