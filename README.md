@@ -101,7 +101,7 @@ The View layer provides thin wrappers around DOM elements and window events.
   - `overlaps(target: CotomyElement): boolean` — True if the two elements' `rect` values overlap (AABB)
   - `overlapElements: CotomyElement[]` — Returns other CotomyElements (by `data-cotomy-instance`) that overlap this element
 - Events
-  - Generic: `on(eventOrEvents, handler, options?)`, `off(eventOrEvents, handler?, options?)`, `once(eventOrEvents, handler, options?)`, `trigger(event[, Event])` — `eventOrEvents` accepts either a single event name or an array for batch registration/removal. `trigger` emits bubbling events by default and can be customized by passing an `Event`.
+  - Generic: `on(eventOrEvents, handler, options?)`, `off(eventOrEvents, handler?, options?)`, `once(eventOrEvents, handler, options?)`, `trigger(eventOrEvent[, Event])` — `eventOrEvents` accepts either a single event name or an array for batch registration/removal. `trigger` accepts either an event name or a prebuilt `Event`, emits bubbling events by default, and can be customized by passing an `Event`.
   - Delegation: `onSubTree(eventOrEvents, selector, handler, options?)` — `eventOrEvents` can also be an array for listening to multiple delegated events at once.
   - Mouse: `click`, `dblclick`, `mouseover`, `mouseout`, `mousedown`, `mouseup`, `mousemove`, `mouseenter`, `mouseleave`
   - Keyboard: `keydown`, `keyup`, `keypress`
@@ -165,7 +165,7 @@ npm test -- --run tests/view.spec.ts -t "compares document order with comesBefor
   - `scrollTo(target, options?: CotomyScrollOptions | Partial<CotomyScrollOptions>): this` — Scrolls to reveal a target (`selector | CotomyElement | HTMLElement`)
   - `moveNext(focused: CotomyElement, shift = false)` — Move focus to next/previous focusable
 - Window events
-  - `on(eventOrEvents, handler): this` / `off(eventOrEvents, handler?): this` / `trigger(event[, Event]): this` — `eventOrEvents` accepts a single event name or an array. CotomyWindow’s `trigger` also bubbles by default and accepts an `Event` to override the behavior.
+  - `on(eventOrEvents, handler): this` / `off(eventOrEvents, handler?): this` / `trigger(eventOrEvent[, Event]): this` — `eventOrEvents` accepts a single event name or an array. CotomyWindow’s `trigger` accepts an event name or `Event`, bubbles by default, and accepts an `Event` to override the behavior.
   - `load(handler): this` / `ready(handler): this`
   - `resize([handler]): this` / `scroll([handler]): this` / `changeLayout([handler]): this` / `pageshow([handler]): this`
 - Window state

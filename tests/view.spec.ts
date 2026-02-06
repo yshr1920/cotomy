@@ -122,6 +122,18 @@ describe("CotomyElement event handling", () => {
         expect(handler).not.toHaveBeenCalled();
     });
 
+    it("accepts an Event instance directly", () => {
+        const element = new CotomyElement(document.createElement("div"));
+        document.body.appendChild(element.element);
+
+        const handler = vi.fn();
+        element.on("custom:event", handler);
+
+        element.trigger(new Event("custom:event"));
+
+        expect(handler).toHaveBeenCalledTimes(1);
+    });
+
     it("allows on/off to register and remove multiple events at once", () => {
         const element = new CotomyElement(document.createElement("div"));
         document.body.appendChild(element.element);
@@ -980,6 +992,14 @@ describe("CotomyWindow behaviors", () => {
         });
         CotomyWindow.instance.on("custom:event", handler);
         CotomyWindow.instance.trigger("custom:event", new Event("custom:event", { bubbles: false }));
+        expect(handler).toHaveBeenCalledTimes(1);
+        CotomyWindow.instance.off("custom:event", handler);
+    });
+
+    it("accepts Event instances directly for window events", () => {
+        const handler = vi.fn();
+        CotomyWindow.instance.on("custom:event", handler);
+        CotomyWindow.instance.trigger(new Event("custom:event"));
         expect(handler).toHaveBeenCalledTimes(1);
         CotomyWindow.instance.off("custom:event", handler);
     });
