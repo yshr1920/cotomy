@@ -5,7 +5,7 @@ sidebar_position: 5
 
 # API Client Basics
 
-`CotomyApi` represents Cotomy's communication layer. It does not interact with
+`CotomyApi` represents Cotomy's API layer. It does not interact with
 the UI unless you explicitly connect it.
 
 Cotomy provides an API client that can be used independently of forms.
@@ -169,4 +169,4 @@ You:
 
 ## Next
 
-Continue with [Ajax Form](./06-ajax-form.md) to combine forms and API requests.
+Next: [Ajax Form](./06-ajax-form.md) to combine forms and API requests.

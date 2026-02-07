@@ -177,4 +177,4 @@ manages entity identity.
 
 ## Next
 
-Continue with [Page Control](./07-page-control.md).
+Next: [Page Control](./07-page-control.md) to coordinate page-level behavior.

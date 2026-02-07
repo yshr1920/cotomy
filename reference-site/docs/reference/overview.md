@@ -9,6 +9,8 @@ Cotomy is designed for long-lived business systems where safe UI changes, predic
 
 This reference explains the building blocks that make that possible.
 
+Download source code: [Cotomy v0.4.5 ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v0.4.5.zip)
+
 ---
 
 ## Runtime Guarantees

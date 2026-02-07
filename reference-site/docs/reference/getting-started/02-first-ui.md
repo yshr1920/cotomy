@@ -101,4 +101,4 @@ Everything you see is the real DOM.
 
 ## Next
 
-Continue with [Events and State](./03-events-and-state.md).
+Next: [Events and State](./03-events-and-state.md) to wire up interactions.

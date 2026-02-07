@@ -85,4 +85,4 @@ This is how Cotomy keeps interaction simple and predictable.
 
 ## Next
 
-Continue with [Forms Basics](./04-forms-basics.md).
+Next: [Forms Basics](./04-forms-basics.md) to structure submissions.

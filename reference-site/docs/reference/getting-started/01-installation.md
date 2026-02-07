@@ -7,6 +7,8 @@ sidebar_position: 1
 
 This page covers the minimum setup for using Cotomy and the design model it assumes.
 
+Download source code: [Cotomy v0.4.5 ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v0.4.5.zip)
+
 ## Cotomy's Design Model
 
 Cotomy is a page-oriented UI layer, not an application framework.
@@ -201,4 +203,4 @@ Open the page and confirm there are no console errors.
 
 ## Next
 
-Continue with [First UI](./02-first-ui.md).
+Next: [First UI](./02-first-ui.md) to create your first DOM-backed element.

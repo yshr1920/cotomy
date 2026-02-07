@@ -126,4 +126,4 @@ This pattern scales to API and entity forms.
 
 ## Next
 
-Continue with [API Integration](./05-api-integration.md).
+Next: [API Client Basics](./05-api-integration.md) to call APIs without forms.

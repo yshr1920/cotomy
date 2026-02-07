@@ -154,3 +154,7 @@ You learned a practical, Cotomy-specific debugging approach:
 - API and network last
 
 This is the fastest way to solve real-world Cotomy issues.
+
+## Next
+
+Next: Use the Reference pages for detailed class and method descriptions.

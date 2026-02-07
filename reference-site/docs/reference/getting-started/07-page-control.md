@@ -154,4 +154,4 @@ You created a page-level controller that:
 
 ## Next
 
-Continue with [Debugging and Tips](./08-debugging-and-tips.md).
+Next: [Debugging and Tips](./08-debugging-and-tips.md) to troubleshoot effectively.
