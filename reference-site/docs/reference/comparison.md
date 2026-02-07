@@ -74,6 +74,9 @@ React / Vue:
 Cotomy does not replace the platform.  
 It enforces runtime discipline on top of the platform.
 
+Cotomy can coexist with other frameworks when page scope and responsibilities
+are clearly separated.
+
 ## Summary
 
 Cotomy reduces UI risk, not rendering cost.

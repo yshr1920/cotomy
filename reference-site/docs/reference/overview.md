@@ -9,6 +9,8 @@ Cotomy is designed for long-lived business systems where safe UI changes, predic
 
 Cotomy reduces UI complexity by removing abstraction layers rather than adding them.
 
+Cotomy does not manage application state. It manages runtime safety around the DOM.
+
 This reference explains the building blocks that make that possible.
 
 Cotomy is not trying to replace the browser platform. It is a runtime

@@ -109,6 +109,7 @@ When submitted:
 
 This is a server-driven UI update model: the response is the source of truth.
 Server responses drive UI state changes, not client-side prediction.
+Rendering applies server truth. It does not predict client-side state.
 
 ### 4) POST to PUT transitions
 
