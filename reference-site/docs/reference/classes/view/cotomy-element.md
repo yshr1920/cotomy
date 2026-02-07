@@ -113,7 +113,7 @@ DOM wrapper with utilities for querying, styling, layout, and events.
 | `prependTo(target)` | Prepends this element to a target. |
 | `trigger(event, e?)` | Dispatches an event from this element. |
 | `on(event, handle, options?)` | Registers an event handler. |
-| `onSubTree(selector, event, handle)` | Registers a delegated handler. |
+| `onSubTree(event, selector, handle)` | Registers a delegated handler. |
 | `once(event, handle, options?)` | Registers a one-time handler. |
 | `off(event, handle?)` | Removes handlers. |
 | `click(handle?)` | Registers or triggers `click`. |
