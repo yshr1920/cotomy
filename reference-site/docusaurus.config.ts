@@ -106,10 +106,22 @@ const config: Config = {
               label: 'Overview',
               to: '/reference/overview',
             },
+            {
+              label: 'Comparison',
+              to: '/reference/comparison',
+            },
+            {
+              label: 'Getting Started',
+              to: '/reference/getting-started',
+            },
+            {
+              label: 'Reference',
+              to: '/reference/classes/view/cotomy-element',
+            },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Cotomy.`,
+      copyright: `© ${new Date().getFullYear()} labo1920. All rights reserved.`,
     },
     prism: {
       theme: prismThemes.github,

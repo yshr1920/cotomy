@@ -6,21 +6,50 @@ Cotomy is not a component framework.
 It is a DOM-structured runtime layer designed for form-driven, page-scoped business systems.
 
 ```mermaid
-flowchart TB
-  A[Server HTML]
-  B[Cotomy Runtime: lifecycle / forms / scoped CSS / event registry]
-  C[Business Logic]
-
-  A --> B --> C
-
-  subgraph Frameworks[React / Vue]
-    D[Component Framework]
+flowchart LR
+  subgraph Frameworks[ React, Vue ]
+    direction TB
+    B1["Initial HTML"]
+    B2["Component Framework\ncomponent tree / render"]
+    B3["JS State - UI source"]
+    B4["DOM - render output"]
+    B5["Business Logic"]
+    B1 --> B2
+    B3 --> B2
+    B2 --> B4
+    B5 -- "update state" --> B3
+    B4 -- "events / refs" --> B2
   end
 
-  A --> D --> C
+  subgraph Cotomy[ Cotomy ]
+    direction TB
+    A1["Initial HTML"]
+    A2["DOM - UI state"]
+    A3["Cotomy Runtime\nlifecycle / forms / scoped CSS / event registry"]
+    A4["Business Logic"]
+    A1 --> A2 --> A3 --> A4
+    A4 -- "update via CotomyElement" --> A3
+    A3 --> A2
+  end
+
+  Frameworks ~~~ Cotomy
 ```
 
 Cotomy does not replace the platform. It enforces runtime discipline on top of the platform.
+The key difference is **where UI state lives** and **what owns the UI model**.
+
+- **Cotomy:** The DOM is the UI state. Cotomy adds a runtime layer for lifecycle,
+  forms, scoped CSS, and event cleanup. Updates should go through `CotomyElement`
+  or Cotomy forms so the runtime can track lifecycle and handlers correctly.
+- **React/Vue:** UI state lives primarily in JavaScript memory. The framework
+  renders that state into the DOM, which becomes the output of the component tree.
+
+“Initial HTML” here simply means the HTML that exists before the client runtime
+starts. It could be server-rendered HTML, static HTML, or HTML produced by a build step.
+
+Use Cotomy when you want HTML/DOM to remain the primary model and you need
+runtime safety for forms and long-lived pages. Use a component framework when
+you want a centralized render model and a JS state tree to be the source of truth.
 
 ## Responsibility Comparison
 
