@@ -104,11 +104,11 @@ const config: Config = {
           items: [
             {
               label: 'Overview',
-              to: '/reference/overview',
+              to: '/',
             },
             {
               label: 'Comparison',
-              to: '/reference/comparison',
+              to: '/comparison',
             },
             {
               label: 'Getting Started',

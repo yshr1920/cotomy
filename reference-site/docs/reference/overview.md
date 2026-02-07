@@ -1,3 +1,7 @@
+---
+slug: /
+---
+
 # Overview
 
 Cotomy is a pragmatic UI runtime layer designed to make business web applications lighter, clearer, and safer to maintain.  

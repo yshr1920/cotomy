@@ -1,3 +1,7 @@
+---
+slug: /comparison
+---
+
 # Comparison
 
 ## Cotomy Position
