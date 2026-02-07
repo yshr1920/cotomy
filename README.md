@@ -16,7 +16,7 @@ npm i cotomy
 
 Cotomy will continue to expand with more detailed usage instructions and code examples added to the README in the future.  
 For the latest updates, please check the official documentation or repository regularly.  
-Reference: `https://cotomy.net/`
+Reference: https://cotomy.net/
 
 ## View Reference
 
