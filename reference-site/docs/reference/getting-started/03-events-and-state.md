@@ -15,6 +15,13 @@ the UI state.
 - Understand Cotomy's event delegation model
 - See how DOM changes represent state
 
+## Related Classes
+
+```mermaid
+classDiagram
+class CotomyElement
+```
+
 ## Steps
 
 These steps assume you still have the `card` element from the First UI page.
@@ -30,6 +37,10 @@ new CotomyElement(`<button class="btn">Click me</button>`).appendTo(card).on("cl
 Cotomy uses native DOM events. `on()` registers handlers through Cotomy's
 internal registry to avoid leaks.
 
+Cotomy tracks handlers centrally to prevent duplicate bindings.
+
+Events are tracked per element instance, so cleanup stays safe and predictable.
+
 `on()` attaches directly to the element. `onSubTree()` listens once on the root
 and delegates to matching children.
 
@@ -43,6 +54,9 @@ card.onSubTree("click", ".btn", () => {
 
 `onSubTree()` listens once on the root element and delegates to matching
 children. This also works for elements added later with `append()`.
+
+This is especially useful in business UIs where DOM is built dynamically.
+This avoids rebinding when the DOM changes dynamically.
 
 ### 3) Modify the UI as state
 

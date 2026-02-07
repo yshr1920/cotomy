@@ -17,6 +17,28 @@ This is the complete Cotomy UI pattern: UI + Events + Forms + API + Rendering.
 - Handle POST to PUT transitions
 - Render API responses into the DOM
 
+## Related Classes
+
+```mermaid
+classDiagram
+class CotomyForm
+class CotomyApiForm
+class CotomyEntityApiForm
+class CotomyEntityFillApiForm
+class CotomyViewRenderer
+class ICotomyBindNameGenerator
+class CotomyBracketBindNameGenerator
+class CotomyDotBindNameGenerator
+
+CotomyForm <|-- CotomyApiForm
+CotomyApiForm <|-- CotomyEntityApiForm
+CotomyEntityApiForm <|-- CotomyEntityFillApiForm
+CotomyEntityFillApiForm ..> CotomyViewRenderer : renders
+ICotomyBindNameGenerator <|.. CotomyBracketBindNameGenerator
+ICotomyBindNameGenerator <|.. CotomyDotBindNameGenerator
+CotomyViewRenderer ..> ICotomyBindNameGenerator : bind names
+```
+
 ## Steps
 
 ### Classes used in this pattern
@@ -85,10 +107,18 @@ When submitted:
 3. If `201 Created`, the entity key is stored
 4. Response JSON is applied to the DOM
 
+This is a server-driven UI update model: the response is the source of truth.
+Server responses drive UI state changes, not client-side prediction.
+
 ### 4) POST to PUT transitions
 
 When the server responds with `201 Created` and a `Location` header, Cotomy
 stores the entity key. Subsequent submits switch from POST to PUT automatically.
+
+Using the server-issued `Location` keeps identity authoritative and avoids
+duplicate creates in CRUD flows.
+This prevents accidental duplicate creation when users resubmit or navigate
+back.
 
 ### 5) Bind name styles and renderers
 

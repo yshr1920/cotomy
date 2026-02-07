@@ -58,6 +58,22 @@ predictable page modules.
 - Understand the one-page, one-entry model
 - Confirm a basic build or script load
 
+## Related Classes
+
+```mermaid
+classDiagram
+class CotomyWindow
+class CotomyPageController
+class CotomyElement
+class CotomyForm
+class CotomyApi
+
+CotomyElement <|-- CotomyForm
+CotomyForm ..> CotomyApi : submits
+CotomyPageController o-- CotomyForm : manages
+CotomyPageController ..> CotomyWindow : lifecycle
+```
+
 ## Steps
 
 ### 1) Install with npm
@@ -188,7 +204,7 @@ import { CotomyElement } from "cotomy";
 
 new CotomyElement({
 	html: `<div class="hello">Hello Cotomy</div>`,
-	css: `.hello { color: green; font-weight: bold; }`,
+	css: `[root].hello { color: green; font-weight: bold; }`,
 }).appendTo(new CotomyElement(document.body));
 ```
 

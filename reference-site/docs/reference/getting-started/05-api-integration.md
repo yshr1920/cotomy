@@ -8,6 +8,8 @@ sidebar_position: 5
 `CotomyApi` represents Cotomy's API layer. It does not interact with
 the UI unless you explicitly connect it.
 
+This separation keeps UI updates explicit and avoids hidden client state.
+
 Cotomy provides an API client that can be used independently of forms.
 Use this when you need to:
 
@@ -31,6 +33,16 @@ of a form submission. Typical cases:
 - Send API requests without a form
 - Handle responses and errors
 - Understand `CotomyApi`'s role
+
+## Related Classes
+
+```mermaid
+classDiagram
+class CotomyApi
+class CotomyElement
+
+CotomyElement ..> CotomyApi : connects
+```
 
 ## Steps
 
@@ -144,6 +156,11 @@ Cotomy keeps API communication separate from UI state.
 - Cache responses globally
 
 CotomyApi does not retain request or response state. Each call is independent.
+This keeps long-lived systems predictable and easier to maintain.
+
+Each API call is stateless from the client perspective.
+
+CotomyApi does not introduce a client-side data store.
 
 ## Note: Rendering API Responses
 

@@ -8,6 +8,29 @@ This guide is a short, practical entry point to Cotomy. Each page builds on the 
 2. Build a minimal UI with `CotomyElement`.
 3. Learn event handling, the DOM-state model, and forms.
 
+## Architecture Map
+
+```mermaid
+classDiagram
+class CotomyWindow
+class CotomyPageController
+class CotomyElement
+class CotomyForm
+class CotomyApi
+class CotomyApiForm
+class CotomyEntityApiForm
+class CotomyEntityFillApiForm
+
+CotomyElement <|-- CotomyForm
+CotomyForm <|-- CotomyApiForm
+CotomyApiForm <|-- CotomyEntityApiForm
+CotomyEntityApiForm <|-- CotomyEntityFillApiForm
+
+CotomyForm ..> CotomyApi : submits
+CotomyPageController o-- CotomyForm : manages
+CotomyPageController ..> CotomyWindow : lifecycle
+```
+
 ## Sections
 
 - [Installation](./getting-started/01-installation.md)

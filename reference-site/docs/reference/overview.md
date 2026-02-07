@@ -7,7 +7,13 @@ Cotomy favors **predictability over abstraction**, **HTML over virtual DOM**, an
 
 Cotomy is designed for long-lived business systems where safe UI changes, predictable behavior, and low framework lock-in matter more than rendering tricks.
 
+Cotomy reduces UI complexity by removing abstraction layers rather than adding them.
+
 This reference explains the building blocks that make that possible.
+
+Cotomy is not trying to replace the browser platform. It is a runtime
+discipline layer that makes browser-native UI safe for long-lived business
+systems.
 
 Download source code: [Cotomy v0.4.5 ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v0.4.5.zip)
 
@@ -71,6 +77,20 @@ It runs in the browser and works with plain JavaScript or TypeScript, with or wi
 ## Architecture at a Glance
 
 Cotomy is structured around four cooperating layers:
+
+```mermaid
+classDiagram
+class CotomyWindow
+class CotomyPageController
+class CotomyElement
+class CotomyForm
+class CotomyApi
+
+CotomyElement <|-- CotomyForm
+CotomyForm ..> CotomyApi : submits
+CotomyPageController o-- CotomyForm : manages
+CotomyPageController ..> CotomyWindow : lifecycle
+```
 
 | Layer | Role |
 | --- | --- |

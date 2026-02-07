@@ -21,11 +21,27 @@ across pages.
 The page controller coordinates behavior but does not replace element-level UI
 logic.
 
+The controller coordinates behavior but does not hold UI state.
+
 ## Goals
 
 - Initialize page logic in one place
 - Manage multiple forms
 - Handle page lifecycle events
+
+## Related Classes
+
+```mermaid
+classDiagram
+class CotomyPageController
+class CotomyWindow
+class CotomyForm
+class CotomyUrl
+
+CotomyPageController ..> CotomyWindow : lifecycle
+CotomyPageController o-- CotomyForm : manages
+CotomyPageController ..> CotomyUrl : reads
+```
 
 ## Why a Page Controller?
 
@@ -37,6 +53,23 @@ Cotomy is page-oriented. Each page is an independent UI module.
 - Handle page lifecycle events
 
 Without it, page logic becomes scattered across elements and scripts.
+
+This is not a client-side router model. It targets document-driven business
+screens where page scope keeps behavior predictable.
+
+Think of the page controller as the orchestrator for a single screen.
+
+## CotomyWindow in This Layer
+
+`CotomyWindow` is the runtime surface that exposes page-level lifecycle events
+to controllers. It handles:
+
+- Initial load and ready timing
+- Page restore detection (bfcache)
+- Global page events used by forms and controllers
+
+`CotomyPageController` runs on top of `CotomyWindow` to keep page logic
+predictable without introducing a global app container.
 
 ## Page vs Form Responsibilities
 

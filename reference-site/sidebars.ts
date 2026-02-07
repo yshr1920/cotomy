@@ -15,6 +15,7 @@ import type { SidebarsConfig } from '@docusaurus/plugin-content-docs';
 const sidebars: SidebarsConfig = {
   tutorialSidebar: [
     'reference/overview',
+    'reference/comparison',
     {
       type: 'category',
       label: 'Getting Started',

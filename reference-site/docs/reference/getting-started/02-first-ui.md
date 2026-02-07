@@ -17,6 +17,13 @@ with scoped styling.
 - Attach it to an existing DOM node
 - Understand that the DOM element is the UI state
 
+## Related Classes
+
+```mermaid
+classDiagram
+class CotomyElement
+```
+
 ## Steps
 
 ### 1) Create a `CotomyElement`
@@ -27,7 +34,7 @@ import { CotomyElement } from "cotomy";
 const card = new CotomyElement({
 	html: `<div class="card">Hello Cotomy</div>`,
 	css: `
-		.card {
+		[root].card {
 			padding: 16px;
 			background: #e8f5e9;
 			border-radius: 6px;
@@ -39,11 +46,36 @@ const card = new CotomyElement({
 The HTML must have a single root element. Multiple roots will throw an error.  
 `CotomyElement` creates a real DOM element. There is no virtual layer between
 your code and the browser.  
+Cotomy does not virtualize the DOM. What you inspect is what runs.  
 Cotomy automatically scopes the CSS to this element so styles do not leak to
 the rest of the page. This keeps styles local to each UI unit, matching
 Cotomy's page-scoped design.  
+Cotomy scopes CSS at runtime, so style safety does not rely on build tools or
+naming conventions.  
 Selectors are treated as relative to the root element. To target the root
 element itself, use the `[root]` selector.
+
+You can style child elements in two ways:
+
+```ts
+css: `
+	.title { font-weight: 600; }
+	.icon { width: 16px; }
+`
+```
+
+This targets children under the root. It does **not** style the root itself.
+Use `[root]` when the selector should include the root element:
+
+```ts
+css: `
+	[root] .title { font-weight: 600; }
+	[root].active .icon { opacity: 1; }
+`
+```
+
+`[root]` is useful when you need to combine root state (like `.active`) with
+descendant styling.
 
 ### 2) Attach it to the page
 

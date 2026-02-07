@@ -8,6 +8,8 @@ sidebar_position: 4
 Forms in Cotomy are structured UI units built on the same DOM-state model.
 `CotomyForm` adds a predictable submission flow on top of `CotomyElement`.
 
+Forms are screen-level processing units, not UI components.
+
 ## Form Types at a Glance
 
 | Form Type | Base | Purpose | Notes |
@@ -23,6 +25,24 @@ Forms in Cotomy are structured UI units built on the same DOM-state model.
 - Define a form using `CotomyForm`
 - Understand Cotomy's submit lifecycle
 - See how form elements remain DOM-based
+
+## Related Classes
+
+```mermaid
+classDiagram
+class CotomyElement
+class CotomyForm
+class CotomyQueryForm
+class CotomyApiForm
+class CotomyEntityApiForm
+class CotomyEntityFillApiForm
+
+CotomyElement <|-- CotomyForm
+CotomyForm <|-- CotomyQueryForm
+CotomyForm <|-- CotomyApiForm
+CotomyApiForm <|-- CotomyEntityApiForm
+CotomyEntityApiForm <|-- CotomyEntityFillApiForm
+```
 
 ## Steps
 
@@ -106,6 +126,14 @@ The state still lives in the DOM.
 Cotomy does not create a separate form model. Inputs, values, and validation
 remain tied to the DOM. `CotomyForm` only standardizes the submission
 lifecycle.
+
+Cotomy avoids model binding to keep state observable and prevent hidden sync
+logic from creeping into long-lived screens.
+Form state is not mirrored in JavaScript objects, so there is no hidden sync
+layer.
+
+Form submission logic is centralized, but field state remains local to each
+input.
 
 ### CotomyForm does not:
 
