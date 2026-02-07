@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkreference_site=globalThis.webpackChunkreference_site||[]).push([[4583],{6866(e,r,t){t.r(r),t.d(r,{default:()=>i});var c=t(6540),n=t(6347),s=t(9139),f=t(4848);function i(){const e=(0,n.W6)();return(0,c.useEffect)(()=>{e.replace("/reference/overview")},[e]),(0,f.jsx)(s.A,{title:"Cotomy Reference"})}}}]);
