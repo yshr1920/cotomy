@@ -198,14 +198,6 @@ describe("CotomyElement core behaviors", () => {
         expect(styleElement?.textContent).toContain(`[data-cotomy-scopeid="${scope}"] .styled { color: red; }`);
     });
 
-    it("treats [scope] and [root] as equivalent in scoped css", () => {
-        const styled = new CotomyElement({ html: `<div class="styled"></div>`, css: `[scope] .styled { color: blue; }` });
-        const scope = styled.scopeId;
-        const styleElement = document.head.querySelector(`#css-${scope}`) as HTMLStyleElement | null;
-        expect(styleElement).not.toBeNull();
-        expect(styleElement?.textContent).toContain(`[data-cotomy-scopeid="${scope}"] .styled { color: blue; }`);
-    });
-
     it("auto-prefixes [root] when no scope placeholder is present", () => {
         const styled = new CotomyElement({ html: `<div class="styled"></div>`, css: `.styled { color: green; }` });
         const scope = styled.scopeId;
@@ -554,7 +546,7 @@ describe("CotomyElement core behaviors", () => {
         container.appendAll([
             "<div class=\"first\"></div>",
             middle,
-            { html: `<div class="last"></div>`, css: `[scope] .last { color: blue; }` }
+            { html: `<div class="last"></div>`, css: `[root] .last { color: blue; }` }
         ]);
 
         expect(container.element.firstElementChild?.className).toBe("head");
@@ -570,7 +562,7 @@ describe("CotomyElement core behaviors", () => {
         document.body.appendChild(container.element);
 
         const anchor = container.firstChild("#anchor")!;
-        anchor.insertAfter({ html: `<div class="styled"></div>`, css: `[scope] .styled { color: red; }` });
+        anchor.insertAfter({ html: `<div class="styled"></div>`, css: `[root] .styled { color: red; }` });
         anchor.insertBefore("<div class=\"before\"></div>");
 
         const inserted = container.firstChild(".styled")!;
@@ -632,7 +624,7 @@ describe("CotomyElement core behaviors", () => {
     it("rehydrates scoped css when a clone shares scope after the original was removed", async () => {
         CotomyWindow.instance.initialize();
 
-        const original = new CotomyElement({ html: `<div class="styled"></div>`, css: `[scope] .styled { color: red; }` });
+        const original = new CotomyElement({ html: `<div class="styled"></div>`, css: `[root] .styled { color: red; }` });
         const scope = original.scopeId;
         const clone = original.clone();
 

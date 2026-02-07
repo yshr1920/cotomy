@@ -384,9 +384,9 @@ export class CotomyElement implements IEventTarget {
             const cssid = this.scopedCssElementId;
             CotomyElement.find(`#${cssid}`).forEach(e => e.remove());
             const element = document.createElement("style");
-            const hasScopeOrRoot = /\[(?:scope|root)\]/.test(css);
-            const normalizedCss = hasScopeOrRoot ? css : `[root] ${css}`;
-            const writeCss = normalizedCss.replace(/\[(?:scope|root)\]/g, `[data-cotomy-scopeid="${this.scopeId}"]`);
+            const hasRoot = /\[root\]/.test(css);
+            const normalizedCss = hasRoot ? css : `[root] ${css}`;
+            const writeCss = normalizedCss.replace(/\[root\]/g, `[data-cotomy-scopeid="${this.scopeId}"]`);
             const node = document.createTextNode(writeCss);
             element.appendChild(node);
             element.id = cssid;
