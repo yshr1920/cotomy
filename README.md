@@ -6,9 +6,6 @@
 **Cotomy** is a lightweight framework for managing form behavior and page controllers in web applications.  
 It is suitable for both SPAs (Single Page Applications) and traditional web apps requiring dynamic form operations.
 
-⚠️ **Warning**: This project is in early development. APIs may change without notice until version 1.0.0.
-
-
 To install Cotomy in your project, run the following command:
 
 ```bash
@@ -18,7 +15,8 @@ npm i cotomy
 ## Usage
 
 Cotomy will continue to expand with more detailed usage instructions and code examples added to the README in the future.  
-For the latest updates, please check the official documentation or repository regularly.
+For the latest updates, please check the official documentation or repository regularly.  
+Reference: `https://cotomy.net/`
 
 ## View Reference
 
@@ -38,8 +36,7 @@ The View layer provides thin wrappers around DOM elements and window events.
 - Scoped CSS
   - `scopeId: string` - Returns the value stored in the element's `data-cotomy-scopeid` attribute
   - `[root]` placeholder in provided CSS is replaced by `[data-cotomy-scopeid="..."]`
-  - `[scope]` is deprecated and will be removed in a future release (use `[root]` instead)
-  - If neither `[root]` nor `[scope]` is present, `[root]` is treated as if it were prefixed automatically
+  - If no `[root]` is present, `[root]` is treated as if it were prefixed automatically
   - Scoped CSS text is kept on the instance; if the `<style id="css-${scopeId}">` is missing when the element is attached, it will be re-generated automatically
   - `stylable: boolean` - False for tags like `script`, `style`, `link`, `meta`
 - Static helpers
@@ -146,7 +143,7 @@ npm test -- --run tests/view.spec.ts -t "throws when cloning an invalidated elem
 npm test -- --run tests/view.spec.ts -t "compares document order with comesBefore/comesAfter"
 ```
 
-普段は `npm test` で全体を実行できます。上記のコマンドでは `[root]/[scope]` 展開、スコープID共有のクローン挙動、インスタンス単位のイベント隔離、クローン後のスコープCSS再生成、移動フラグの除去、無効化要素のクローン拒否、DOM順序判定などをピンポイントで確認できます。
+普段は `npm test` で全体を実行できます。上記のコマンドでは `[root]` 展開、スコープID共有のクローン挙動、インスタンス単位のイベント隔離、クローン後のスコープCSS再生成、移動フラグの除去、無効化要素のクローン拒否、DOM順序判定などをピンポイントで確認できます。
 
 ### CotomyMetaElement
 
