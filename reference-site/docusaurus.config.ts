@@ -7,7 +7,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
   title: 'Cotomy Reference',
   tagline: 'Cotomy API and class reference',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/logo.svg',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
@@ -65,8 +65,20 @@ const config: Config = {
       },
       items: [
         {
-          type: 'docSidebar',
-          sidebarId: 'tutorialSidebar',
+          type: 'doc',
+          docId: 'reference/overview',
+          position: 'left',
+          label: 'Overview',
+        },
+        {
+          type: 'doc',
+          docId: 'reference/getting-started',
+          position: 'left',
+          label: 'Getting Started',
+        },
+        {
+          type: 'doc',
+          docId: 'reference/classes/view/cotomy-element',
           position: 'left',
           label: 'Reference',
         },

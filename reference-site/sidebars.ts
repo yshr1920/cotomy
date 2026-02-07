@@ -1,4 +1,4 @@
-import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
+import type { SidebarsConfig } from '@docusaurus/plugin-content-docs';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
@@ -15,6 +15,21 @@ import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
 const sidebars: SidebarsConfig = {
   tutorialSidebar: [
     'reference/overview',
+    {
+      type: 'category',
+      label: 'Getting Started',
+      link: {type: 'doc', id: 'reference/getting-started'},
+      items: [
+        'reference/getting-started/installation',
+        'reference/getting-started/first-ui',
+        'reference/getting-started/events-and-state',
+        'reference/getting-started/forms-basics',
+        'reference/getting-started/api-integration',
+        'reference/getting-started/ajax-form',
+        'reference/getting-started/page-control',
+        'reference/getting-started/debugging-and-tips',
+      ],
+    },
     {
       type: 'category',
       label: 'Reference',
