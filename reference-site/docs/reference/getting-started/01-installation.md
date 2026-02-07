@@ -7,7 +7,7 @@ sidebar_position: 1
 
 This page covers the minimum setup for using Cotomy and the design model it assumes.
 
-Download source code: [Cotomy v0.4.5 ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v0.4.5.zip)
+Download source code: [Cotomy v1.0.0 ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.0.zip) | [Cotomy v1.0.0 TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.0.tar.gz)
 
 ## Cotomy's Design Model
 
