@@ -44,6 +44,10 @@ const config: Config = {
           routeBasePath: '/',
         },
         blog: false,
+        sitemap: {
+          changefreq: 'weekly',
+          priority: 0.5,
+        },
         theme: {
           customCss: './src/css/custom.css',
         },
