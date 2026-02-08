@@ -4,16 +4,17 @@ slug: /
 
 # Overview
 
-Cotomy is a pragmatic UI runtime layer designed to make business web applications lighter, clearer, and safer to maintain.  
-It provides a structured layer over the DOM, forms, and API communication — without introducing a heavy framework or hidden magic.
+Cotomy is a pragmatic UI runtime layer and runtime discipline layer designed to make business web applications lighter, clearer, and safer to maintain.  
+It provides a structured layer over the DOM, forms, and API communication — without introducing a heavy component-rendering SPA framework or hidden magic.
 
 Cotomy favors **predictability over abstraction**, **HTML over virtual DOM**, and **explicit structure over convention-based behavior**.
 
 Cotomy is designed for long-lived business systems where safe UI changes, predictable behavior, and low framework lock-in matter more than rendering tricks.
 
-Cotomy reduces UI complexity by removing abstraction layers rather than adding them.
+**Cotomy reduces UI complexity by removing abstraction layers rather than adding them.**
 
 Cotomy does not manage application state. It manages runtime safety around the DOM.
+Cotomy does not introduce a separate application state store. UI state remains in the DOM, and business state remains in your application logic.
 
 This reference explains the building blocks that make that possible.
 
@@ -37,6 +38,7 @@ Cotomy is not just a DOM helper. It enforces runtime-level safety rules that are
 | **DOM move awareness** | Internal transit events prevent state corruption during DOM reparenting |
 | **DOM-state unification** | DOM state is the source of truth, reducing hidden state divergence |
 
+These guarantees address the most common long-term UI failure sources in business systems: memory leaks, ghost handlers, CSS leakage, and DOM-state divergence.
 These guarantees make UI behavior observable and predictable, not dependent on implicit framework rules.
 
 `CotomyElement` makes it easy to bundle small bits of HTML and scoped CSS, then attach them to existing DOM nodes.
@@ -64,7 +66,7 @@ CotomyElement.first("header")!.append(new CotomyElement({
 
 ## What is Cotomy?
 
-Cotomy is **not** a full framework.  
+Cotomy is **not** a component-rendering SPA framework.  
 It is a **structured UI runtime** for business UI that prioritizes maintainability, safe changes, and long-term stability.
 
 It structures browser-native capabilities into a predictable UI execution model.
@@ -105,7 +107,7 @@ CotomyPageController ..> CotomyWindow : lifecycle
 | **CotomyPageController** | Page-level behavior orchestration |
 | **CotomyWindow** | App-wide lifecycle and navigation hooks |
 
-This layered model replaces the need for a heavy SPA framework while keeping behavior predictable.
+This layered model replaces the need for a heavy component-rendering SPA framework while keeping behavior predictable.
 
 ---
 

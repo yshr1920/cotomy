@@ -6,7 +6,7 @@ slug: /comparison
 
 ## Cotomy Position
 
-Cotomy is not a component framework.  
+Cotomy is not a component-rendering SPA framework.  
 It is a DOM-structured runtime layer designed for form-driven, page-scoped business systems.
 
 ```mermaid
@@ -41,6 +41,7 @@ flowchart LR
 
 Cotomy does not replace the platform. It enforces runtime discipline on top of the platform.
 The key difference is **where UI state lives** and **what owns the UI model**.
+Business logic interacts with the DOM through Cotomy's runtime APIs, keeping lifecycle and event discipline intact.
 
 - **Cotomy:** The DOM is the UI state. Cotomy adds a runtime layer for lifecycle,
   forms, scoped CSS, and event cleanup. Updates should go through `CotomyElement`
@@ -65,7 +66,7 @@ you want a centralized render model and a JS state tree to be the source of trut
 | Lifecycle safety | Built-in runtime | Hook-based | Manual | Manual |
 | CSS scoping | Runtime scoped | Build or convention | None | None |
 | Page model | Page-scoped | SPA / Component | Page / Widget | Page |
-| Data binding | Renderer-driven | Reactive state | Attribute-based | Manual |
+| Data binding | DOM + runtime-driven | Reactive state | Attribute-based | Manual |
 | Event cleanup | Automatic | Component lifecycle | Manual | Manual |
 
 ## Philosophy Differences
@@ -100,12 +101,14 @@ React / Vue:
 | --- | --- |
 | Large-scale SPA | No global state management |
 | High-frequency re-render UIs | Not a render-optimization framework |
+| Highly animated UI | Not optimized for frequent visual re-render cycles |
 | Canvas / game UIs | DOM-centric design |
 
-## Why Cotomy Is Not a Framework
+## Why Cotomy Is Not a Component-Rendering SPA Framework
 
 Cotomy does not replace the platform.  
 It enforces runtime discipline on top of the platform.
+Here, “framework” means a component-rendering SPA framework that owns the UI state and render cycle.
 
 Cotomy can coexist with other frameworks when page scope and responsibilities
 are clearly separated.
@@ -113,3 +116,4 @@ are clearly separated.
 ## Summary
 
 Cotomy reduces UI risk, not rendering cost.
+It is a runtime discipline system for DOM-centric business UI.
