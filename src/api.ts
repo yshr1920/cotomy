@@ -477,7 +477,7 @@ export class CotomyApi {
     }
 
     public get keepalive(): boolean {
-        return this._options.keepalive || true;
+        return this._options.keepalive ?? true;
     }
 
     public get integrity(): string {

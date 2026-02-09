@@ -15,7 +15,7 @@ HTTP client wrapper for calling Cotomy REST endpoints with consistent error hand
 
 | Property | Type | Description |
 | --- | --- | --- |
-| `baseUrl` | `string` | Base URL used for relative paths. |
+| `baseUrl` | `string` | Base URL used when the path does not start with a letter (e.g. `/users`). |
 | `headers` | `Record<string, string>` | Default request headers. |
 | `credentials` | `RequestCredentials` | Fetch credentials mode. |
 | `redirect` | `RequestRedirect` | Fetch redirect behavior. |
