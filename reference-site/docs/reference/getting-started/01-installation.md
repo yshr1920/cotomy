@@ -20,6 +20,27 @@ Each page should:
 - Control only its own DOM
 - Avoid hidden cross-page dependencies
 
+> **Note on sharing one entry file across multiple endpoints**
+>
+> Cotomy’s design model assumes one entry file per page. This keeps lifecycle
+> boundaries structural rather than convention-based and is the safest default.
+>
+> If you intentionally choose to use a single entry file that handles multiple
+> pages, treat this as an advanced configuration. From a framework design
+> perspective, providing an entry point per page is still **strongly
+> recommended**.
+>
+> When using a shared entry file, you must enforce the same isolation rules in
+> your own architecture:
+>
+> - Do not keep page-specific state in global variables or singletons
+> - Do not retain DOM references across page navigations
+> - Load page-specific logic conditionally based on URL or DOM context
+> - Avoid retaining page-specific state after navigation (treat navigation as disposal)
+>
+> In this setup, lifecycle safety depends on application design rather than
+> Cotomy’s structural model.
+
 This keeps behavior predictable, debugging simple, page reloads safe, and
 server-rendered apps easy to integrate. Cotomy intentionally avoids a global
 app container or virtual DOM layers. The DOM is the UI state.
@@ -85,7 +106,7 @@ npm install cotomy
 ### 2) Create a page entry
 
 Cotomy works best when each page has its own entry file and endpoint.
-This keeps behavior local and avoids hidden cross-page coupling.
+This keeps behavior local, keeps page lifecycle boundaries **structural** (not convention-based), and avoids hidden cross-page coupling.
 
 Example structure:
 
@@ -113,6 +134,8 @@ and loads the corresponding script bundle for that page.
 
 ### Why one entry per page?
 
+This is a **structural** safety rule, not a technical limitation.
+
 Cotomy assumes a document-oriented UI model:
 
 | SPA Model | Cotomy Model |
@@ -123,7 +146,7 @@ Cotomy assumes a document-oriented UI model:
 
 This keeps behavior isolated and avoids cross-page memory leaks.
 
-### 3a) Example webpack setup
+### 4) Example webpack setup
 
 If you bundle per page with webpack, define a multi-entry config and output
 to a page-specific bundle name.
@@ -170,7 +193,7 @@ Then reference the page bundle in each HTML file:
 <script src="/dist/settings.bundle.js"></script>
 ```
 
-### 3b) Example Vite setup (optional)
+### 5) Example Vite setup (optional)
 
 If you prefer Vite, use a multi-page build config:
 
@@ -191,13 +214,13 @@ export default defineConfig({
 });
 ```
 
-### 4) Import Cotomy
+### 6) Import Cotomy
 
 ```ts
 import { CotomyElement } from "cotomy";
 ```
 
-### 5) Create your first Cotomy element
+### 7) Create your first Cotomy element
 
 ```ts
 import { CotomyElement } from "cotomy";
@@ -208,7 +231,7 @@ new CotomyElement({
 }).appendTo(new CotomyElement(document.body));
 ```
 
-### 6) Verify the page
+### 8) Verify the page
 
 Open the page and confirm there are no console errors.
 
