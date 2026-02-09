@@ -71,8 +71,11 @@ directly.
 
 ### 4) Event cleanup is automatic
 
-When an element is removed, its registered event handlers are cleared
-automatically. Handlers are tracked per element instance.
+When an element is removed, handlers registered with `on()`/`onSubTree()`/`once()`
+are cleared automatically. Handlers are tracked per element instance.
+
+Shortcut helpers like `click()` attach native listeners and are not tracked by
+the registry.
 
 ## Important Concept: Events Follow the DOM Lifecycle
 

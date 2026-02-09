@@ -159,8 +159,8 @@ elements and inputs. Submission logic and rendering logic are separate layers.
 `fill` updates form input values. `render` updates display elements. These are
 separate steps.
 
-The renderer only applies data that exists in the response. It does not track
-future state changes.
+The renderer clears bound elements first, then applies data from the response.
+Keys that are missing in the response are cleared.
 
 If the API request fails, rendering is skipped and error events are triggered.
 

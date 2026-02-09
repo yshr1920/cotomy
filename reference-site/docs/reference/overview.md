@@ -33,7 +33,7 @@ Cotomy is not just a DOM helper. It enforces runtime-level safety rules that are
 | Guarantee | What It Means in Practice |
 |---|---|
 | **Element identity tracking** | Each `CotomyElement` has a persistent instance ID used to manage lifecycle and events safely |
-| **Automatic event cleanup** | Event handlers are centrally tracked and removed when elements leave the DOM |
+| **Automatic event cleanup** | Handlers registered via `on`/`onSubTree`/`once` are tracked and removed when elements leave the DOM |
 | **Scoped CSS lifecycle** | Styles attached to elements are disposed when the last scoped element is removed |
 | **DOM move awareness** | Internal transit events prevent state corruption during DOM reparenting |
 | **DOM-state unification** | DOM state is the source of truth, reducing hidden state divergence |
@@ -127,7 +127,7 @@ Cotomy provides **just enough structure** to keep code organized while staying c
 
 Cotomy automatically manages:
 
-- Event listener cleanup when elements are removed  
+- Cleanup for `on`/`onSubTree`/`once` handlers when elements are removed  
 - Scoped CSS disposal when components leave the DOM  
 - Page re-entry handling for browser back and forward cache  
 
@@ -156,6 +156,8 @@ Cotomy centralizes event management per element instance.
 - One-time events are normalized  
 
 This avoids common UI bugs such as duplicate listeners, memory leaks, and detached callbacks.
+
+Shortcut helpers like `click()` use native listeners and are not tracked in the registry.
 
 This allows large screens to grow without accumulating hidden listener bugs.
 

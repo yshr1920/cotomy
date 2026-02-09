@@ -15,14 +15,14 @@ HTTP client wrapper for calling Cotomy REST endpoints with consistent error hand
 
 | Property | Type | Description |
 | --- | --- | --- |
-| `baseUrl` | `string` | Base URL used for relative paths. |
+| `baseUrl` | `string` | Base URL used when the path does not start with a letter (e.g. `/users`). |
 | `headers` | `Record<string, string>` | Default request headers. |
 | `credentials` | `RequestCredentials` | Fetch credentials mode. |
 | `redirect` | `RequestRedirect` | Fetch redirect behavior. |
 | `cache` | `RequestCache` | Fetch cache behavior. |
 | `referrerPolicy` | `ReferrerPolicy` | Fetch referrer policy. |
 | `mode` | `RequestMode` | Fetch mode (CORS, no-cors, etc.). |
-| `keepalive` | `boolean` | Whether to keep the request alive on page unload. |
+| `keepalive` | `boolean` | Keepalive is always enabled in the current implementation. |
 | `integrity` | `string` | Subresource integrity value. |
 | `abortController` | `AbortController` | Controller used for request cancellation. |
 

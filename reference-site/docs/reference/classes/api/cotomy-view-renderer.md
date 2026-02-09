@@ -15,17 +15,24 @@ Applies API response data to DOM elements using `data-cotomy-bind` and custom re
 
 | Property | Type | Description |
 | --- | --- | --- |
-| `locale` | `string` | Current locale derived from data attributes or browser language. |
-| `initialized` | `boolean` | `true` once default renderers are registered. |
-| `renderers` | `Record<string, (element, value) => void>` | Registered renderer map (initializes on access). |
+| `element` | `CotomyElement` | Root element used for binding and rendering. |
+| `bindNameGenerator` | `ICotomyBindNameGenerator` | Name generator for bind paths. |
 
 **Methods**
 
 | Method | Description |
 | --- | --- |
 | `renderer(type, callback)` | Registers a custom renderer for a bind type. |
+| `applyAsync(response)` | Clears bound elements, then applies response JSON. |
+
+**Protected Members (for subclassing)**
+
+| Member | Description |
+| --- | --- |
+| `locale` | Current locale derived from data attributes or browser language. |
+| `initialized` | `true` once default renderers are registered. |
+| `renderers` | Registered renderer map (initializes on access). |
 | `initialize()` | Registers default renderers (mail, tel, url, number, utc, date). |
 | `bindPrimitiveValue(propertyName, value)` | Binds a primitive value to matching elements. |
 | `applyArrayAsync(values, propertyName)` | Binds array values recursively. |
 | `applyObjectAsync(target, propertyName?)` | Binds object values recursively. |
-| `applyAsync(response)` | Applies the response JSON to bound elements. |

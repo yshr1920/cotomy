@@ -6,71 +6,9 @@ sidebar_position: 1
 # Installation
 
 This page covers the minimum setup for using Cotomy and the design model it assumes.
+Cotomy installs fast, stays close to native HTML, and requires only a small entry script to get started.
 
 Download source code: [Cotomy v1.0.0 ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.0.zip) | [Cotomy v1.0.0 TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.0.tar.gz)
-
-## Cotomy's Design Model
-
-Cotomy is a page-oriented UI layer, not an application framework.
-
-Cotomy is designed around page-scoped UI, not a global application state.
-Each page should:
-
-- Have its own entry file
-- Control only its own DOM
-- Avoid hidden cross-page dependencies
-
-> **Note on sharing one entry file across multiple endpoints**
->
-> Cotomy’s design model assumes one entry file per page. This keeps lifecycle
-> boundaries structural rather than convention-based and is the safest default.
->
-> If you intentionally choose to use a single entry file that handles multiple
-> pages, treat this as an advanced configuration. From a framework design
-> perspective, providing an entry point per page is still **strongly
-> recommended**.
->
-> When using a shared entry file, you must enforce the same isolation rules in
-> your own architecture:
->
-> - Do not keep page-specific state in global variables or singletons
-> - Do not retain DOM references across page navigations
-> - Load page-specific logic conditionally based on URL or DOM context
-> - Avoid retaining page-specific state after navigation (treat navigation as disposal)
->
-> In this setup, lifecycle safety depends on application design rather than
-> Cotomy’s structural model.
-
-This keeps behavior predictable, debugging simple, page reloads safe, and
-server-rendered apps easy to integrate. Cotomy intentionally avoids a global
-app container or virtual DOM layers. The DOM is the UI state.
-
-Cotomy's model scales by composition of pages, not by growing a single
-application shell. Large systems remain maintainable because:
-
-- Each page has a bounded lifecycle
-- Memory and event handlers are naturally released on navigation
-- No global state container grows over time
-- Server-rendered and SPA-style pages can coexist
-
-Cotomy favors predictable behavior and low cognitive load over framework-level
-abstractions. If you prefer:
-
-- Direct DOM control
-- Minimal runtime abstraction
-- Clear lifecycle boundaries
-- Compatibility with server-rendered systems
-
-Cotomy fits naturally.
-
-Cotomy is especially effective for systems where:
-
-- Pages are served independently
-- Business flows are document-driven
-- Server and client responsibilities are clearly separated
-
-Instead of building a large, long-lived client application, you build a set of
-predictable page modules.
 
 ## Goals
 
@@ -78,6 +16,24 @@ predictable page modules.
 - Define a page-level endpoint
 - Understand the one-page, one-entry model
 - Confirm a basic build or script load
+
+## Environment Assumptions
+
+Cotomy is a runtime layer and does not require a specific framework. It does
+not require a build step, but TypeScript usage usually does. You can:
+
+- Use a bundler (webpack, Vite, etc.)
+- Or load prebuilt JS if your setup provides it
+
+| Requirement | Notes |
+| --- | --- |
+| ES module support | Required for `import` syntax |
+| TypeScript (optional) | Recommended for medium to large projects |
+| Bundler (optional) | Helps organize per-page entry files |
+| Modern browsers | Cotomy targets modern browser environments |
+
+Each page HTML file should load only its corresponding entry bundle.
+Avoid loading multiple page bundles into the same document.
 
 ## Related Classes
 
