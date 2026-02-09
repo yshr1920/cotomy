@@ -7,7 +7,7 @@ import { themes as prismThemes } from 'prism-react-renderer';
 const config: Config = {
   title: 'Cotomy Reference',
   tagline: 'Cotomy API and class reference',
-  favicon: 'img/logo.svg',
+  favicon: 'img/cotomy.svg',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
@@ -71,7 +71,7 @@ const config: Config = {
       title: 'Cotomy',
       logo: {
         alt: 'Cotomy Logo',
-        src: 'img/logo.svg',
+        src: 'img/cotomy.svg',
       },
       items: [
         {
