@@ -22,7 +22,7 @@ HTTP client wrapper for calling Cotomy REST endpoints with consistent error hand
 | `cache` | `RequestCache` | Fetch cache behavior. |
 | `referrerPolicy` | `ReferrerPolicy` | Fetch referrer policy. |
 | `mode` | `RequestMode` | Fetch mode (CORS, no-cors, etc.). |
-| `keepalive` | `boolean` | Whether to keep the request alive on page unload. |
+| `keepalive` | `boolean` | Keepalive is always enabled in the current implementation. |
 | `integrity` | `string` | Subresource integrity value. |
 | `abortController` | `AbortController` | Controller used for request cancellation. |
 

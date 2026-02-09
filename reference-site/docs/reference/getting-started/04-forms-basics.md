@@ -18,7 +18,7 @@ Forms are screen-level processing units, not UI components.
 | `CotomyQueryForm` | `CotomyForm` | Query navigation via GET | Builds a query string from inputs and navigates |
 | `CotomyApiForm` | `CotomyForm` | API submit with `FormData` | Handles `FormData` and API error events |
 | `CotomyEntityApiForm` | `CotomyApiForm` | Entity-aware API submit | Switches POST to PUT when an entity key exists |
-| `CotomyEntityFillApiForm` | `CotomyEntityApiForm` | Load and fill inputs | Fetches data and fills inputs on load and submit |
+| `CotomyEntityFillApiForm` | `CotomyEntityApiForm` | Load and fill inputs | Fetches data and fills inputs when an entity key is present |
 
 ## Goals
 
