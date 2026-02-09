@@ -95,6 +95,19 @@ describe("CotomyApi", () => {
         expect(init?.body).toBe(JSON.stringify({ name: "Alice" }));
     });
 
+    it("allows keepalive to be disabled", async () => {
+        (fetch as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(
+            new Response("{}", { status: 200 })
+        );
+
+        const api = new CotomyApi({ keepalive: false });
+
+        await api.getAsync("/ping");
+
+        const [, init] = (fetch as unknown as ReturnType<typeof vi.fn>).mock.calls[0];
+        expect(init?.keepalive).toBe(false);
+    });
+
     it("converts multipart/form-data bodies to FormData and removes header", async () => {
         (fetch as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(
             new Response("{}", { status: 200 })
