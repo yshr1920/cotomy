@@ -8,7 +8,7 @@ sidebar_position: 1
 This page covers the minimum setup for using Cotomy and the design model it assumes.
 Cotomy installs fast, stays close to native HTML, and requires only a small entry script to get started.
 
-Download source code: [Cotomy v1.0.0 ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.0.zip) | [Cotomy v1.0.0 TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.0.tar.gz)
+Download source code: [Cotomy v1.0.1 ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.1.zip) | [Cotomy v1.0.1 TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.1.tar.gz)
 
 ## Goals
 

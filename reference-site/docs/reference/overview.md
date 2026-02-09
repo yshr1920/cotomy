@@ -22,7 +22,7 @@ Cotomy is not trying to replace the browser platform. It is a runtime
 discipline layer that makes browser-native UI safe for long-lived business
 systems.
 
-Download source code: [Cotomy v1.0.0 ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.0.zip) | [Cotomy v1.0.0 TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.0.tar.gz)
+Download source code: [Cotomy v1.0.1 ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.1.zip) | [Cotomy v1.0.1 TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.1.tar.gz)
 
 ---
 

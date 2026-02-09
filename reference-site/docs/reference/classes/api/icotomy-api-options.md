@@ -18,5 +18,5 @@ Options for configuring `CotomyApi` request behavior. All fields are optional.
 | `cache` | `RequestCache` | Fetch cache behavior. |
 | `referrerPolicy` | `ReferrerPolicy` | Fetch referrer policy. |
 | `mode` | `RequestMode` | Fetch mode (CORS, no-cors, etc.). |
-| `keepalive` | `boolean` | Keepalive is always enabled in the current implementation. |
+| `keepalive` | `boolean` | Whether to keep the request alive on page unload (default: `true`). |
 | `integrity` | `string` | Subresource integrity value. |
