@@ -283,6 +283,11 @@ Business-specific UI logic
 
 It does not replace the platform — it structures it.
 
+---
+## Contact
+
+Email: yshr1920@gmail.com
+
 ## How to Use This Reference
 
 Use the sidebar to navigate to each class, interface, and utility.  

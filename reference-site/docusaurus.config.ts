@@ -124,6 +124,15 @@ const config: Config = {
             },
           ],
         },
+        {
+          title: 'Contact',
+          items: [
+            {
+              label: 'yshr1920@gmail.com',
+              href: 'mailto:yshr1920@gmail.com',
+            },
+          ],
+        },
       ],
       copyright: `© ${new Date().getFullYear()} labo1920. All rights reserved.`,
     },
