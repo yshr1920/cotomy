@@ -6,49 +6,49 @@ title: Class Index
 This page lists all available classes in the Cotomy reference.
 
 ## View
-- [CotomyScrollOptions](./classes/view/cotomy-scroll-options)
-- [CotomyElement](./classes/view/cotomy-element)
-- [CotomyMetaElement](./classes/view/cotomy-meta-element)
-- [CotomyWindow](./classes/view/cotomy-window)
+- [CotomyScrollOptions](/reference/classes/view/cotomy-scroll-options)
+- [CotomyElement](/reference/classes/view/cotomy-element)
+- [CotomyMetaElement](/reference/classes/view/cotomy-meta-element)
+- [CotomyWindow](/reference/classes/view/cotomy-window)
 
 ## Forms
-- [CotomyForm](./classes/forms/cotomy-form)
-- [CotomyQueryForm](./classes/forms/cotomy-query-form)
-- [CotomyApiFailedEvent](./classes/forms/cotomy-api-failed-event)
-- [CotomyApiForm](./classes/forms/cotomy-api-form)
-- [CotomyEntityApiForm](./classes/forms/cotomy-entity-api-form)
-- [CotomyEntityFillApiForm](./classes/forms/cotomy-entity-fill-api-form)
+- [CotomyForm](/reference/classes/forms/cotomy-form)
+- [CotomyQueryForm](/reference/classes/forms/cotomy-query-form)
+- [CotomyApiFailedEvent](/reference/classes/forms/cotomy-api-failed-event)
+- [CotomyApiForm](/reference/classes/forms/cotomy-api-form)
+- [CotomyEntityApiForm](/reference/classes/forms/cotomy-entity-api-form)
+- [CotomyEntityFillApiForm](/reference/classes/forms/cotomy-entity-fill-api-form)
 
 ## Page
-- [CotomyUrl](./classes/page/cotomy-url)
-- [CotomyPageController](./classes/page/cotomy-page-controller)
+- [CotomyUrl](/reference/classes/page/cotomy-url)
+- [CotomyPageController](/reference/classes/page/cotomy-page-controller)
 
 ## API
-- [CotomyApi](./classes/api/cotomy-api)
-- [CotomyApiResponse](./classes/api/cotomy-api-response)
-- [CotomyBracketBindNameGenerator](./classes/api/cotomy-bracket-bind-name-generator)
-- [CotomyDotBindNameGenerator](./classes/api/cotomy-dot-bind-name-generator)
-- [CotomyViewRenderer](./classes/api/cotomy-view-renderer)
-- [ICotomyBindNameGenerator](./classes/api/icotomy-bind-name-generator)
-- [ICotomyApiOptions](./classes/api/icotomy-api-options)
-- [ICotomyRestSubmitForm](./classes/api/icotomy-rest-submit-form)
+- [CotomyApi](/reference/classes/api/cotomy-api)
+- [CotomyApiResponse](/reference/classes/api/cotomy-api-response)
+- [CotomyBracketBindNameGenerator](/reference/classes/api/cotomy-bracket-bind-name-generator)
+- [CotomyDotBindNameGenerator](/reference/classes/api/cotomy-dot-bind-name-generator)
+- [CotomyViewRenderer](/reference/classes/api/cotomy-view-renderer)
+- [ICotomyBindNameGenerator](/reference/classes/api/icotomy-bind-name-generator)
+- [ICotomyApiOptions](/reference/classes/api/icotomy-api-options)
+- [ICotomyRestSubmitForm](/reference/classes/api/icotomy-rest-submit-form)
 
 ## Debug
-- [CotomyDebugFeature](./classes/debug/cotomy-debug-feature)
-- [CotomyDebugSettings](./classes/debug/cotomy-debug-settings)
+- [CotomyDebugFeature](/reference/classes/debug/cotomy-debug-feature)
+- [CotomyDebugSettings](/reference/classes/debug/cotomy-debug-settings)
 
 ## Errors
-- [CotomyApiException](./classes/errors/cotomy-api-exception)
-- [CotomyConflictException](./classes/errors/cotomy-conflict-exception)
-- [CotomyForbiddenException](./classes/errors/cotomy-forbidden-exception)
-- [CotomyHttpClientError](./classes/errors/cotomy-http-client-error)
-- [CotomyHttpServerError](./classes/errors/cotomy-http-server-error)
-- [CotomyInvalidFormDataBodyException](./classes/errors/cotomy-invalid-form-data-body-exception)
-- [CotomyNotFoundException](./classes/errors/cotomy-not-found-exception)
-- [CotomyRequestInvalidException](./classes/errors/cotomy-request-invalid-exception)
-- [CotomyResponseJsonParseException](./classes/errors/cotomy-response-json-parse-exception)
-- [CotomyTooManyRequestsException](./classes/errors/cotomy-too-many-requests-exception)
-- [CotomyUnauthorizedException](./classes/errors/cotomy-unauthorized-exception)
+- [CotomyApiException](/reference/classes/errors/cotomy-api-exception)
+- [CotomyConflictException](/reference/classes/errors/cotomy-conflict-exception)
+- [CotomyForbiddenException](/reference/classes/errors/cotomy-forbidden-exception)
+- [CotomyHttpClientError](/reference/classes/errors/cotomy-http-client-error)
+- [CotomyHttpServerError](/reference/classes/errors/cotomy-http-server-error)
+- [CotomyInvalidFormDataBodyException](/reference/classes/errors/cotomy-invalid-form-data-body-exception)
+- [CotomyNotFoundException](/reference/classes/errors/cotomy-not-found-exception)
+- [CotomyRequestInvalidException](/reference/classes/errors/cotomy-request-invalid-exception)
+- [CotomyResponseJsonParseException](/reference/classes/errors/cotomy-response-json-parse-exception)
+- [CotomyTooManyRequestsException](/reference/classes/errors/cotomy-too-many-requests-exception)
+- [CotomyUnauthorizedException](/reference/classes/errors/cotomy-unauthorized-exception)
 
 ## Debug
 - [CotomyDebugFeature](./classes/debug/cotomy-debug-feature)
