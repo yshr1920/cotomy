@@ -49,7 +49,3 @@ This page lists all available classes in the Cotomy reference.
 - [CotomyResponseJsonParseException](/reference/classes/errors/cotomy-response-json-parse-exception)
 - [CotomyTooManyRequestsException](/reference/classes/errors/cotomy-too-many-requests-exception)
 - [CotomyUnauthorizedException](/reference/classes/errors/cotomy-unauthorized-exception)
-
-## Debug
-- [CotomyDebugFeature](./classes/debug/cotomy-debug-feature)
-- [CotomyDebugSettings](./classes/debug/cotomy-debug-settings)
