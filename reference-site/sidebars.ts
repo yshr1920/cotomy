@@ -16,6 +16,7 @@ const sidebars: SidebarsConfig = {
   tutorialSidebar: [
     'reference/overview',
     'reference/comparison',
+    'reference/index',
     {
       type: 'category',
       label: 'Getting Started',
