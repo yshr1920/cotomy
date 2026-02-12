@@ -5,8 +5,8 @@ import { themes as prismThemes } from 'prism-react-renderer';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: 'Cotomy Reference',
-  tagline: 'Cotomy API and class reference',
+  title: 'Cotomy - Structured UI Runtime',
+  tagline: 'Structured UI runtime and API reference for business web UI',
   favicon: 'img/logo.svg',
   trailingSlash: true,
 
@@ -72,9 +72,9 @@ const config: Config = {
       innerHTML: JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'WebSite',
-        name: 'Cotomy Reference',
+        name: 'Cotomy',
         url: 'https://cotomy.net/',
-        description: 'Official Cotomy API and class reference for DOM-centric business UI.',
+        description: 'Structured UI runtime and API reference for DOM-centric business web applications.',
       }),
     },
     {
@@ -86,6 +86,7 @@ const config: Config = {
         name: 'labo1920',
         url: 'https://cotomy.net/',
         email: 'yshr1920@gmail.com',
+        sameAs: ['https://blog.cotomy.net/', 'https://github.com/yshr1920/cotomy'],
       }),
     },
   ],
@@ -161,6 +162,11 @@ const config: Config = {
           position: 'right',
           label: 'Privacy Policy',
         },
+        {
+          href: 'https://blog.cotomy.net/',
+          position: 'right',
+          label: 'Blog',
+        },
       ],
     },
     footer: {
@@ -184,6 +190,15 @@ const config: Config = {
             {
               label: 'Reference',
               to: '/reference/classes/view/cotomy-element',
+            },
+          ],
+        },
+        {
+          title: 'Blog',
+          items: [
+            {
+              label: 'Cotomy Blog',
+              href: 'https://blog.cotomy.net/',
             },
           ],
         },
