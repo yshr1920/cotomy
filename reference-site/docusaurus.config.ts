@@ -44,6 +44,9 @@ const config: Config = {
           routeBasePath: '/',
         },
         blog: false,
+        gtag: {
+          trackingID: 'G-0HS12QXSH7',
+        },
         sitemap: {
           changefreq: 'weekly',
           priority: 0.5,
