@@ -9,7 +9,10 @@ export default function ContactPage(): React.JSX.Element {
   }, []);
 
   return (
-    <Layout title="Contact">
+    <Layout
+      title="Contact"
+      description="Contact the Cotomy site operator for technical inquiries, support questions, or privacy requests."
+    >
       <main className="container margin-vert--lg">
         <h1>Contact</h1>
 

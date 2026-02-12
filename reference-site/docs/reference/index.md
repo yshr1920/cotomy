@@ -1,6 +1,7 @@
 ---
 slug: /reference
 title: Class Index
+description: Browse all Cotomy classes across View, Forms, Page, API, Debug, and Errors with direct links.
 ---
 
 This page lists all available classes in the Cotomy reference.

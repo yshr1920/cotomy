@@ -8,6 +8,7 @@ const config: Config = {
   title: 'Cotomy Reference',
   tagline: 'Cotomy API and class reference',
   favicon: 'img/logo.svg',
+  trailingSlash: true,
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
@@ -64,9 +65,52 @@ const config: Config = {
     mermaid: true,
   },
 
+  headTags: [
+    {
+      tagName: 'script',
+      attributes: {type: 'application/ld+json'},
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: 'Cotomy Reference',
+        url: 'https://cotomy.net/',
+        description: 'Official Cotomy API and class reference for DOM-centric business UI.',
+      }),
+    },
+    {
+      tagName: 'script',
+      attributes: {type: 'application/ld+json'},
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: 'labo1920',
+        url: 'https://cotomy.net/',
+        email: 'yshr1920@gmail.com',
+      }),
+    },
+  ],
+
   themeConfig: {
     // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',
+    metadata: [
+      {
+        name: 'description',
+        content: 'Cotomy reference documentation for classes, forms, API integration, and page-scoped UI architecture.',
+      },
+      {
+        name: 'keywords',
+        content: 'Cotomy, TypeScript, DOM, UI runtime, API forms, reference documentation',
+      },
+      {
+        name: 'robots',
+        content: 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1',
+      },
+      {
+        property: 'og:type',
+        content: 'website',
+      },
+    ],
     colorMode: {
       respectPrefersColorScheme: true,
     },

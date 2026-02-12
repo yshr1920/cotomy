@@ -1,3 +1,8 @@
+---
+title: Getting Started
+description: Start with Cotomy installation, first UI, events, forms, API integration, and page control in practical steps.
+---
+
 # Getting Started
 
 This guide is a short, practical entry point to Cotomy. Each page builds on the previous one.
