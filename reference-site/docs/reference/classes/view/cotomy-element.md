@@ -148,3 +148,7 @@ DOM wrapper with utilities for querying, styling, layout, and events.
 | `resize(handle?)` | Registers or triggers layout resize events. |
 | `scroll(handle?)` | Registers or triggers layout scroll events. |
 | `changeLayout(handle?)` | Registers or triggers layout change events. |
+
+### Related Blog Articles
+
+- [Problem #3 - Screen Lifecycle and DOM Stability](https://blog.cotomy.net/posts/problem-3-screen-lifecycle-dom-stability/)

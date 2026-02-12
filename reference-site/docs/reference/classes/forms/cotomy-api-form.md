@@ -29,3 +29,7 @@ Form that submits to an API endpoint and surfaces failure events.
 | `triggerApiFailedEvent(response)` | Dispatches the API failed event. |
 | `triggerSubmitFailedEvent(response)` | Dispatches the submit failed event. |
 | `submitToApiAsync(formData)` | Submits FormData and returns the response. |
+
+### Related Blog Articles
+
+- [Business Operations Need a Protocol](https://blog.cotomy.net/posts/problem-5-api-driven-entities-ui-contract-stability/)

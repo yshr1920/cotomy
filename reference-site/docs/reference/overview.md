@@ -299,3 +299,10 @@ Email: yshr1920@gmail.com
 
 Use the sidebar to navigate to each class, interface, and utility.  
 Each page describes its purpose, methods, and expected behavior.
+
+## Practical Guides
+
+For real-world usage and architectural discussions:
+
+- [Problem #5 - Business Operations Need a Protocol](https://blog.cotomy.net/posts/problem-5-api-driven-entities-ui-contract-stability/)
+- [Problem #6 - Runtime Boundaries and Operational Safety](https://blog.cotomy.net/posts/problem-6-runtime-boundaries-operational-safety/)
