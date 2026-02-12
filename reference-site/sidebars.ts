@@ -16,7 +16,6 @@ const sidebars: SidebarsConfig = {
   tutorialSidebar: [
     'reference/overview',
     'reference/comparison',
-    'reference/index',
     {
       type: 'category',
       label: 'Getting Started',
@@ -32,6 +31,7 @@ const sidebars: SidebarsConfig = {
         'reference/getting-started/debugging-and-tips',
       ],
     },
+    'reference/index',
     {
       type: 'category',
       label: 'Reference',
