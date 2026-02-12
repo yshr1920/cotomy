@@ -5,6 +5,7 @@ description: Browse all Cotomy classes across View, Forms, Page, API, Debug, and
 ---
 
 This page lists all available classes in the Cotomy reference.
+For design and architectural context behind these APIs, visit the [Cotomy Blog](https://blog.cotomy.net/).
 
 ## View
 - [CotomyScrollOptions](/reference/classes/view/cotomy-scroll-options)

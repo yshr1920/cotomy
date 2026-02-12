@@ -57,6 +57,7 @@ starts. It could be server-rendered HTML, static HTML, or HTML produced by a bui
 Use Cotomy when you want HTML/DOM to remain the primary model and you need
 runtime safety for forms and long-lived pages. Use a component framework when
 you want a centralized render model and a JS state tree to be the source of truth.
+For design rationale and practical usage notes, see the [Cotomy Blog](https://blog.cotomy.net/).
 
 ## Responsibility Comparison
 

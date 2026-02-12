@@ -6,6 +6,7 @@ description: Start with Cotomy installation, first UI, events, forms, API integr
 # Getting Started
 
 This guide is a short, practical entry point to Cotomy. Each page builds on the previous one.
+For design essays and implementation notes around these topics, see the [Cotomy Blog](https://blog.cotomy.net/).
 
 ## Cotomy's Design Model
 
