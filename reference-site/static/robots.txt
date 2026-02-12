@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Explicitly allow major AI crawlers as well
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://cotomy.net/sitemap.xml
