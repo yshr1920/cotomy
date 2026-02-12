@@ -21,6 +21,7 @@ Cotomy does not introduce a separate application state store. UI state remains i
 This reference explains the building blocks that make that possible.
 
 Key references: [CotomyElement](/reference/classes/view/cotomy-element), [CotomyApiForm](/reference/classes/forms/cotomy-api-form), [CotomyWindow](/reference/classes/view/cotomy-window), and the full [Class Index](/reference/).
+For design notes and practical write-ups, visit the [Cotomy Blog](https://blog.cotomy.net/).
 
 Cotomy is not trying to replace the browser platform. It is a runtime
 discipline layer that makes browser-native UI safe for long-lived business
