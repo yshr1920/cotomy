@@ -1,6 +1,7 @@
 ---
 slug: /privacy-policy
 title: Privacy Policy
+description: Privacy policy for cotomy.net covering collected data, usage, retention, cookies, and user rights.
 ---
 
 ## 1. Operator Information

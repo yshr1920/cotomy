@@ -1,5 +1,7 @@
 ---
 slug: /
+title: Overview
+description: Cotomy overview for DOM-centric business UI, runtime guarantees, lifecycle safety, and form-first architecture.
 ---
 
 # Overview
@@ -17,6 +19,8 @@ Cotomy does not manage application state. It manages runtime safety around the D
 Cotomy does not introduce a separate application state store. UI state remains in the DOM, and business state remains in your application logic.
 
 This reference explains the building blocks that make that possible.
+
+Key references: [CotomyElement](/reference/classes/view/cotomy-element), [CotomyApiForm](/reference/classes/forms/cotomy-api-form), [CotomyWindow](/reference/classes/view/cotomy-window), and the full [Class Index](/reference/).
 
 Cotomy is not trying to replace the browser platform. It is a runtime
 discipline layer that makes browser-native UI safe for long-lived business

@@ -1,5 +1,7 @@
 ---
 slug: /comparison
+title: Comparison
+description: Compare Cotomy with React, Vue, Alpine, and jQuery for DOM state, lifecycle safety, and business UI architecture.
 ---
 
 # Comparison
