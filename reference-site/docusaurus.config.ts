@@ -94,9 +94,25 @@ const config: Config = {
         },
         {
           type: 'doc',
+          docId: 'reference/index',
+          position: 'left',
+          label: 'Class Index',
+        },
+        {
+          type: 'doc',
           docId: 'reference/classes/view/cotomy-element',
           position: 'left',
           label: 'Reference',
+        },
+        {
+          to: '/contact/',
+          position: 'right',
+          label: 'Contact',
+        },
+        {
+          to: '/privacy-policy/',
+          position: 'right',
+          label: 'Privacy Policy',
         },
       ],
     },
@@ -127,6 +143,14 @@ const config: Config = {
         {
           title: 'Contact',
           items: [
+            {
+              label: 'Contact Form',
+              to: '/contact/',
+            },
+            {
+              label: 'Privacy Policy',
+              to: '/privacy-policy/',
+            },
             {
               label: 'yshr1920@gmail.com',
               href: 'mailto:yshr1920@gmail.com',
