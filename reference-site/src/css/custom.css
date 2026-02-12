@@ -29,6 +29,20 @@
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
 
+.navbar__link {
+  color: var(--ifm-color-primary);
+  font-weight: 500;
+}
+
+.navbar__link:hover {
+  color: var(--ifm-color-primary-dark);
+}
+
+.navbar__link--active {
+  color: var(--ifm-color-primary-darkest);
+  font-weight: 700;
+}
+
 .contact-form {
   max-width: 720px;
   margin-inline: auto;
