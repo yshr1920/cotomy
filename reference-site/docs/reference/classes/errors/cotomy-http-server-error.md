@@ -8,5 +8,5 @@ sidebar_position: 9
 Base class for HTTP 5xx errors.
 
 **Constructor**
-- `new CotomyHttpServerError(status, message, response, bodyText?)`
+- new CotomyHttpServerError(status, message, response, bodyText?)
   Creates a server error with response details.

@@ -8,5 +8,5 @@ sidebar_position: 10
 Thrown when a response body cannot be parsed as JSON.
 
 **Constructor**
-- `new CotomyResponseJsonParseException(message?)`
+- new CotomyResponseJsonParseException(message?)
   Creates a JSON parse error.

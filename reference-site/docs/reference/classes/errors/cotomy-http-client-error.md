@@ -8,5 +8,5 @@ sidebar_position: 2
 Base class for HTTP 4xx errors.
 
 **Constructor**
-- `new CotomyHttpClientError(status, message, response, bodyText?)`
+- new CotomyHttpClientError(status, message, response, bodyText?)
   Creates a client error with HTTP status and response details.

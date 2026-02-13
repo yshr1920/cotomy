@@ -8,5 +8,5 @@ sidebar_position: 7
 Represents validation-related client errors (400/422).
 
 **Constructor**
-- `new CotomyRequestInvalidException(status, message, response, bodyText?)`
+- new CotomyRequestInvalidException(status, message, response, bodyText?)
   Creates a request invalid error with response details.

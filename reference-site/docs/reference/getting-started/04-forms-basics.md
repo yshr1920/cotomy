@@ -6,23 +6,21 @@ sidebar_position: 4
 # Forms Basics
 
 Forms in Cotomy are structured UI units built on the same DOM-state model.
-`CotomyForm` adds a predictable submission flow on top of `CotomyElement`.
-
-Forms are screen-level processing units, not UI components.
+CotomyForm adds a predictable submission flow on top of CotomyElement.
 
 ## Form Types at a Glance
 
 | Form Type | Base | Purpose | Notes |
 | --- | --- | --- | --- |
-| `CotomyForm` | `CotomyElement` | Standard submit lifecycle | Use when you want full control of `submitAsync()` |
-| `CotomyQueryForm` | `CotomyForm` | Query navigation via GET | Builds a query string from inputs and navigates |
-| `CotomyApiForm` | `CotomyForm` | API submit with `FormData` | Handles `FormData` and API error events |
-| `CotomyEntityApiForm` | `CotomyApiForm` | Entity-aware API submit | Switches POST to PUT when an entity key exists |
-| `CotomyEntityFillApiForm` | `CotomyEntityApiForm` | Load and fill inputs | Fetches data and fills inputs when an entity key is present |
+| CotomyForm | CotomyElement | Standard submit lifecycle | Use when you want full control of submitAsync() |
+| CotomyQueryForm | CotomyForm | Query navigation via GET | Builds a query string from inputs and navigates |
+| CotomyApiForm | CotomyForm | API submit with FormData | Handles FormData and API error events |
+| CotomyEntityApiForm | CotomyApiForm | Entity-aware API submit | Switches POST to PUT when an entity key exists |
+| CotomyEntityFillApiForm | CotomyEntityApiForm | Load and fill inputs | Fetches data and fills inputs when an entity key is present |
 
 ## Goals
 
-- Define a form using `CotomyForm`
+- Define a form using CotomyForm
 - Understand Cotomy's submit lifecycle
 - See how form elements remain DOM-based
 
@@ -67,13 +65,13 @@ const form = new SimpleForm(`
 form.appendTo(new CotomyElement(document.body));
 ```
 
-The root element must be a `<form>` element. `CotomyForm` does not create one
+The root element must be a &lt;form&gt; element. CotomyForm does not create one
 for you.
 
 ### 1a) Recommended: bind existing HTML
 
-Cotomy typically works with static or server-rendered HTML, then binds behavior
-to the existing form using `byId()`.
+Cotomy usually works with static or server-rendered HTML, then binds behavior
+to the existing form using byId().
 
 ```html
 <form id="profile-form">
@@ -101,7 +99,7 @@ form?.initialize();
 form.initialize();
 ```
 
-`initialize()` sets up Cotomy's internal submit handling.
+initialize() sets up Cotomy's internal submit handling.
 It must be called once to enable Cotomy's submit lifecycle.
 
 ### 3) Understand the submit flow
@@ -109,7 +107,7 @@ It must be called once to enable Cotomy's submit lifecycle.
 When the form is submitted:
 
 1. Default browser submit is prevented
-2. Cotomy calls `submitAsync()`
+2. Cotomy calls submitAsync()
 3. You control what happens next
 
 ### 4) Access form values
@@ -124,16 +122,9 @@ The state still lives in the DOM.
 ## Important Concept: Forms are Still DOM
 
 Cotomy does not create a separate form model. Inputs, values, and validation
-remain tied to the DOM. `CotomyForm` only standardizes the submission
+remain tied to the DOM. CotomyForm only standardizes the submission
 lifecycle.
-
-Cotomy avoids model binding to keep state observable and prevent hidden sync
-logic from creeping into long-lived screens.
-Form state is not mirrored in JavaScript objects, so there is no hidden sync
-layer.
-
-Form submission logic is centralized, but field state remains local to each
-input.
+Form submission logic is centralized, while field state remains on each input element.
 
 ### CotomyForm does not:
 
@@ -154,4 +145,4 @@ This pattern scales to API and entity forms.
 
 ## Next
 
-Next: [API Client Basics](./05-api-integration.md) to call APIs without forms.
+Next: [API Client Basics](./05-api-integration.md).

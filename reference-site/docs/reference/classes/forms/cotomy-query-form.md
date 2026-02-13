@@ -11,4 +11,4 @@ Form that submits via query string navigation (GET).
 
 | Method | Description |
 | --- | --- |
-| `submitAsync()` | Builds a query string from inputs and navigates to the URL. |
+| submitAsync() | Builds a query string from inputs and navigates to the URL. |

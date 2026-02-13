@@ -6,26 +6,16 @@ description: Cotomy overview for DOM-centric business UI, runtime guarantees, li
 
 # Overview
 
-Cotomy is a pragmatic UI runtime layer and runtime discipline layer designed to make business web applications lighter, clearer, and safer to maintain.  
-It provides a structured layer over the DOM, forms, and API communication — without introducing a heavy component-rendering SPA framework or hidden magic.
+Cotomy is a runtime layer for business UI. It keeps the browser as the center of the system, while adding structure around DOM updates, forms, and API calls.
 
-Cotomy favors **predictability over abstraction**, **HTML over virtual DOM**, and **explicit structure over convention-based behavior**.
+The goal is simple: make long-lived screens easier to change and debug without committing to a heavy SPA stack.
 
-Cotomy is designed for long-lived business systems where safe UI changes, predictable behavior, and low framework lock-in matter more than rendering tricks.
+Cotomy does not add a separate app state store. UI state stays in the DOM, and business state stays in your application logic.
 
-**Cotomy reduces UI complexity by removing abstraction layers rather than adding them.**
-
-Cotomy does not manage application state. It manages runtime safety around the DOM.
-Cotomy does not introduce a separate application state store. UI state remains in the DOM, and business state remains in your application logic.
-
-This reference explains the building blocks that make that possible.
+This reference explains the core pieces behind that model.
 
 Key references: [CotomyElement](/reference/classes/view/cotomy-element), [CotomyApiForm](/reference/classes/forms/cotomy-api-form), [CotomyWindow](/reference/classes/view/cotomy-window), and the full [Class Index](/reference/).
 For design notes and practical write-ups, visit the [Cotomy Blog](https://blog.cotomy.net/).
-
-Cotomy is not trying to replace the browser platform. It is a runtime
-discipline layer that makes browser-native UI safe for long-lived business
-systems.
 
 ## Release Notes
 
@@ -46,23 +36,22 @@ Downloads: [ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.0.zip
 
 ## Runtime Guarantees
 
-Cotomy is not just a DOM helper. It enforces runtime-level safety rules that are normally left to developer discipline:
+Cotomy includes runtime guardrails that are often left to manual discipline:
 
 | Guarantee | What It Means in Practice |
 |---|---|
-| **Element identity tracking** | Each `CotomyElement` has a persistent instance ID used to manage lifecycle and events safely |
-| **Automatic event cleanup** | Handlers registered via `on`/`onSubTree`/`once` are tracked and removed when elements leave the DOM |
+| **Element identity tracking** | Each CotomyElement has a persistent instance ID used to manage lifecycle and events safely |
+| **Automatic event cleanup** | Handlers registered via on/onSubTree/once are tracked and removed when elements leave the DOM |
 | **Scoped CSS lifecycle** | Styles attached to elements are disposed when the last scoped element is removed |
 | **DOM move awareness** | Internal transit events prevent state corruption during DOM reparenting |
 | **DOM-state unification** | DOM state is the source of truth, reducing hidden state divergence |
 
-These guarantees address the most common long-term UI failure sources in business systems: memory leaks, ghost handlers, CSS leakage, and DOM-state divergence.
-These guarantees make UI behavior observable and predictable, not dependent on implicit framework rules.
+These guarantees reduce common long-term UI failures such as memory leaks, orphaned handlers, and style leakage.
 
-`CotomyElement` makes it easy to bundle small bits of HTML and scoped CSS, then attach them to existing DOM nodes.
+CotomyElement makes it easy to bundle small bits of HTML and scoped CSS, then attach them to existing DOM nodes.
 If you are getting started, read the [Getting Started](./getting-started.md) page first.
-This example assumes a `header` already exists in the page.
-For better template literal highlighting, we recommend a VS Code extension like `es6-string-html` for HTML/CSS.
+This example assumes a header already exists in the page.
+For better template literal highlighting, we recommend a VS Code extension like es6-string-html for HTML/CSS.
 
 ```ts
 CotomyElement.first("header")!.append(new CotomyElement({
@@ -84,12 +73,8 @@ CotomyElement.first("header")!.append(new CotomyElement({
 
 ## What is Cotomy?
 
-Cotomy is **not** a component-rendering SPA framework.  
-It is a **structured UI runtime** for business UI that prioritizes maintainability, safe changes, and long-term stability.
-
-It structures browser-native capabilities into a predictable UI execution model.
-
-It adds structure to everyday tasks while staying close to HTML and the DOM:
+Cotomy is a structured UI runtime, not a component-rendering SPA framework.
+It keeps day-to-day UI work close to HTML and the DOM:
 
 - DOM manipulation with predictable helpers  
 - Form and API handling with repeatable patterns  
@@ -125,27 +110,27 @@ CotomyPageController ..> CotomyWindow : lifecycle
 | **CotomyPageController** | Page-level behavior orchestration |
 | **CotomyWindow** | App-wide lifecycle and navigation hooks |
 
-This layered model replaces the need for a heavy component-rendering SPA framework while keeping behavior predictable.
+This layered model keeps behavior explicit without introducing a large framework runtime.
 
 ---
 
 ## What Problems It Solves
 
-Cotomy addresses issues that make enterprise UI expensive to maintain:
+Cotomy focuses on the issues that usually make business UI expensive to maintain:
 
 - Changes ripple across screens due to shared CSS or hidden conventions  
 - UI behavior becomes hard to trace when framework layers grow  
 - Framework lock-in makes long-lived systems harder to evolve  
 - Debugging slows down because DOM structure and UI state diverge  
 
-Cotomy provides **just enough structure** to keep code organized while staying close to standard HTML and JavaScript.
+It provides enough structure to keep code organized while staying close to standard HTML and JavaScript.
 
 ---
 ## Lifecycle Safety
 
 Cotomy automatically manages:
 
-- Cleanup for `on`/`onSubTree`/`once` handlers when elements are removed  
+- Cleanup for on/onSubTree/once handlers when elements are removed  
 - Scoped CSS disposal when components leave the DOM  
 - Page re-entry handling for browser back and forward cache  
 
@@ -153,7 +138,7 @@ This prevents memory leaks and ghost event bugs common in large UI systems.
 
 ### Why This Matters
 
-In many UI systems, developers must remember to:
+In many projects, developers still need to remember to:
 
 - Manually remove event listeners  
 - Avoid duplicate bindings  
@@ -166,7 +151,7 @@ Cotomy moves these concerns into the runtime layer so business UI code focuses o
 
 ## Event Model
 
-Cotomy centralizes event management per element instance.
+Cotomy centralizes event management per element instance:
 
 - Events are registered through an internal registry  
 - Duplicate handlers are prevented  
@@ -175,9 +160,9 @@ Cotomy centralizes event management per element instance.
 
 This avoids common UI bugs such as duplicate listeners, memory leaks, and detached callbacks.
 
-Shortcut helpers like `click()` use native listeners and are not tracked in the registry.
+Shortcut helpers like click() use native listeners and are not tracked in the registry.
 
-This allows large screens to grow without accumulating hidden listener bugs.
+This helps large screens grow without quietly accumulating listener bugs.
 
 ---
 
@@ -196,7 +181,7 @@ Few UI toolkits handle DOM relocation explicitly at runtime.
 ---
 ## Form as a First-Class Citizen
 
-Forms in Cotomy are not simple HTML wrappers. They are structured units capable of:
+In Cotomy, forms are treated as structured runtime units:
 
 - Query-based navigation  
 - API-backed submission  
@@ -204,7 +189,7 @@ Forms in Cotomy are not simple HTML wrappers. They are structured units capable 
 - Automatic model binding and view filling  
 - Automatic entity key handling based on server responses (POST → PUT transition)
 
-This makes Cotomy particularly strong for business systems where forms and APIs drive most screens.
+This is particularly useful for systems where most screens are form and API driven.
 
 ---
 ## Debugging Advantage
@@ -230,34 +215,34 @@ This reduces desynchronization bugs common in SPA-style architectures.
 ---
 ## Design Philosophy
 
-Cotomy is built on the following principles:
+Cotomy follows these principles:
 
 - **Low lock-in**  
-  Adds order without replacing the platform.
+  Add structure without replacing the platform.
 
 - **HTML-first**  
-  Markup remains the primary source of truth.
+  Keep markup as the primary source of truth.
 
 - **Scoped styling**  
-  Changes stay local and do not leak into other screens.
+  Keep changes local to the relevant screen.
 
 - **Explicit over magic**  
-  Behavior is defined clearly, so troubleshooting stays simple.
+  Favor behavior you can trace directly.
 
 - **Small surface area**  
-  Only essential abstractions are introduced.
+  Introduce only essential abstractions.
 
 - **Predictable behavior**  
-  Utilities behave consistently across screens.
+  Keep utility behavior consistent.
 
 - **Runtime over compile-time tricks**  
-  Behavior is controlled in the browser at runtime, not through build-time transforms.
+  Prefer runtime behavior over build-time transforms.
 
 ---
 
 ## When to Use Cotomy
 
-Cotomy is well-suited for:
+Cotomy is a good fit for:
 
 - Business applications  
 - Form-driven interfaces  
@@ -268,7 +253,7 @@ Cotomy is well-suited for:
 
 ## When Not to Use Cotomy
 
-Cotomy is not intended for:
+Cotomy is not the best fit for:
 
 - Large-scale SPA state management  
 - Virtual DOM–driven UI systems  
@@ -278,22 +263,21 @@ Cotomy is not intended for:
 
 ## Cross-Reference: Comparison with Major Frameworks
 
-Below is a compact, cross-reference friendly summary derived from `docs/comparison.md`.
-Use it as a quick decision guide, then see the Comparison page in the HP reference for full details.
+Use this as a quick comparison guide.
 
 | Framework | State Management | SSR | DX | Learning Cost | Cotomy vs |
 |---|---|---|---|---|---|
-| Cotomy | DOM-first, `data-*` binding, no dedicated store | None | Light, incremental adoption | Low–Medium | Form-centric, DOM-first runtime, minimal abstraction |
-| React | `useState`/`useReducer`, external stores common | Strong via Next.js | Large ecosystem | Medium–High | Flexible and scalable, but heavier |
-| Vue | `reactive`/`ref`, Pinia | Mature via Nuxt | Component templates, approachable | Medium | Declarative UI focus vs DOM-first |
+| Cotomy | DOM-first, data-* binding, no dedicated store | None | Light, incremental adoption | Low–Medium | Form-centric, DOM-first runtime, minimal abstraction |
+| React | useState/useReducer, external stores common | Strong via Next.js | Large ecosystem | Medium–High | Flexible and scalable, but heavier |
+| Vue | reactive/ref, Pinia | Mature via Nuxt | Component templates, approachable | Medium | Declarative UI focus vs DOM-first |
 | Svelte | Compiler-driven reactivity, stores | SvelteKit | Lean runtime | Medium | Build-time optimization vs runtime DOM |
 | Angular | RxJS, NgRx, DI-heavy | Angular Universal | Enterprise tooling | High | Large-scale standardization vs lightweight |
-| Alpine | `x-data`-style lightweight state | None | Very simple | Low | Similar DOM-first, thinner on forms/API |
+| Alpine | x-data-style lightweight state | None | Very simple | Low | Similar DOM-first, thinner on forms/API |
 
 ---
 ## Where Cotomy Sits in the Stack
 
-Cotomy is best understood as a **UI runtime layer** that sits between:
+Cotomy sits between server-rendered HTML and business-specific UI logic:
 
 Server-rendered HTML  
 ⬇  
@@ -301,7 +285,7 @@ Cotomy runtime (structure, lifecycle, forms, events)
 ⬇  
 Business-specific UI logic
 
-It does not replace the platform — it structures it.
+It does not replace the platform; it structures it.
 
 ---
 ## Contact
@@ -311,7 +295,7 @@ Email: yshr1920@gmail.com
 ## How to Use This Reference
 
 Use the sidebar to navigate to each class, interface, and utility.  
-Each page describes its purpose, methods, and expected behavior.
+Each page describes purpose, methods, and expected behavior.
 
 ## Practical Guides
 

@@ -5,8 +5,7 @@ sidebar_position: 1
 
 # Installation
 
-This page covers the minimum setup for using Cotomy and the design model it assumes.
-Cotomy installs fast, stays close to native HTML, and requires only a small entry script to get started.
+This page covers the minimum setup for using Cotomy and the page-based structure it assumes.
 
 Download source code: [Cotomy v1.0.1 ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.1.zip) | [Cotomy v1.0.1 TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.1.tar.gz)
 
@@ -19,15 +18,15 @@ Download source code: [Cotomy v1.0.1 ZIP](https://github.com/yshr1920/cotomy/arc
 
 ## Environment Assumptions
 
-Cotomy is a runtime layer and does not require a specific framework. It does
-not require a build step, but TypeScript usage usually does. You can:
+Cotomy does not require a specific framework. A build step is optional
+(TypeScript projects usually use one). You can:
 
 - Use a bundler (webpack, Vite, etc.)
 - Or load prebuilt JS if your setup provides it
 
 | Requirement | Notes |
 | --- | --- |
-| ES module support | Required for `import` syntax |
+| ES module support | Required for import syntax |
 | TypeScript (optional) | Recommended for medium to large projects |
 | Bundler (optional) | Helps organize per-page entry files |
 | Modern browsers | Cotomy targets modern browser environments |
@@ -62,7 +61,7 @@ npm install cotomy
 ### 2) Create a page entry
 
 Cotomy works best when each page has its own entry file and endpoint.
-This keeps behavior local, keeps page lifecycle boundaries **structural** (not convention-based), and avoids hidden cross-page coupling.
+This keeps lifecycle boundaries explicit and avoids hidden cross-page coupling.
 
 Example structure:
 
@@ -82,17 +81,15 @@ src/
 Expose one endpoint per page and map it to the matching entry file.
 How you do this depends on your stack, but the intent is the same:
 
-- `/users` -> `src/pages/users/index.ts`
-- `/settings` -> `src/pages/settings/index.ts`
+- /users -> src/pages/users/index.ts
+- /settings -> src/pages/settings/index.ts
 
 In server-rendered apps, this typically means a route that renders the HTML
 and loads the corresponding script bundle for that page.
 
 ### Why one entry per page?
 
-This is a **structural** safety rule, not a technical limitation.
-
-Cotomy assumes a document-oriented UI model:
+This is a structural safety rule, not a technical limitation:
 
 | SPA Model | Cotomy Model |
 | --- | --- |
@@ -100,7 +97,7 @@ Cotomy assumes a document-oriented UI model:
 | Virtual state | DOM = state |
 | Long-lived app | Page lifecycle |
 
-This keeps behavior isolated and avoids cross-page memory leaks.
+It keeps behavior isolated and helps avoid cross-page leaks.
 
 ### 4) Example webpack setup
 
@@ -198,4 +195,4 @@ Open the page and confirm there are no console errors.
 
 ## Next
 
-Next: [First UI](./02-first-ui.md) to create your first DOM-backed element.
+Next: [First UI](./02-first-ui.md).

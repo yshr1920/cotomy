@@ -5,9 +5,7 @@ sidebar_position: 7
 
 # Page Control
 
-`CotomyPageController` coordinates page-level behavior.
-
-It is the entry point layer for a page.
+CotomyPageController coordinates page-level behavior.
 
 It manages:
 
@@ -18,10 +16,7 @@ It manages:
 
 Cotomy keeps logic page-scoped. There is no global application state shared
 across pages.  
-The page controller coordinates behavior but does not replace element-level UI
-logic.
-
-The controller coordinates behavior but does not hold UI state.
+The controller orchestrates behavior but does not replace element-level logic or hold UI state.
 
 ## Goals
 
@@ -46,7 +41,7 @@ CotomyPageController ..> CotomyUrl : reads
 ## Why a Page Controller?
 
 Cotomy is page-oriented. Each page is an independent UI module.
-`CotomyPageController` provides a single place to:
+CotomyPageController provides a single place to:
 
 - Initialize page-level logic
 - Register forms
@@ -57,18 +52,16 @@ Without it, page logic becomes scattered across elements and scripts.
 This is not a client-side router model. It targets document-driven business
 screens where page scope keeps behavior predictable.
 
-Think of the page controller as the orchestrator for a single screen.
-
 ## CotomyWindow in This Layer
 
-`CotomyWindow` is the runtime surface that exposes page-level lifecycle events
+CotomyWindow is the runtime surface that exposes page-level lifecycle events
 to controllers. It handles:
 
 - Initial load and ready timing
 - Page restore detection (bfcache)
 - Global page events used by forms and controllers
 
-`CotomyPageController` runs on top of `CotomyWindow` to keep page logic
+CotomyPageController runs on top of CotomyWindow to keep page logic
 predictable without introducing a global app container.
 
 ## Page vs Form Responsibilities
@@ -94,7 +87,7 @@ CotomyPageController.set(class extends CotomyPageController {
 });
 ```
 
-`set()` should be called once per page entry. The controller initializes when
+set() should be called once per page entry. The controller initializes when
 the page loads.
 
 ### 2) Register forms
@@ -112,9 +105,9 @@ CotomyPageController.set(class extends CotomyPageController {
 });
 ```
 
-`setForm()` registers the form with the page controller. If the form element is
+setForm() registers the form with the page controller. If the form element is
 removed, it is automatically unregistered.  
-`setForm()` also calls `initialize()` on the form.
+setForm() also calls initialize() on the form.
 
 ### 3) Access registered forms
 
@@ -122,13 +115,13 @@ removed, it is automatically unregistered.
 const form = this.getForm<CotomyEntityFillApiForm>("profile-form");
 ```
 
-This is intended to be called inside a `CotomyPageController` subclass method
-such as `initializeAsync()`.
+This is intended to be called inside a CotomyPageController subclass method
+such as initializeAsync().
 
 ### 4) Restore after page show
 
 When a page is restored from browser cache (back/forward navigation), forms
-with `autoReload` enabled reload their data.  
+with autoReload enabled reload their data.  
 Restore runs only when the browser uses bfcache. This can vary by browser and
 page settings, so it may not always fire.
 
@@ -140,29 +133,26 @@ console.log(url.path);
 console.log(url.parameters["id"]);
 ```
 
-`CotomyUrl` is mainly for reading the current URL state. Use it to drive page
-initialization, such as loading data by `id` from query parameters.
+CotomyUrl is mainly for reading the current URL state. Use it to drive page
+initialization, such as loading data by id from query parameters.
 
 ### 6) Lifecycle flow
 
 Page load sequence:
 
-1. `CotomyPageController.set()` is called
-2. `CotomyWindow` initializes
-3. `initializeAsync()` runs
+1. CotomyPageController.set() is called
+2. CotomyWindow initializes
+3. initializeAsync() runs
 4. Forms are registered
-5. `cotomy:ready` fires
+5. cotomy:ready fires
 
-`initializeAsync()` runs once on page load. `restoreAsync()` runs when the page
+initializeAsync() runs once on page load. restoreAsync() runs when the page
 is restored from browser history.
 
 Restore logic affects registered forms, not arbitrary elements.
 
-`cotomy:ready` is fired after page initialization completes and forms are
+cotomy:ready is fired after page initialization completes and forms are
 registered.
-
-`CotomyPageController` works on top of `CotomyWindow`, which handles low-level
-page events.
 
 ## Important Concept: One Controller per Page
 

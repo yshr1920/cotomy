@@ -8,8 +8,8 @@ description: Compare Cotomy with React, Vue, Alpine, and jQuery for DOM state, l
 
 ## Cotomy Position
 
-Cotomy is not a component-rendering SPA framework.  
-It is a DOM-structured runtime layer designed for form-driven, page-scoped business systems.
+Cotomy is a DOM-oriented runtime layer for form-driven, page-scoped systems.
+Unlike component-rendering SPA frameworks, it keeps the DOM as the primary UI model.
 
 ```mermaid
 flowchart LR
@@ -41,12 +41,11 @@ flowchart LR
   Frameworks ~~~ Cotomy
 ```
 
-Cotomy does not replace the platform. It enforces runtime discipline on top of the platform.
 The key difference is **where UI state lives** and **what owns the UI model**.
-Business logic interacts with the DOM through Cotomy's runtime APIs, keeping lifecycle and event discipline intact.
+In Cotomy, business logic updates the DOM through runtime APIs so lifecycle and event cleanup stay consistent.
 
 - **Cotomy:** The DOM is the UI state. Cotomy adds a runtime layer for lifecycle,
-  forms, scoped CSS, and event cleanup. Updates should go through `CotomyElement`
+  forms, scoped CSS, and event cleanup. Updates should go through CotomyElement
   or Cotomy forms so the runtime can track lifecycle and handlers correctly.
 - **React/Vue:** UI state lives primarily in JavaScript memory. The framework
   renders that state into the DOM, which becomes the output of the component tree.
@@ -54,9 +53,8 @@ Business logic interacts with the DOM through Cotomy's runtime APIs, keeping lif
 “Initial HTML” here simply means the HTML that exists before the client runtime
 starts. It could be server-rendered HTML, static HTML, or HTML produced by a build step.
 
-Use Cotomy when you want HTML/DOM to remain the primary model and you need
-runtime safety for forms and long-lived pages. Use a component framework when
-you want a centralized render model and a JS state tree to be the source of truth.
+Use Cotomy when you want HTML/DOM to stay central and need runtime safety for forms and long-lived pages.
+Use a component framework when you want a centralized render model and a JS state tree as the source of truth.
 For design rationale and practical usage notes, see the [Cotomy Blog](https://blog.cotomy.net/).
 
 ## Responsibility Comparison
@@ -74,20 +72,13 @@ For design rationale and practical usage notes, see the [Cotomy Blog](https://bl
 
 ## Philosophy Differences
 
-Cotomy:
-
-- DOM = state
-- No virtual render layer
-- Form-first
-- Page-scoped architecture
-- Runtime lifecycle safety
-
-React / Vue:
-
-- JS state = source of truth
-- Virtual or reactive render cycle
-- Component tree centered
-- SPA-oriented architecture
+| Cotomy | React / Vue |
+| --- | --- |
+| DOM as primary state | JS state as primary source of truth |
+| No virtual render layer | Virtual or reactive render cycle |
+| Form-first design | Component-tree-first design |
+| Page-scoped structure | SPA-oriented structure |
+| Runtime lifecycle safety | Lifecycle driven by component hooks |
 
 ## Where Cotomy Fits
 
@@ -109,14 +100,9 @@ React / Vue:
 
 ## Why Cotomy Is Not a Component-Rendering SPA Framework
 
-Cotomy does not replace the platform.  
-It enforces runtime discipline on top of the platform.
-Here, “framework” means a component-rendering SPA framework that owns the UI state and render cycle.
-
-Cotomy can coexist with other frameworks when page scope and responsibilities
-are clearly separated.
+Here, “framework” means a component-rendering SPA framework that owns UI state and render cycles.
+Cotomy instead adds structure around browser-native DOM behavior, and can coexist with other frameworks when page boundaries are clear.
 
 ## Summary
 
-Cotomy reduces UI risk, not rendering cost.
-It is a runtime discipline system for DOM-centric business UI.
+Cotomy is aimed at reducing UI maintenance risk in DOM-centric business screens, not at render optimization.
