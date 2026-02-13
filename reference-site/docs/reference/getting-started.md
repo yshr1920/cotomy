@@ -10,10 +10,8 @@ For design essays and implementation notes around these topics, see the [Cotomy 
 
 ## Cotomy's Design Model
 
-Cotomy is a page-oriented UI layer, not an application framework.
-
-Cotomy is designed around page-scoped UI, not a global application state.
-Each page should:
+Cotomy is a page-oriented UI layer, not a global application framework.
+The basic unit is the page, and each page should:
 
 - Have its own entry file
 - Control only its own DOM
@@ -21,13 +19,11 @@ Each page should:
 
 > **Note on sharing one entry file across multiple endpoints**
 >
-> Cotomy’s design model assumes one entry file per page. This keeps lifecycle
-> boundaries structural rather than convention-based and is the safest default.
+> The default model is one entry file per page. This keeps lifecycle boundaries
+> explicit and avoids cross-page side effects.
 >
 > If you intentionally choose to use a single entry file that handles multiple
-> pages, treat this as an advanced configuration. From a framework design
-> perspective, providing an entry point per page is still **strongly
-> recommended**.
+> pages, treat it as an advanced configuration.
 >
 > When using a shared entry file, you must enforce the same isolation rules in
 > your own architecture:
@@ -37,30 +33,26 @@ Each page should:
 > - Load page-specific logic conditionally based on URL or DOM context
 > - Avoid retaining page-specific state after navigation (treat navigation as disposal)
 >
-> In this setup, lifecycle safety depends on application design rather than
-> Cotomy’s structural model.
+> In this setup, lifecycle safety depends more on your app design.
 
-This keeps behavior predictable, debugging simple, page reloads safe, and
-server-rendered apps easy to integrate. Cotomy intentionally avoids a global
-app container or virtual DOM layers. The DOM is the UI state.
+This model keeps behavior easier to trace in server-rendered or mixed environments.
+Cotomy avoids a global app container and virtual DOM layer; the DOM remains the UI state.
 
-Cotomy's model scales by composition of pages, not by growing a single
-application shell. Large systems remain maintainable because:
+Cotomy scales by composing page modules instead of expanding a single client shell:
 
 - Each page has a bounded lifecycle
 - Memory and event handlers are naturally released on navigation
-- No global state container grows over time
+- No single global state container grows over time
 - Server-rendered and SPA-style pages can coexist
 
-Cotomy favors predictable behavior and low cognitive load over framework-level
-abstractions. If you prefer:
+If your team prefers:
 
 - Direct DOM control
 - Minimal runtime abstraction
 - Clear lifecycle boundaries
 - Compatibility with server-rendered systems
 
-Cotomy fits naturally.
+Cotomy generally fits well.
 
 Cotomy is especially effective for systems where:
 
@@ -74,7 +66,7 @@ predictable page modules.
 ## How to Use This Guide
 
 1. Start with Installation.
-2. Build a minimal UI with `CotomyElement`.
+2. Build a minimal UI with CotomyElement.
 3. Learn event handling, the DOM-state model, and forms.
 
 ## Architecture Map

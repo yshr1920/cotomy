@@ -5,7 +5,7 @@ sidebar_position: 2
 
 # First UI
 
-Create and attach your first `CotomyElement`.
+Create and attach your first CotomyElement.
 
 This step shows the smallest meaningful unit in Cotomy: a DOM-backed UI element
 with scoped styling.
@@ -26,7 +26,7 @@ class CotomyElement
 
 ## Steps
 
-### 1) Create a `CotomyElement`
+### 1) Create a CotomyElement
 
 ```ts
 import { CotomyElement } from "cotomy";
@@ -44,16 +44,10 @@ const card = new CotomyElement({
 ```
 
 The HTML must have a single root element. Multiple roots will throw an error.  
-`CotomyElement` creates a real DOM element. There is no virtual layer between
-your code and the browser.  
-Cotomy does not virtualize the DOM. What you inspect is what runs.  
-Cotomy automatically scopes the CSS to this element so styles do not leak to
-the rest of the page. This keeps styles local to each UI unit, matching
-Cotomy's page-scoped design.  
-Cotomy scopes CSS at runtime, so style safety does not rely on build tools or
-naming conventions.  
+CotomyElement creates a real DOM element, so what you inspect is what runs.  
+CSS is scoped at runtime to avoid leakage into other parts of the page.  
 Selectors are treated as relative to the root element. To target the root
-element itself, use the `[root]` selector.
+element itself, use the [root] selector.
 
 You can style child elements in two ways:
 
@@ -65,7 +59,7 @@ css: `
 ```
 
 This targets children under the root. It does **not** style the root itself.
-Use `[root]` when the selector should include the root element:
+Use [root] when the selector should include the root element:
 
 ```ts
 css: `
@@ -74,7 +68,7 @@ css: `
 `
 ```
 
-`[root]` is useful when you need to combine root state (like `.active`) with
+[root] is useful when you need to combine root state (like .active) with
 descendant styling.
 
 ### 2) Attach it to the page
@@ -94,8 +88,7 @@ card.text = "Updated text";
 card.style("color", "green");
 ```
 
-You update the UI by updating the DOM directly. There is no separate state
-object to synchronize.
+You update the UI by updating the DOM directly.
 
 ### 4) Add another element
 
@@ -108,9 +101,8 @@ card.append({
 
 ## Important Concept: DOM = UI State
 
-Cotomy does not mirror state in JavaScript objects. The DOM element itself is
-the source of truth. When you change text, attributes, styles, or children, you
-are updating the UI state directly.
+Cotomy does not mirror UI state into a separate store. Changing text,
+attributes, styles, or children updates the UI state directly.
 
 ## What just happened?
 
@@ -121,7 +113,7 @@ You:
 3. Attached it to the page
 4. Updated it directly
 
-This is the core Cotomy workflow.
+This is the core workflow.
 
 ### Cotomy is not doing:
 

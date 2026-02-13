@@ -5,14 +5,8 @@ sidebar_position: 8
 
 # Debugging and Tips
 
-This final chapter focuses on **Cotomy-specific debugging**.  
-The goal is not to teach DevTools, but to show how to diagnose issues by
-following Cotomy's design philosophy.
-
-Because Cotomy does not introduce a render abstraction, UI behavior is
-directly observable.
-
-If you cannot see it in the DOM, Cotomy is not tracking it.
+This final chapter focuses on Cotomy-specific debugging.
+The goal is to diagnose issues using Cotomy's DOM-first model.
 
 ## Goals
 
@@ -34,20 +28,15 @@ CotomyDebugSettings ..> CotomyElement : logs
 
 ## 1) Cotomy Debugging Mindset
 
-Cotomy uses the real DOM as UI state.
-
-Because there is no hidden render layer, DevTools is usually enough to explain
-what the UI is doing.
+Cotomy uses the real DOM as UI state, so DevTools is usually enough to explain what the UI is doing.
 
 When debugging:
 
 - Inspect the DOM, not JavaScript variables
-- Check attributes and `textContent`
+- Check attributes and textContent
 - Confirm event handlers are attached to elements
 
 If you can explain what the DOM looks like, you can explain what the UI is.
-
-If the DOM is broken, the UI is broken. That observability is intentional.
 
 ## 2) UI Does Not Update
 
@@ -56,8 +45,8 @@ Symptoms: data changed but the view does not.
 Check:
 
 - Is the element actually in the DOM?
-- Does it have the expected `data-cotomy-bind`?
-- Is there a typo in `data-cotomy-bind`?
+- Does it have the expected data-cotomy-bind?
+- Is there a typo in data-cotomy-bind?
 - Did the API response contain that field?
 - Was rendering skipped due to an API error?
 
@@ -67,7 +56,7 @@ Cotomy binds to DOM attributes. If the attribute is missing, no renderer runs.
 
 Check:
 
-- Confirm `initialize()` was called
+- Confirm initialize() was called
 - Check that the element was not removed
 - Use DevTools → Event Listeners tab
 
@@ -78,9 +67,9 @@ If the element was re-created or swapped, the handler is gone.
 
 Check:
 
-- Is the root element a `<form>`?
-- Was `initialize()` called?
-- Does the button have `type="submit"`?
+- Is the root element a &lt;form&gt;?
+- Was initialize() called?
+- Does the button have type="submit"?
 
 CotomyForm assumes real HTML form semantics.
 
@@ -89,7 +78,7 @@ CotomyForm assumes real HTML form semantics.
 Check:
 
 - Does the form have an entity key?
-- Is `data-cotomy-identify="false"` set?
+- Is data-cotomy-identify="false" set?
 - Did the GET request succeed?
 
 If the GET fails, no fill happens.
@@ -98,7 +87,7 @@ If the GET fails, no fill happens.
 
 Check:
 
-- Does the element have `data-cotomy-bind`?
+- Does the element have data-cotomy-bind?
 - Is the bind name style correct (bracket vs dot)?
 - Is the response JSON shape correct?
 
@@ -112,10 +101,10 @@ rendering. If display updates but inputs do not, the issue is in fill.
 
 Check:
 
-- Is a `<style id="css-...">` generated?
-- Does the selector use `[root]` when targeting the root?
+- Is a &lt;style id="css-..."&gt; generated?
+- Does the selector use [root] when targeting the root?
 
-Cotomy rewrites `[root]` to the element's scope id.
+Cotomy rewrites [root] to the element's scope id.
 
 ## 8) Page Restore Confusion
 
@@ -137,12 +126,12 @@ In the Network tab, check:
 ## 10) Often Not a Cotomy Issue
 
 - The API did not return the expected JSON shape
-- The server returned `204 No Content`
+- The server returned 204 No Content
 - The element is outside the form or page scope
 
 ## 11) Debug Features
 
-Enable debug logs with `CotomyDebugSettings`.
+Enable debug logs with CotomyDebugSettings.
 
 ```ts
 import { CotomyDebugSettings, CotomyDebugFeature } from "cotomy";
@@ -154,10 +143,10 @@ CotomyDebugSettings.enable(CotomyDebugFeature.Api);
 
 Typical useful keys:
 
-- `Fill` for form fill output
-- `Api` for request/response logging
-- `Bind` for bind resolution
-- `FormLoad` for auto load behavior
+- Fill for form fill output
+- Api for request/response logging
+- Bind for bind resolution
+- FormLoad for auto load behavior
 
 Debug features only add logging and are production-safe, but be mindful of log
 volume.
@@ -172,7 +161,7 @@ This is the Cotomy debugging flow.
 
 ## What just happened?
 
-You learned a practical, Cotomy-specific debugging approach:
+You learned a practical debugging approach:
 
 - DOM first
 - Attributes second

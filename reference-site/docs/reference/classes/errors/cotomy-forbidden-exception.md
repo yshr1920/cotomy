@@ -8,5 +8,5 @@ sidebar_position: 4
 Represents an HTTP 403 Forbidden error.
 
 **Constructor**
-- `new CotomyForbiddenException(status, message, response, bodyText?)`
+- new CotomyForbiddenException(status, message, response, bodyText?)
   Creates a forbidden error with response details.

@@ -8,5 +8,5 @@ sidebar_position: 3
 Represents an HTTP 401 Unauthorized error.
 
 **Constructor**
-- `new CotomyUnauthorizedException(status, message, response, bodyText?)`
+- new CotomyUnauthorizedException(status, message, response, bodyText?)
   Creates an unauthorized error with response details.

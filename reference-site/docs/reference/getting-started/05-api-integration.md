@@ -5,10 +5,7 @@ sidebar_position: 5
 
 # API Client Basics
 
-`CotomyApi` represents Cotomy's API layer. It does not interact with
-the UI unless you explicitly connect it.
-
-This separation keeps UI updates explicit and avoids hidden client state.
+CotomyApi is Cotomy's API layer. It does not update UI unless you connect it explicitly.
 
 Cotomy provides an API client that can be used independently of forms.
 Use this when you need to:
@@ -19,7 +16,7 @@ Use this when you need to:
 
 ## When to Use CotomyApi
 
-Use `CotomyApi` whenever the page needs to communicate with the server outside
+Use CotomyApi whenever the page needs to communicate with the server outside
 of a form submission. Typical cases:
 
 - Loading initial page data
@@ -32,7 +29,7 @@ of a form submission. Typical cases:
 
 - Send API requests without a form
 - Handle responses and errors
-- Understand `CotomyApi`'s role
+- Understand CotomyApi's role
 
 ## Related Classes
 
@@ -80,8 +77,8 @@ const response = await api.submitAsync({
 
 ## About FormData
 
-`CotomyApi` accepts a standard `FormData` object as the request body. You can
-include text fields, numbers (as strings), files (`File` or `Blob`), and
+CotomyApi accepts a standard FormData object as the request body. You can
+include text fields, numbers (as strings), files (File or Blob), and
 multiple values for the same key.
 
 ```ts
@@ -93,10 +90,10 @@ data.set("age", "30");
 data.append("photo", fileInput.element.files?.[0]!);
 ```
 
-**Cotomy does not modify `FormData`. It sends it as-is.**
+**Cotomy does not modify FormData. It sends it as-is.**
 
-You can also pass a plain object (`Record<string, string | number>`) and
-Cotomy will convert it to `FormData` when using `multipart/form-data`.
+You can also pass a plain object (Record&lt;string, string | number&gt;) and
+Cotomy will convert it to FormData when using multipart/form-data.
 
 ```ts
 const data = {
@@ -111,11 +108,11 @@ await api.submitAsync({
 });
 ```
 
-Object values are converted to strings when building `FormData`.
+Object values are converted to strings when building FormData.
 
 ### 4) Handle errors
 
-`CotomyApi` throws exceptions for HTTP errors. Handle them with `try/catch`.
+CotomyApi throws exceptions for HTTP errors. Handle them with try/catch.
 
 ```ts
 try {
@@ -145,8 +142,8 @@ to the UI.
 
 Cotomy keeps API communication separate from UI state.
 
-- `CotomyApi` handles HTTP
-- `CotomyElement` manages UI
+- CotomyApi handles HTTP
+- CotomyElement manages UI
 - You connect them explicitly
 
 ### CotomyApi does not:
@@ -155,25 +152,17 @@ Cotomy keeps API communication separate from UI state.
 - Manage application state
 - Cache responses globally
 
-CotomyApi does not retain request or response state. Each call is independent.
-This keeps long-lived systems predictable and easier to maintain.
-
-Each API call is stateless from the client perspective.
-
-CotomyApi does not introduce a client-side data store.
+CotomyApi does not retain request/response state between calls and does not introduce a client-side data store.
 
 ## Note: Rendering API Responses
 
-`CotomyApi` only handles HTTP communication. If you want to apply server
+CotomyApi only handles HTTP communication. If you want to apply server
 responses to the UI automatically, use a form-based approach with
-`CotomyViewRenderer`. This is covered in the Ajax Form section.
+CotomyViewRenderer. This is covered in the Ajax Form section.
 
-`CotomyViewRenderer` applies response JSON to elements marked with
-`data-cotomy-bind`, and you can choose a bind name style with
-`CotomyBracketBindNameGenerator` or `CotomyDotBindNameGenerator`.
-See [CotomyViewRendererの詳細](../classes/api/cotomy-view-renderer.md),
-[CotomyBracketBindNameGeneratorの詳細](../classes/api/cotomy-bracket-bind-name-generator.md), and
-[CotomyDotBindNameGeneratorの詳細](../classes/api/cotomy-dot-bind-name-generator.md).
+CotomyViewRenderer applies response JSON to elements marked with data-cotomy-bind.
+Bind name style can be switched with CotomyBracketBindNameGenerator or CotomyDotBindNameGenerator.
+See [CotomyViewRendererの詳細](../classes/api/cotomy-view-renderer.md), [CotomyBracketBindNameGeneratorの詳細](../classes/api/cotomy-bracket-bind-name-generator.md), and [CotomyDotBindNameGeneratorの詳細](../classes/api/cotomy-dot-bind-name-generator.md).
 
 ## What just happened?
 
