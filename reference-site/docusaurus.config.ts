@@ -143,14 +143,8 @@ const config: Config = {
         {
           to: '/reference/',
           position: 'left',
-          label: 'Class Index',
-          activeBaseRegex: '^/reference/?$',
-        },
-        {
-          to: '/reference/classes/view/cotomy-element/',
-          position: 'left',
           label: 'Reference',
-          activeBaseRegex: '^/reference/classes(?:/|$)',
+          activeBaseRegex: '^/reference(?:/|$)',
         },
         {
           to: '/contact/',
@@ -191,7 +185,7 @@ const config: Config = {
             },
             {
               label: 'Reference',
-              to: '/reference/classes/view/cotomy-element',
+              to: '/reference/',
             },
           ],
         },
