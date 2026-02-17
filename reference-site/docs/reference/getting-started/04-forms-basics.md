@@ -18,6 +18,15 @@ CotomyForm adds a predictable submission flow on top of CotomyElement.
 | CotomyEntityApiForm | CotomyApiForm | Entity-aware API submit | Switches POST to PUT when an entity key exists |
 | CotomyEntityFillApiForm | CotomyEntityApiForm | Load and fill inputs | Fetches data and fills inputs when an entity key is present |
 
+:::important Multiple select is excluded from automatic fill
+
+CotomyEntityFillApiForm does not automatically synchronize
+select elements with the multiple attribute.
+
+If array-based synchronization is required,
+handle it explicitly at application level.
+:::
+
 ## Goals
 
 - Define a form using CotomyForm
