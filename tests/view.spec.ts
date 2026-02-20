@@ -227,18 +227,22 @@ describe("CotomyElement core behaviors", () => {
         expect(generated.attribute("data-cotomy-instance")).toBe(generated.instanceId);
     });
 
-    it("evaluates attached using native Node.isConnected semantics", () => {
+    it("separates attached (current document) and isConnected (any document tree)", () => {
         const detached = new CotomyElement(document.createElement("div"));
         expect(detached.attached).toBe(false);
+        expect(detached.isConnected).toBe(false);
 
-        const host = document.createElement("div");
-        const shadowRoot = host.attachShadow({ mode: "open" });
-        const shadowChild = document.createElement("span");
-        shadowRoot.appendChild(shadowChild);
-        document.body.appendChild(host);
+        const attachedInCurrentDocument = new CotomyElement(document.createElement("div"));
+        document.body.appendChild(attachedInCurrentDocument.element);
+        expect(attachedInCurrentDocument.attached).toBe(true);
+        expect(attachedInCurrentDocument.isConnected).toBe(true);
 
-        const wrappedShadowChild = new CotomyElement(shadowChild);
-        expect(wrappedShadowChild.attached).toBe(true);
+        const foreignDocument = document.implementation.createHTMLDocument("foreign");
+        const foreignElement = foreignDocument.createElement("div");
+        foreignDocument.body.appendChild(foreignElement);
+        const wrappedForeignElement = new CotomyElement(foreignElement);
+        expect(wrappedForeignElement.isConnected).toBe(true);
+        expect(wrappedForeignElement.attached).toBe(false);
     });
 
     it("detects overlaps between CotomyElements using rect wrappers", () => {

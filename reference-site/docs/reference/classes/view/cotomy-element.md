@@ -38,7 +38,8 @@ DOM wrapper with utilities for querying, styling, layout, and events.
 | id | string | null | undefined | Element id attribute. |
 | element | HTMLElement | Underlying DOM element. |
 | tagname | string | Lowercase tag name. |
-| attached | boolean | true if the element is connected to a document. |
+| attached | boolean | true if the element belongs to the current window document. |
+| isConnected | boolean | true if the element is connected to any document tree (Node.isConnected). |
 | value | string | Gets or sets element value. |
 | text | string | Gets or sets textContent. |
 | html | string | Gets or sets innerHTML. |
