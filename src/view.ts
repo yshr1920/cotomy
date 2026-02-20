@@ -531,7 +531,7 @@ export class CotomyElement implements IEventTarget {
     //#region Elementの状態及び値
 
     public get attached(): boolean {
-        return document.contains(this.element);
+        return this.element.isConnected;
     }
 
     public get readonly(): boolean {
@@ -603,7 +603,7 @@ export class CotomyElement implements IEventTarget {
             return false;
         }
 
-        if (!this.element.offsetParent && !document.contains(this.element)) {
+        if (!this.element.offsetParent && !this.attached) {
             return false;
         }
 

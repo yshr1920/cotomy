@@ -227,6 +227,20 @@ describe("CotomyElement core behaviors", () => {
         expect(generated.attribute("data-cotomy-instance")).toBe(generated.instanceId);
     });
 
+    it("evaluates attached using native Node.isConnected semantics", () => {
+        const detached = new CotomyElement(document.createElement("div"));
+        expect(detached.attached).toBe(false);
+
+        const host = document.createElement("div");
+        const shadowRoot = host.attachShadow({ mode: "open" });
+        const shadowChild = document.createElement("span");
+        shadowRoot.appendChild(shadowChild);
+        document.body.appendChild(host);
+
+        const wrappedShadowChild = new CotomyElement(shadowChild);
+        expect(wrappedShadowChild.attached).toBe(true);
+    });
+
     it("detects overlaps between CotomyElements using rect wrappers", () => {
         const mockRect = (element: HTMLElement, rect: { top: number; left: number; width: number; height: number }) => {
             const right = rect.left + rect.width;
