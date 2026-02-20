@@ -531,6 +531,10 @@ export class CotomyElement implements IEventTarget {
     //#region Elementの状態及び値
 
     public get attached(): boolean {
+        return document.contains(this.element);
+    }
+
+    public get isConnected(): boolean {
         return this.element.isConnected;
     }
 

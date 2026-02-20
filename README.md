@@ -50,7 +50,8 @@ The View layer provides thin wrappers around DOM elements and window events.
 - Identity & matching
   - `instanceId: string` — Always returns the element's `data-cotomy-instance` (generated when missing, respects existing values)
   - `id: string | null | undefined`
-  - `attached: boolean` — True when the element is connected to a document
+  - `attached: boolean` — True when the element belongs to the current window document
+  - `isConnected: boolean` — True when the element is connected to any document tree (Node.isConnected)
   - `generateId(prefix = "__cotomy_elem__"): this`
   - `is(selector: string): boolean` — Parent-aware matching helper
   - `empty: boolean` — True for tags that cannot have children or have no content
