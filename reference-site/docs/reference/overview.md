@@ -19,6 +19,10 @@ For design notes and practical write-ups, visit the [Cotomy Blog](https://blog.c
 
 ## Release Notes
 
+### v1.0.4 (2026-02-21)
+
+Downloads: [ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.4.zip) | [TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.4.tar.gz)
+
 ### v1.0.3 (2026-02-21)
 
 Downloads: [ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.3.zip) | [TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.3.tar.gz)
