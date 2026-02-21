@@ -19,29 +19,33 @@ For design notes and practical write-ups, visit the [Cotomy Blog](https://blog.c
 
 ## Release Notes
 
-### v1.0.4 (2026-02-21)
+### v1.0.4 (2026-02-21 06:45 UTC)
 
 Downloads: [ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.4.zip) | [TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.4.tar.gz)
 
-### v1.0.3 (2026-02-21)
+- Added page-level default bind-name-generator support for `CotomyEntityFillApiForm` and `CotomyViewRenderer`.
+
+### v1.0.3 (2026-02-20 15:38 UTC)
 
 Downloads: [ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.3.zip) | [TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.3.tar.gz)
 
-- Released 1.0.3.
+- Restored attached-state semantics and added `isConnected` handling.
 
-### v1.0.2 (2026-02-20)
+### v1.0.2 (2026-02-20 13:25 UTC)
 
 Downloads: [ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.2.zip) | [TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.2.tar.gz)
 
-- Released 1.0.2.
+- Updated attached-state detection to use `Node.isConnected`.
+- Expanded and refined reference-site docs (overview/release notes, class index, navigation, SEO, and policy pages).
 
-### v1.0.1 (2026-02-09)
+### v1.0.1 (2026-02-09 13:04 UTC)
 
 Downloads: [ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.1.zip) | [TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.1.tar.gz)
 
 - Fixed keepalive option handling.
+- Updated reference-site docs and build configuration (TypeScript 5.8.x, sitemap, overview/comparison, and support info).
 
-### v1.0.0 (2026-02-08)
+### v1.0.0 (2026-02-07 15:30 UTC)
 
 Downloads: [ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.0.zip) | [TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.0.tar.gz)
 
