@@ -8,8 +8,9 @@ sidebar_position: 5
 Applies API response data to DOM elements using data-cotomy-bind and custom renderers.
 
 **Constructor**
-- new CotomyViewRenderer(element: CotomyElement, bindNameGenerator: ICotomyBindNameGenerator)
-  Creates a renderer bound to a root element and a bind name generator.
+- new CotomyViewRenderer(element: CotomyElement, bindNameGenerator?: ICotomyBindNameGenerator)
+  Creates a renderer bound to a root element. If bindNameGenerator is omitted,
+  it uses CotomyViewRenderer.defaultBindNameGenerator.
 
 **Properties**
 
@@ -17,6 +18,7 @@ Applies API response data to DOM elements using data-cotomy-bind and custom rend
 | --- | --- | --- |
 | element | CotomyElement | Root element used for binding and rendering. |
 | bindNameGenerator | ICotomyBindNameGenerator | Name generator for bind paths. |
+| defaultBindNameGenerator (static) | ICotomyBindNameGenerator | Global default used when constructor argument is omitted. |
 
 **Methods**
 
@@ -24,6 +26,7 @@ Applies API response data to DOM elements using data-cotomy-bind and custom rend
 | --- | --- |
 | renderer(type, callback) | Registers a custom renderer for a bind type. |
 | applyAsync(response) | Clears bound elements, then applies response JSON. |
+| resetDefaultBindNameGenerator() (static) | Resets static default bind name generator to bracket style. |
 
 **Protected Members (for subclassing)**
 

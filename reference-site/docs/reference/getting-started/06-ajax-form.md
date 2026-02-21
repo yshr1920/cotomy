@@ -158,23 +158,25 @@ If the API request fails, rendering is skipped and error events are triggered.
 ### 6) Advanced: switch to dot notation
 
 By default, Cotomy uses bracket-style bind names such as user[name]. If you
-prefer dot notation like user.name, override the bind name generator:
+prefer dot notation like user.name, set the page default bind name generator:
 
 ```ts
-import { CotomyDotBindNameGenerator, CotomyEntityFillApiForm } from "cotomy";
+import {
+	CotomyDotBindNameGenerator,
+	CotomyEntityFillApiForm,
+	CotomyPageController
+} from "cotomy";
 
-class ProfileForm extends CotomyEntityFillApiForm {
-	protected override bindNameGenerator() {
-		return new CotomyDotBindNameGenerator();
+CotomyPageController.set(class extends CotomyPageController {
+	protected override async initializeAsync(): Promise<void> {
+		this.defaultBindNameGenerator = new CotomyDotBindNameGenerator();
+
+		this.setForm(CotomyEntityFillApiForm.byId(
+			"profile-form",
+			CotomyEntityFillApiForm
+		)!);
 	}
-}
-
-const form = CotomyEntityFillApiForm.byId<ProfileForm>(
-	"profile-form",
-	ProfileForm
-)!;
-
-form.initialize();
+});
 ```
 
 ## Important Concept: Ajax Forms Use the Same DOM Model

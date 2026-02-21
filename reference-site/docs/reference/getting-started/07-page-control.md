@@ -78,17 +78,19 @@ predictable without introducing a global app container.
 ### 1) Create a page controller
 
 ```ts
-import { CotomyPageController } from "cotomy";
+import { CotomyDotBindNameGenerator, CotomyPageController } from "cotomy";
 
 CotomyPageController.set(class extends CotomyPageController {
 	protected override async initializeAsync(): Promise<void> {
-		console.log("Page initialized");
+		this.defaultBindNameGenerator = new CotomyDotBindNameGenerator();
 	}
 });
 ```
 
 set() should be called once per page entry. The controller initializes when
 the page loads.
+Use `defaultBindNameGenerator` when you want all forms/renderers on that page
+to use dot-path naming.
 
 ### 2) Register forms
 

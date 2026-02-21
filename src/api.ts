@@ -256,11 +256,42 @@ export class CotomyDotBindNameGenerator implements ICotomyBindNameGenerator {
     }
 }
 
+class CotomyBindNameGeneratorProvider {
+    private static _default?: ICotomyBindNameGenerator;
+
+    public static getDefault(): ICotomyBindNameGenerator {
+        return this._default ??= new CotomyBracketBindNameGenerator();
+    }
+
+    public static setDefault(generator: ICotomyBindNameGenerator): void {
+        this._default = generator;
+    }
+
+    public static resetDefault(): void {
+        this._default = undefined;
+    }
+}
+
 export class CotomyViewRenderer {
     private _renderers: { [key: string]: (element: CotomyElement, value: any) => void } = {};
     private _builded: boolean = false;
 
-    public constructor(public readonly element: CotomyElement, public readonly bindNameGenerator: ICotomyBindNameGenerator) {
+    public static get defaultBindNameGenerator(): ICotomyBindNameGenerator {
+        return CotomyBindNameGeneratorProvider.getDefault();
+    }
+
+    public static set defaultBindNameGenerator(generator: ICotomyBindNameGenerator) {
+        CotomyBindNameGeneratorProvider.setDefault(generator);
+    }
+
+    public static resetDefaultBindNameGenerator(): void {
+        CotomyBindNameGeneratorProvider.resetDefault();
+    }
+
+    public constructor(
+        public readonly element: CotomyElement,
+        public readonly bindNameGenerator: ICotomyBindNameGenerator = CotomyViewRenderer.defaultBindNameGenerator
+    ) {
     }
 
     protected get locale(): string {

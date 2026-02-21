@@ -243,7 +243,7 @@ The Form layer builds on `CotomyElement` for common form flows.
   - `loadActionUrl: string` — Defaults to `actionUrl`; override or set for custom endpoints
   - `canLoad: boolean` — Defaults to `hasEntityKey`
 - Naming & binding
-  - `bindNameGenerator(): ICotomyBindNameGenerator` — Defaults to `CotomyBracketBindNameGenerator` (`user[name]`)
+  - `bindNameGenerator(): ICotomyBindNameGenerator` — Defaults to `CotomyViewRenderer.defaultBindNameGenerator` (initial value: `CotomyBracketBindNameGenerator`, `user[name]`)
   - `renderer(): CotomyViewRenderer` — Applies `[data-cotomy-bind]` to view elements
 - `filler(type, (input, value))` — Register fillers; defaults provided for `datetime-local`, `checkbox`, `radio`
   - Fills non-array, non-object fields by matching input/select/textarea `name`
@@ -262,8 +262,7 @@ Example:
 
 ```ts
 const view = new CotomyViewRenderer(
-  new CotomyElement(document.querySelector("#profile")!),
-  new CotomyBracketBindNameGenerator()
+  new CotomyElement(document.querySelector("#profile")!)
 );
 
 await view.applyAsync(apiResponse); // apiResponse is CotomyApiResponse from CotomyApi
@@ -287,6 +286,24 @@ const form = new CotomyEntityFillApiForm(document.querySelector("form")!);
 form.initialize();
 form.apiFailed(e => console.error("API failed", e.response.status));
 form.submitFailed(e => console.warn("Submit failed", e.response.status));
+```
+
+To switch the default bind naming style for a page, set it from your page controller:
+
+```ts
+import {
+  CotomyDotBindNameGenerator,
+  CotomyEntityFillApiForm,
+  CotomyPageController
+} from "cotomy";
+
+CotomyPageController.set(class extends CotomyPageController {
+  protected override async initializeAsync(): Promise<void> {
+    this.defaultBindNameGenerator = new CotomyDotBindNameGenerator();
+
+    this.setForm(CotomyEntityFillApiForm.byId("profile-form", CotomyEntityFillApiForm)!);
+  }
+});
 ```
 
 ### Entity API forms

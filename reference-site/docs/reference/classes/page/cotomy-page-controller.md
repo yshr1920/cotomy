@@ -24,6 +24,7 @@ Base class for page-level orchestration and form management.
 
 | Member | Description |
 | --- | --- |
+| defaultBindNameGenerator | Gets/sets the default bind name generator used by forms/renderers on the page. |
 | setForm(form) | Registers and initializes a form. |
 | getForm(id, type?) | Retrieves a registered form by id. |
 | forms | List of registered forms. |
