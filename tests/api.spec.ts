@@ -2,6 +2,8 @@
 // @vitest-environment jsdom
 
 import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
     CotomyApi,
@@ -16,6 +18,9 @@ import {
     CotomyViewRenderer
 } from "../src/api";
 import { CotomyElement } from "../src/view";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 describe("CotomyApiResponse", () => {
     afterEach(() => {
@@ -235,6 +240,69 @@ describe("CotomyViewRenderer date bind type", () => {
         (renderer as any).bindPrimitiveValue("eventDate", "not-a-date");
 
         expect(target.text).toBe("placeholder");
+    });
+});
+
+describe("CotomyViewRenderer utc bind type", () => {
+    const createRenderer = (html: string = `<div><span data-cotomy-bind="eventAt" data-cotomy-bindtype="utc" data-cotomy-format="x"></span></div>`) => {
+        const root = new CotomyElement(html);
+        const renderer = new CotomyViewRenderer(root, new CotomyBracketBindNameGenerator());
+        (renderer as any).initialize();
+        return { root, renderer };
+    };
+
+    const assertUtcRender = (input: string, expectedDate: Date) => {
+        const { root, renderer } = createRenderer();
+        const target = root.first(`[data-cotomy-bind="eventAt"]`)!;
+
+        expect(Number.isNaN(expectedDate.getTime())).toBe(false);
+        (renderer as any).bindPrimitiveValue("eventAt", input);
+
+        expect(target.text).toBe(dayjs(expectedDate).format("x"));
+    };
+
+    it("parses ISO 8601 timestamps ending with Z", () => {
+        const input = "2026-02-21T09:35:00Z";
+        assertUtcRender(input, new Date(input));
+    });
+
+    it("parses ISO 8601 timestamps ending with +00:00", () => {
+        const input = "2026-02-21T09:35:00+00:00";
+        assertUtcRender(input, new Date(input));
+    });
+
+    it("parses ISO 8601 timestamps ending with +09:00", () => {
+        const input = "2026-02-21T09:35:00+09:00";
+        assertUtcRender(input, new Date(input));
+    });
+
+    it("treats timestamps without an offset as UTC", () => {
+        const input = "2026-02-21T09:35:00";
+        assertUtcRender(input, new Date(`${input}Z`));
+    });
+
+    it("converts UTC values when data-cotomy-timezone is set on the element", () => {
+        const { root, renderer } = createRenderer(
+            `<div><span data-cotomy-bind="eventAt" data-cotomy-bindtype="utc" data-cotomy-timezone="Asia/Tokyo" data-cotomy-format="YYYY-MM-DD HH:mm"></span></div>`
+        );
+        const input = "2026-02-21T00:35:00Z";
+        const target = root.first(`[data-cotomy-bind="eventAt"]`)!;
+
+        (renderer as any).bindPrimitiveValue("eventAt", input);
+
+        expect(target.text).toBe(dayjs(new Date(input)).tz("Asia/Tokyo").format("YYYY-MM-DD HH:mm"));
+    });
+
+    it("inherits data-cotomy-timezone from an ancestor", () => {
+        const { root, renderer } = createRenderer(
+            `<div data-cotomy-timezone="America/New_York"><span data-cotomy-bind="eventAt" data-cotomy-bindtype="utc" data-cotomy-format="YYYY-MM-DD HH:mm"></span></div>`
+        );
+        const input = "2026-02-21T00:35:00Z";
+        const target = root.first(`[data-cotomy-bind="eventAt"]`)!;
+
+        (renderer as any).bindPrimitiveValue("eventAt", input);
+
+        expect(target.text).toBe(dayjs(new Date(input)).tz("America/New_York").format("YYYY-MM-DD HH:mm"));
     });
 });
 

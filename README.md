@@ -255,8 +255,15 @@ The Form layer builds on `CotomyElement` for common form flows.
 - `mail`, `tel`, `url` — Wrap the value in a corresponding anchor tag.
 - `number` — Uses `Intl.NumberFormat` with `data-cotomy-locale`/`data-cotomy-currency` inheritance.
   - `data-cotomy-fraction-digits="2"` — Forces fixed fraction digits (sets both `minimumFractionDigits` and `maximumFractionDigits`). Works with or without `data-cotomy-currency` (e.g. `0` → `0.00`).
-- `utc` — Treats the value as UTC (or appends `Z` when missing) and formats with `data-cotomy-format` (default `YYYY/MM/DD HH:mm`).
-- `date` — Renders local dates with `data-cotomy-format` (default `YYYY/MM/DD`) when the input is a valid `Date` value.
+- `utc` — Treats the value as UTC (or appends `Z` when missing) and formats with `data-cotomy-format` (default `YYYY/MM/DD HH:mm`). By default it renders in local time; set `data-cotomy-timezone` (element or ancestor) to render in a specific IANA timezone.
+- `date` — Renders local dates with `data-cotomy-format` (default `YYYY/MM/DD`) when the input is a valid `Date` value. By default it renders in local time; set `data-cotomy-timezone` (element or ancestor) to render in a specific IANA timezone.
+
+### UTC Renderer
+
+- Supports ISO 8601 offsets (`+09:00`, `-05:00`)
+- Explicitly supports `Z` (UTC indicator)
+- Offset-less timestamps are treated as UTC (internally appends "Z" before parsing)
+- `data-cotomy-timezone` is optional. When omitted, output stays local; when set, output is converted to the specified IANA timezone (supports ancestor inheritance).
 
 Example:
 
