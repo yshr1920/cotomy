@@ -6,7 +6,9 @@ import {
     CotomyApi,
     CotomyApiResponse,
     CotomyConflictException,
+    CotomyDotBindNameGenerator,
     ICotomyBindNameGenerator,
+    CotomyViewRenderer,
     CotomyRequestInvalidException
 } from "../src/api";
 import {
@@ -189,6 +191,7 @@ describe("CotomyEntityFillApiForm", () => {
     });
 
     afterEach(() => {
+        CotomyViewRenderer.resetDefaultBindNameGenerator();
         vi.unstubAllGlobals();
         vi.restoreAllMocks();
     });
@@ -287,5 +290,30 @@ describe("CotomyEntityFillApiForm", () => {
         await form.reloadAsync();
         expect(getAsync).toHaveBeenCalledTimes(1);
         expect(getAsync).toHaveBeenCalledWith("/custom");
+    });
+
+    it("fills inputs using the default bind name generator from CotomyViewRenderer", async () => {
+        CotomyViewRenderer.defaultBindNameGenerator = new CotomyDotBindNameGenerator();
+
+        const formElement = document.createElement("form");
+        formElement.setAttribute("action", "/users");
+        formElement.innerHTML = `
+            <input type="text" name="user.name" />
+        `;
+        const form = new CotomyEntityFillApiForm(formElement);
+        form.attribute("data-cotomy-entity-key", "123");
+        document.body.appendChild(form.element);
+        form.initialize();
+
+        const apiResponse = new Response(JSON.stringify({ user: { name: "Alice" } }), {
+            status: 200,
+            headers: { "Content-Type": "application/json" }
+        });
+        (fetch as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(apiResponse);
+
+        await form.reloadAsync();
+
+        const nameInput = form.find('input[name="user.name"]')[0];
+        expect(nameInput.value).toBe("Alice");
     });
 });

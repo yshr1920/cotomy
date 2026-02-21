@@ -7,6 +7,7 @@ import {
     CotomyApi,
     CotomyApiResponse,
     CotomyBracketBindNameGenerator,
+    CotomyDotBindNameGenerator,
     CotomyForbiddenException,
     CotomyInvalidFormDataBodyException,
     CotomyNotFoundException,
@@ -277,5 +278,28 @@ describe("CotomyViewRenderer number bind type", () => {
         const target = root.first(`[data-cotomy-bind="amount"]`)!;
         expect(target.text).not.toContain(".56");
         expect(target.text).not.toContain(".");
+    });
+});
+
+describe("CotomyViewRenderer default bind name generator", () => {
+    afterEach(() => {
+        CotomyViewRenderer.resetDefaultBindNameGenerator();
+    });
+
+    it("uses bracket generator by default", () => {
+        const root = new CotomyElement(`<div></div>`);
+        const renderer = new CotomyViewRenderer(root);
+
+        expect(renderer.bindNameGenerator).toBeInstanceOf(CotomyBracketBindNameGenerator);
+    });
+
+    it("uses configured default generator when constructor argument is omitted", () => {
+        CotomyViewRenderer.defaultBindNameGenerator = new CotomyDotBindNameGenerator();
+
+        const root = new CotomyElement(`<div></div>`);
+        const renderer = new CotomyViewRenderer(root);
+
+        expect(renderer.bindNameGenerator).toBe(CotomyViewRenderer.defaultBindNameGenerator);
+        expect(renderer.bindNameGenerator).toBeInstanceOf(CotomyDotBindNameGenerator);
     });
 });

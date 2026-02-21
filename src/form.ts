@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { StatusCodes } from "http-status-codes";
-import { CotomyApi, CotomyApiException, CotomyApiResponse, CotomyBracketBindNameGenerator, CotomyNotFoundException, CotomyViewRenderer, ICotomyBindNameGenerator } from "./api";
+import { CotomyApi, CotomyApiException, CotomyApiResponse, CotomyNotFoundException, CotomyViewRenderer, ICotomyBindNameGenerator } from "./api";
 import { CotomyDebugFeature, CotomyDebugSettings } from "./debug";
 import { CotomyElement, CotomyWindow } from "./view";
 
@@ -381,7 +381,7 @@ export class CotomyEntityFillApiForm extends CotomyEntityApiForm {
     }
 
     protected bindNameGenerator(): ICotomyBindNameGenerator {
-        return new CotomyBracketBindNameGenerator();
+        return CotomyViewRenderer.defaultBindNameGenerator;
     }
 
     public renderer(): CotomyViewRenderer {

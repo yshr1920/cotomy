@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
+import { ICotomyBindNameGenerator, CotomyViewRenderer } from "./api";
 import { CotomyDebugFeature, CotomyDebugSettings } from "./debug";
 import { CotomyForm } from "./form";
 import { CotomyElement, CotomyWindow } from "./view";
@@ -87,6 +88,14 @@ export class CotomyPageController {
 
 
     private _forms: { [key: string]: CotomyForm } = {};
+
+    protected get defaultBindNameGenerator(): ICotomyBindNameGenerator {
+        return CotomyViewRenderer.defaultBindNameGenerator;
+    }
+
+    protected set defaultBindNameGenerator(value: ICotomyBindNameGenerator) {
+        CotomyViewRenderer.defaultBindNameGenerator = value;
+    }
 
     protected setForm<T extends CotomyForm = CotomyForm>(form: T): T {
         if (!form.id) {

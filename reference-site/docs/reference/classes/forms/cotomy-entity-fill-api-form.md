@@ -21,7 +21,7 @@ Entity API form that loads data and fills inputs automatically.
 | Member | Description |
 | --- | --- |
 | loadActionUrl | URL used for loading entity data. |
-| bindNameGenerator() | Name generator for binding (default: bracket). |
+| bindNameGenerator() | Name generator for binding (default: CotomyViewRenderer.defaultBindNameGenerator). |
 | canLoad | true if loading should proceed. |
 | loadAsync() | Loads entity data and fills the form. |
 | applyValueToInputs(pname, value) | Applies a single value to inputs. |

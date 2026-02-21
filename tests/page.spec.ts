@@ -2,7 +2,8 @@
 // @vitest-environment jsdom
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { CotomyUrl } from "../src/page";
+import { CotomyBracketBindNameGenerator, CotomyDotBindNameGenerator, CotomyViewRenderer } from "../src/api";
+import { CotomyPageController, CotomyUrl } from "../src/page";
 
 describe("CotomyUrl", () => {
     beforeEach(() => {
@@ -88,5 +89,30 @@ describe("CotomyUrl", () => {
         expect(mockReplaceState).toHaveBeenCalledWith({ id: 123 }, "TestTitle", "/state?z=9");
 
         vi.stubGlobal("history", originalHistory);
+    });
+});
+
+describe("CotomyPageController default bind name generator", () => {
+    afterEach(() => {
+        CotomyViewRenderer.resetDefaultBindNameGenerator();
+    });
+
+    it("updates CotomyViewRenderer default through protected property", () => {
+        class TestPageController extends CotomyPageController {
+            public setDefaultGenerator(generator: CotomyDotBindNameGenerator | CotomyBracketBindNameGenerator) {
+                this.defaultBindNameGenerator = generator;
+            }
+
+            public getDefaultGenerator() {
+                return this.defaultBindNameGenerator;
+            }
+        }
+
+        const controller = new TestPageController();
+        const dot = new CotomyDotBindNameGenerator();
+        controller.setDefaultGenerator(dot);
+
+        expect(controller.getDefaultGenerator()).toBe(dot);
+        expect(CotomyViewRenderer.defaultBindNameGenerator).toBe(dot);
     });
 });
