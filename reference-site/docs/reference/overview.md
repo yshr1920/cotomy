@@ -19,6 +19,12 @@ For design notes and practical write-ups, visit the [Cotomy Blog](https://blog.c
 
 ## Release Notes
 
+### v1.0.5 (2025-08-31 13:30 UTC)
+
+Downloads: [ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.5.zip) | [TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.5.tar.gz)
+
+- Simplified `convertUtcToLocal()` format-attribute handling, changed `data-cotomy-format` to read only from the current element, and kept ancestor lookup for `data-cotomy-timezone` to support global timezone settings.
+
 ### v1.0.4 (2026-02-21 06:45 UTC)
 
 Downloads: [ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.4.zip) | [TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.4.tar.gz)
