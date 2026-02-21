@@ -256,38 +256,19 @@ export class CotomyDotBindNameGenerator implements ICotomyBindNameGenerator {
     }
 }
 
-class CotomyBindNameGeneratorProvider {
-    private static _default?: ICotomyBindNameGenerator;
-
-    public static getDefault(): ICotomyBindNameGenerator {
-        return this._default ??= new CotomyBracketBindNameGenerator();
-    }
-
-    public static setDefault(generator: ICotomyBindNameGenerator): void {
-        this._default = generator;
-    }
-
-    public static resetDefault(): void {
-        this._default = undefined;
-    }
-}
-
 export class CotomyViewRenderer {
-    private _renderers: { [key: string]: (element: CotomyElement, value: any) => void } = {};
-    private _builded: boolean = false;
-
+    private static _defaultBindNameGenerator: ICotomyBindNameGenerator | null = null;
     public static get defaultBindNameGenerator(): ICotomyBindNameGenerator {
-        return CotomyBindNameGeneratorProvider.getDefault();
+        return this._defaultBindNameGenerator ?? new CotomyBracketBindNameGenerator(); 
     }
-
     public static set defaultBindNameGenerator(generator: ICotomyBindNameGenerator) {
-        CotomyBindNameGeneratorProvider.setDefault(generator);
+        this._defaultBindNameGenerator = generator;
     }
-
     public static resetDefaultBindNameGenerator(): void {
-        CotomyBindNameGeneratorProvider.resetDefault();
+        this._defaultBindNameGenerator = null;
     }
 
+    
     public constructor(
         public readonly element: CotomyElement,
         public readonly bindNameGenerator: ICotomyBindNameGenerator = CotomyViewRenderer.defaultBindNameGenerator
@@ -303,18 +284,20 @@ export class CotomyViewRenderer {
         return locale.includes("-") ? locale.split("-")[0] : locale;
     }
 
+
+    private _renderers: { [key: string]: (element: CotomyElement, value: any) => void } = {};
     public renderer(type: string, callback: (element: CotomyElement, value: any) => void): this {
         this._renderers[type] = callback;
         return this;
     }
-
     protected get renderers(): { [key: string]: (element: CotomyElement, value: any) => void } {
         this.initialize();
         return this._renderers;
     }
 
+    private _initialized: boolean = false;
     protected get initialized(): boolean {
-        return this._builded;
+        return this._initialized;
     }
 
     protected initialize(): this {
@@ -378,7 +361,7 @@ export class CotomyViewRenderer {
                 }
             });
 
-            this._builded = true;
+            this._initialized = true;
         }
         return this;
     }
