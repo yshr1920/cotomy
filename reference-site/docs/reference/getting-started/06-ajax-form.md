@@ -127,6 +127,7 @@ format values (mail, tel, url, number, utc, date) during rendering.
 The renderer turns the value into a mail link automatically.
 
 data-cotomy-bindtype only affects rendering, not form submission.
+For `utc` and `date`, rendering is local by default; add `data-cotomy-timezone` (element or ancestor) to render in a specific IANA timezone.
 
 ## How Rendering Works
 

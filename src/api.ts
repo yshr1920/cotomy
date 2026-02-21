@@ -1,7 +1,12 @@
 import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
 import { StatusCodes } from "http-status-codes";
 import { CotomyDebugFeature, CotomyDebugSettings } from './debug';
 import { CotomyElement } from "./view";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 
 
@@ -275,16 +280,6 @@ export class CotomyViewRenderer {
     ) {
     }
 
-    protected get locale(): string {
-        const languages = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language]).filter(Boolean);
-        let locale = this.element.attribute("data-cotomy-locale")
-                || this.element.closest("[data-cotomy-locale]")?.attribute("data-cotomy-locale")
-                || languages[0]
-                || 'en-US';
-        return locale.includes("-") ? locale.split("-")[0] : locale;
-    }
-
-
     private _renderers: { [key: string]: (element: CotomyElement, value: any) => void } = {};
     public renderer(type: string, callback: (element: CotomyElement, value: any) => void): this {
         this._renderers[type] = callback;
@@ -336,17 +331,29 @@ export class CotomyViewRenderer {
                         ...(hasFractionDigits ? { minimumFractionDigits: fractionDigits, maximumFractionDigits: fractionDigits } : {}),
                     };
 
-                    element.text = new Intl.NumberFormat(this.locale, options).format(value);
+                    const languages = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language]).filter(Boolean);
+                    const localeAttribute = element.attribute("data-cotomy-locale")
+                            || element.closest("[data-cotomy-locale]")?.attribute("data-cotomy-locale")
+                            || this.element.attribute("data-cotomy-locale")
+                            || this.element.closest("[data-cotomy-locale]")?.attribute("data-cotomy-locale")
+                            || languages[0]
+                            || "en-US";
+                    const locale = localeAttribute.includes("-") ? localeAttribute.split("-")[0] : localeAttribute;
+
+                    element.text = new Intl.NumberFormat(locale, options).format(value);
                 }
             });
 
             this.renderer("utc", (element, value) => {
                 if (value) {
-                    const hasOffset = /[+-]\d{2}:\d{2}$/.test(value);
+                    const hasOffset = /([+-]\d{2}:\d{2}|Z)$/.test(value);
                     const date = hasOffset ? new Date(value) : new Date(`${value}Z`);
                     if (!isNaN(date.getTime())) {
                         const format = element.attribute("data-cotomy-format") ?? "YYYY/MM/DD HH:mm";
-                        element.text = dayjs(date).format(format);
+                        const timezone = element.attribute("data-cotomy-timezone")
+                                || element.closest("[data-cotomy-timezone]")?.attribute("data-cotomy-timezone");
+                        const dt = dayjs(date);
+                        element.text = timezone && timezone.trim() !== "" ? dt.tz(timezone).format(format) : dt.format(format);
                     }
                 }
             });
@@ -356,7 +363,10 @@ export class CotomyViewRenderer {
                     const date = new Date(value);
                     if (!isNaN(date.getTime())) {
                         const format = element.attribute("data-cotomy-format") ?? "YYYY/MM/DD";
-                        element.text = dayjs(date).format(format);
+                        const timezone = element.attribute("data-cotomy-timezone")
+                                || element.closest("[data-cotomy-timezone]")?.attribute("data-cotomy-timezone");
+                        const dt = dayjs(date);
+                        element.text = timezone && timezone.trim() !== "" ? dt.tz(timezone).format(format) : dt.format(format);
                     }
                 }
             });

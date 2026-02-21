@@ -32,10 +32,24 @@ Applies API response data to DOM elements using data-cotomy-bind and custom rend
 
 | Member | Description |
 | --- | --- |
-| locale | Current locale derived from data attributes or browser language. |
 | initialized | true once default renderers are registered. |
 | renderers | Registered renderer map (initializes on access). |
 | initialize() | Registers default renderers (mail, tel, url, number, utc, date). |
 | bindPrimitiveValue(propertyName, value) | Binds a primitive value to matching elements. |
 | applyArrayAsync(values, propertyName) | Binds array values recursively. |
 | applyObjectAsync(target, propertyName?) | Binds object values recursively. |
+
+## ISO 8601 UTC Handling
+
+For `data-cotomy-bindtype="utc"`:
+
+- Cotomy supports ISO 8601 timestamps ending with `+HH:mm`, `-HH:mm`, or `Z`.
+- If no offset is provided, Cotomy treats the value as UTC.
+- Output is local by default.
+- Set `data-cotomy-timezone` on the element (or an ancestor) to render in a specific IANA timezone.
+- This behavior is consistent with ISO 8601 UTC handling.
+
+For `data-cotomy-bindtype="date"`:
+
+- Output is local by default.
+- Set `data-cotomy-timezone` on the element (or an ancestor) to render in a specific IANA timezone.
