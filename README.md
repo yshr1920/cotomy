@@ -69,7 +69,7 @@ The View layer provides thin wrappers around DOM elements and window events.
   - `enabled: boolean` (get/set) — Toggles `disabled` attribute
   - `setFocus(): void`
 - Tree traversal & manipulation
-  - `parent: CotomyElement`
+  - `parent: CotomyElement` — Returns `CotomyElement.empty()` when no parent element exists (mainly edge cases such as `html` or detached elements)
   - `parents: CotomyElement[]`
   - `children(selector = "*", type?): T[]` (direct children only)
   - `firstChild(selector = "*", type?)`
@@ -83,6 +83,8 @@ The View layer provides thin wrappers around DOM elements and window events.
   - `clone(type?): CotomyElement` - Returns a deep-cloned element, optionally typed, and reassigns a new `data-cotomy-instance` while preserving the `data-cotomy-scopeid` for scoped CSS sharing (strips `data-cotomy-moving`). Cloning an invalidated element (`data-cotomy-invalidated`) throws.
   - `clear(): this` — Removes all descendants and text
   - `remove(): void` — Explicitly non-chainable after removal
+
+> Design note: `parent` intentionally returns `CotomyElement` (non-null) for chaining and simpler usage. In typical page structures, missing parent elements are rare (mainly `html` or detached elements), and those cases are represented by `CotomyElement.empty()`.
 - Geometry & visibility
   - `visible: boolean`
   - `width: number` (get/set px)
