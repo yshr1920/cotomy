@@ -69,8 +69,10 @@ DOM wrapper with utilities for querying, styling, layout, and events.
 | isBelowViewport | boolean | true if the element is below the viewport. |
 | isLeftViewport | boolean | true if the element is left of the viewport. |
 | isRightViewport | boolean | true if the element is right of the viewport. |
-| parent | CotomyElement | Parent element wrapper. |
+| parent | CotomyElement | Parent element wrapper. Returns an empty placeholder element when no parent exists (mainly html or detached elements). |
 | parents | CotomyElement[] | All ancestor elements. |
+
+> Design note: `parent` intentionally returns `CotomyElement` (non-null) for chaining and simpler usage. In typical page structures, missing parent elements are rare (mainly `html` or detached elements), and those cases are represented by `CotomyElement.empty()`.
 
 **Instance Methods**
 
