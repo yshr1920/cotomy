@@ -14,7 +14,7 @@ Cotomy does not add a separate app state store. UI state stays in the DOM, and b
 
 This reference explains the core pieces behind that model.
 
-Key references: [CotomyElement](/reference/classes/view/cotomy-element), [CotomyApiForm](/reference/classes/forms/cotomy-api-form), [CotomyWindow](/reference/classes/view/cotomy-window), and the full [Class Index](/reference/).
+Key references: [CotomyElement](/reference/classes/view/cotomy-element/), [CotomyApiForm](/reference/classes/forms/cotomy-api-form/), [CotomyWindow](/reference/classes/view/cotomy-window/), and the full [Class Index](/reference/).
 For design notes and practical write-ups, visit the [Cotomy Blog](https://blog.cotomy.net/).
 
 ## Release Notes
