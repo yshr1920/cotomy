@@ -144,7 +144,7 @@ const config: Config = {
           to: '/reference/',
           position: 'left',
           label: 'Reference',
-          activeBaseRegex: '^/reference(?:/|$)',
+          activeBaseRegex: '^/reference(?:/(?!getting-started(?:/|$)).*)?/?$',
         },
         {
           to: '/contact/',
