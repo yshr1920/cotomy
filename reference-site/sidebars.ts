@@ -15,6 +15,9 @@ import type { SidebarsConfig } from '@docusaurus/plugin-content-docs';
 const sidebars: SidebarsConfig = {
   tutorialSidebar: [
     'reference/overview',
+    'architecture',
+    'use-cases',
+    'design-philosophy',
     'reference/comparison',
     {
       type: 'category',
