@@ -129,6 +129,24 @@ const config: Config = {
           activeBaseRegex: '^/$',
         },
         {
+          to: '/architecture/',
+          position: 'left',
+          label: 'Architecture',
+          activeBaseRegex: '^/architecture/?$',
+        },
+        {
+          to: '/use-cases/',
+          position: 'left',
+          label: 'Use Cases',
+          activeBaseRegex: '^/use-cases/?$',
+        },
+        {
+          to: '/design-philosophy/',
+          position: 'left',
+          label: 'Design Philosophy',
+          activeBaseRegex: '^/design-philosophy/?$',
+        },
+        {
           to: '/comparison/',
           position: 'left',
           label: 'Comparison',
@@ -174,6 +192,18 @@ const config: Config = {
             {
               label: 'Overview',
               to: '/',
+            },
+            {
+              label: 'Architecture',
+              to: '/architecture',
+            },
+            {
+              label: 'Use Cases',
+              to: '/use-cases',
+            },
+            {
+              label: 'Design Philosophy',
+              to: '/design-philosophy',
             },
             {
               label: 'Comparison',

@@ -6,6 +6,10 @@ description: Cotomy overview for DOM-centric business UI, runtime guarantees, li
 
 # Overview
 
+## Structured UI Runtime
+
+Cotomy is a DOM-first runtime for building form-driven business web applications.
+
 Cotomy is a runtime layer for business UI. It keeps the browser as the center of the system, while adding structure around DOM updates, forms, and API calls.
 
 The goal is simple: make long-lived screens easier to change and debug without committing to a heavy SPA stack.
@@ -14,49 +18,16 @@ Cotomy does not add a separate app state store. UI state stays in the DOM, and b
 
 This reference explains the core pieces behind that model.
 
+Start here if you want the short version:
+
+- Cotomy is a structured runtime, not a component-rendering SPA framework
+- It is designed for admin systems, internal tools, and form-heavy business screens
+- It keeps the DOM as the primary UI model while adding form, lifecycle, and scoped CSS structure
+
+Suggested path: [Architecture](/architecture/) -> [Use Cases](/use-cases/) -> [Design Philosophy](/design-philosophy/) -> [Getting Started](/reference/getting-started/)
+
 Key references: [CotomyElement](/reference/classes/view/cotomy-element/), [CotomyApiForm](/reference/classes/forms/cotomy-api-form/), [CotomyWindow](/reference/classes/view/cotomy-window/), and the full [Class Index](/reference/).
 For design notes and practical write-ups, visit the [Cotomy Blog](https://blog.cotomy.net/).
-
-## Release Notes
-
-### v1.0.5 (2025-08-31 13:30 UTC)
-
-Downloads: [ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.5.zip) | [TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.5.tar.gz)
-
-- Simplified `convertUtcToLocal()` format-attribute handling, changed `data-cotomy-format` to read only from the current element, and kept ancestor lookup for `data-cotomy-timezone` to support global timezone settings.
-
-### v1.0.4 (2026-02-21 06:45 UTC)
-
-Downloads: [ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.4.zip) | [TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.4.tar.gz)
-
-- Added page-level default bind-name-generator support for `CotomyEntityFillApiForm` and `CotomyViewRenderer`.
-
-### v1.0.3 (2026-02-20 15:38 UTC)
-
-Downloads: [ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.3.zip) | [TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.3.tar.gz)
-
-- Restored attached-state semantics and added `isConnected` handling.
-
-### v1.0.2 (2026-02-20 13:25 UTC)
-
-Downloads: [ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.2.zip) | [TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.2.tar.gz)
-
-- Updated attached-state detection to use `Node.isConnected`.
-- Expanded and refined reference-site docs (overview/release notes, class index, navigation, SEO, and policy pages).
-
-### v1.0.1 (2026-02-09 13:04 UTC)
-
-Downloads: [ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.1.zip) | [TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.1.tar.gz)
-
-- Fixed keepalive option handling.
-- Updated reference-site docs and build configuration (TypeScript 5.8.x, sitemap, overview/comparison, and support info).
-
-### v1.0.0 (2026-02-07 15:30 UTC)
-
-Downloads: [ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.0.zip) | [TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.0.tar.gz)
-
-- Released 1.0.0.
-- Updated README and reference URL guidance for the stable line.
 
 ---
 
@@ -75,7 +46,7 @@ Cotomy includes runtime guardrails that are often left to manual discipline:
 These guarantees reduce common long-term UI failures such as memory leaks, orphaned handlers, and style leakage.
 
 CotomyElement makes it easy to bundle small bits of HTML and scoped CSS, then attach them to existing DOM nodes.
-If you are getting started, read the [Getting Started](./getting-started.md) page first.
+If you are getting started, read the [Getting Started](/reference/getting-started/) page first.
 This example assumes a header already exists in the page.
 For better template literal highlighting, we recommend a VS Code extension like es6-string-html for HTML/CSS.
 
@@ -94,21 +65,6 @@ CotomyElement.first("header")!.append(new CotomyElement({
   `
 }));
 ```
-
----
-
-## What is Cotomy?
-
-Cotomy is a structured UI runtime, not a component-rendering SPA framework.
-It keeps day-to-day UI work close to HTML and the DOM:
-
-- DOM manipulation with predictable helpers  
-- Form and API handling with repeatable patterns  
-- Scoped CSS that keeps changes localized  
-- View-level behavior that stays explicit  
-
-You can build interactive screens without a large SPA framework, and troubleshoot with standard browser tools.
-It runs in the browser and works with plain JavaScript or TypeScript, with or without a build step.
 
 ---
 ## Architecture at a Glance
@@ -150,6 +106,82 @@ Cotomy focuses on the issues that usually make business UI expensive to maintain
 - Debugging slows down because DOM structure and UI state diverge  
 
 It provides enough structure to keep code organized while staying close to standard HTML and JavaScript.
+
+---
+## When Cotomy Works Best
+
+Cotomy is designed for applications such as:
+
+- Admin systems
+- Internal business tools
+- CRUD-heavy management screens
+- Form-driven workflows
+- Long-lived enterprise systems
+
+It favors stability, maintainability, and operational clarity over SPA-style rendering complexity.
+
+Continue with [Use Cases](/use-cases/) for concrete examples, or go directly to [Getting Started](/reference/getting-started/).
+
+---
+## Quick Example
+
+This is the smallest useful mental model for Cotomy:
+
+```ts
+const form = new CotomyForm({
+  html: /* html */`<form><input name="code" /><button type="submit">Save</button></form>`
+});
+
+form.initialize();
+```
+
+- `CotomyForm` standardizes form and API interaction
+- Lifecycle and event cleanup are tracked by the runtime
+- The DOM remains the primary UI state
+
+For the layer model behind this flow, see [Architecture](/architecture/).
+
+---
+## Release Notes
+
+### v1.0.5 (2026-02-21 14:54 UTC)
+
+Downloads: [ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.5.zip) | [TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.5.tar.gz)
+
+- Added timezone-aware `utc` and `date` rendering in `CotomyViewRenderer`, including explicit `Z` offset handling and ancestor `data-cotomy-timezone` lookup.
+
+### v1.0.4 (2026-02-21 06:43 UTC)
+
+Downloads: [ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.4.zip) | [TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.4.tar.gz)
+
+- Added page-level default bind-name-generator support for `CotomyEntityFillApiForm` and `CotomyViewRenderer`.
+
+### v1.0.3 (2026-02-20 15:37 UTC)
+
+Downloads: [ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.3.zip) | [TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.3.tar.gz)
+
+- Restored attached-state semantics and added `isConnected` handling.
+
+### v1.0.2 (2026-02-20 13:24 UTC)
+
+Downloads: [ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.2.zip) | [TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.2.tar.gz)
+
+- Updated attached-state detection to use `Node.isConnected`.
+- Expanded and refined reference-site docs (overview/release notes, class index, navigation, SEO, and policy pages).
+
+### v1.0.1 (2026-02-09 13:03 UTC)
+
+Downloads: [ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.1.zip) | [TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.1.tar.gz)
+
+- Fixed keepalive option handling.
+- Updated reference-site docs and build configuration (TypeScript 5.8.x, sitemap, overview/comparison, and support info).
+
+### v1.0.0 (2026-02-07 15:30 UTC)
+
+Downloads: [ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.0.zip) | [TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.0.tar.gz)
+
+- Released 1.0.0.
+- Updated README and reference URL guidance for the stable line.
 
 ---
 ## Lifecycle Safety
@@ -312,6 +344,13 @@ Cotomy runtime (structure, lifecycle, forms, events)
 Business-specific UI logic
 
 It does not replace the platform; it structures it.
+
+Related pages:
+
+- [Architecture](/architecture/)
+- [Use Cases](/use-cases/)
+- [Design Philosophy](/design-philosophy/)
+- [Getting Started](/reference/getting-started/)
 
 ---
 ## Contact
