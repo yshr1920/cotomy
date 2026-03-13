@@ -21,7 +21,7 @@ const approaches: string[] = [
   'Screen lifecycle coordination',
   'Form submission as a runtime protocol',
   'DOM-centered UI architecture',
-  'Separation between UI intent and business authority',
+  'Separation between UI intent and business logic',
 ];
 
 const runtimeComponents: SectionItem[] = [
@@ -127,12 +127,28 @@ export default function Home(): ReactElement {
               <h2>The Problem with Typical Web UI Architectures</h2>
             </div>
             <div className={styles.copyBlock}>
-              <p>Typical web UI frameworks assume short-lived pages.</p>
-              <p>However, internal business systems behave differently.</p>
+              <p>
+                Typical web UI frameworks, especially SPA frameworks, tend to build
+                the entire application as a single runtime.
+              </p>
+              <p>
+                In internal business systems, however, work is usually organized
+                around individual screens.
+              </p>
+              <p>
+                Each screen has its own business context, and form handling, state
+                retention, and user intent are managed at the screen level.
+              </p>
+              <p>
+                When too much screen logic is concentrated within a single SPA runtime,
+                state management, navigation logic, and UI responsibilities tend to
+                become tightly coupled.
+              </p>
               <BulletList items={problems} />
               <p>
-                Traditional SPA or component-driven architectures do not model these
-                realities well.
+                As the application grows, a single SPA runtime can accumulate
+                navigation logic, UI state management, and workflow coordination in
+                the same place.
               </p>
             </div>
           </div>
