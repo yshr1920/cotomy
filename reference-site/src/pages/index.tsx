@@ -88,23 +88,18 @@ export default function Home(): ReactElement {
             <div className={styles.heroInner}>
               <p className={styles.eyebrow}>DOM-first UI runtime</p>
               <h1 className={styles.heroTitle}>Cotomy</h1>
-              <p className={styles.heroSummary}>
-                Cotomy is a DOM-first UI runtime for long-lived business screens.
-              </p>
               <p className={styles.heroSubtitle}>
-                A DOM-first UI runtime for internal business systems.
+                DOM-first UI runtime for internal business systems.
               </p>
               <p className={styles.heroDescription}>
-                It keeps the DOM as the primary UI model for long-lived business
-                screens.
-              </p>
-              <p className={styles.heroDescription}>
-                It structures DOM behavior, form workflows, and screen lifecycle
-                management.
+                A TypeScript-first runtime for long-lived screens, form workflows, and page lifecycle control.
               </p>
               <div className={styles.installBlock}>
                 <p className={styles.installLabel}>Install from npm</p>
                 <CodeBlock language="bash">{'npm i cotomy'}</CodeBlock>
+                <p className={styles.installCaption}>
+                  Install from npm and continue with the Getting Started guide.
+                </p>
               </div>
               <div className={styles.actions}>
                 <Link className={styles.primaryAction} to="/reference/getting-started/">
