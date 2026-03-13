@@ -210,6 +210,15 @@ const config: Config = {
           ],
         },
         {
+          title: 'npm',
+          items: [
+            {
+              label: 'cotomy package',
+              href: 'https://www.npmjs.com/package/cotomy',
+            },
+          ],
+        },
+        {
           title: 'License',
           items: [
             {

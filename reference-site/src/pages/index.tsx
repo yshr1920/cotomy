@@ -102,6 +102,10 @@ export default function Home(): ReactElement {
                 It structures DOM behavior, form workflows, and screen lifecycle
                 management.
               </p>
+              <div className={styles.installBlock}>
+                <p className={styles.installLabel}>Install from npm</p>
+                <CodeBlock language="bash">{'npm i cotomy'}</CodeBlock>
+              </div>
               <div className={styles.actions}>
                 <Link className={styles.primaryAction} to="/reference/getting-started/">
                   Get Started

@@ -56,6 +56,27 @@
   line-height: 1.75;
 }
 
+.installBlock {
+  max-width: 680px;
+  margin-top: 0.4rem;
+}
+
+.installLabel {
+  margin: 0 0 0.7rem;
+  color: #6c5b31;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.installBlock :global(.theme-code-block) {
+  margin: 0;
+  border: 1px solid rgba(31, 93, 82, 0.14);
+  border-radius: 1rem;
+  box-shadow: 0 14px 32px rgba(29, 42, 38, 0.06);
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;
@@ -282,5 +303,9 @@
   .secondaryAction,
   .tertiaryAction {
     width: 100%;
+  }
+
+  .installBlock {
+    max-width: 100%;
   }
 }
