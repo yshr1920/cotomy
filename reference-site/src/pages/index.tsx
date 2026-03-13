@@ -161,7 +161,10 @@ export default function Home(): ReactElement {
               <h2>Cotomy&apos;s Approach</h2>
             </div>
             <div className={styles.copyBlock}>
-              <p>Cotomy treats the screen as a runtime surface.</p>
+              <p>
+                Cotomy organizes UI behavior around page controllers and form
+                runtimes.
+              </p>
               <p>
                 Instead of focusing on components, Cotomy organizes UI behavior around
                 runtime boundaries and screen lifecycles.
