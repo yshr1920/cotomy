@@ -11,17 +11,17 @@ type SectionItem = {
 };
 
 const problems: string[] = [
-  'Screens stay open for long periods',
-  'Form state lives beyond a single request',
-  'DOM stability matters for operational safety',
-  'UI actions often represent business intent',
+  'Long-running operational screens',
+  'Form state that spans multiple requests',
+  'DOM stability as an operational requirement',
+  'UI actions that directly represent business intent',
 ];
 
 const approaches: string[] = [
-  'Screen lifecycle coordination',
-  'Form submission as a runtime protocol',
-  'DOM-centered UI architecture',
-  'Separation between UI intent and business logic',
+  'DOM-first UI model',
+  'Screen-oriented UI boundaries',
+  'Form workflows as runtime structure',
+  'Page lifecycle and event cleanup',
 ];
 
 const runtimeComponents: SectionItem[] = [
@@ -131,23 +131,23 @@ export default function Home(): ReactElement {
                 the entire application as a single runtime.
               </p>
               <p>
-                In internal business systems, however, work is usually organized
-                around individual screens.
+                In internal business systems, work is usually organized around
+                individual screens with their own business context.
               </p>
               <p>
-                Each screen has its own business context, and form handling, state
-                retention, and user intent are managed at the screen level.
+                Form handling, retained state, and the meaning of user actions are
+                often managed at the screen level rather than at the application
+                shell level.
               </p>
               <p>
-                When too much screen logic is concentrated within a single SPA runtime,
-                state management, navigation logic, and UI responsibilities tend to
-                become tightly coupled.
+                When too much screen logic is concentrated within a single SPA
+                runtime, state management, navigation, UI responsibilities, and
+                workflow coordination tend to become tightly coupled.
               </p>
               <BulletList items={problems} />
               <p>
-                As the application grows, a single SPA runtime can accumulate
-                navigation logic, UI state management, and workflow coordination in
-                the same place.
+                As the application grows, a single runtime can accumulate more and
+                more cross-screen responsibilities in the same place.
               </p>
             </div>
           </div>
@@ -161,12 +161,14 @@ export default function Home(): ReactElement {
             </div>
             <div className={styles.copyBlock}>
               <p>
-                Cotomy organizes UI behavior around page controllers and form
-                runtimes.
+                Cotomy keeps the DOM as the primary UI model and adds explicit
+                runtime structure around forms, screen boundaries, and page-level
+                lifecycle.
               </p>
               <p>
-                Instead of focusing on components, Cotomy organizes UI behavior around
-                runtime boundaries and screen lifecycles.
+                Instead of organizing UI around a component tree, Cotomy organizes
+                it around screen-oriented UI, form workflows, and page lifecycle
+                control.
               </p>
               <h3 className={styles.subheading}>Core ideas</h3>
               <BulletList items={approaches} />
