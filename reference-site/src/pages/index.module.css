@@ -1,23 +1,287 @@
-/**
- * CSS files with the .module.css suffix will be treated as CSS modules
- * and scoped locally.
- */
+.page {
+  background:
+    radial-gradient(circle at top, rgba(0, 170, 138, 0.09), transparent 38%),
+    linear-gradient(180deg, #f1faf7 0%, #f8fdfb 34%, #ffffff 100%);
+  color: #1d2a26;
+}
 
-.heroBanner {
-  padding: 4rem 0;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
+.hero {
+  padding: 5.5rem 0 4rem;
+}
+
+.heroInner {
+  max-width: 980px;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.eyebrow {
+  margin: 0;
+  color: #6c5b31;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.heroTitle {
+  margin: 0;
+  font-size: clamp(3rem, 8vw, 5.8rem);
+  line-height: 0.94;
+  letter-spacing: -0.06em;
+}
+
+.heroSubtitle {
+  margin: 0;
+  max-width: 860px;
+  color: #25463f;
+  font-size: clamp(1.25rem, 2.4vw, 2rem);
+  line-height: 1.3;
+}
+
+.heroSummary {
+  margin: 0;
+  max-width: 860px;
+  color: #2c5d53;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.heroDescription {
+  margin: 0;
+  max-width: 860px;
+  color: #425750;
+  font-size: 1.05rem;
+  line-height: 1.75;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  padding-top: 0.5rem;
+}
+
+.primaryAction,
+.secondaryAction,
+.tertiaryAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0.8rem 1.2rem;
+  border-radius: 999px;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease;
+}
+
+.primaryAction {
+  background: #1f5d52;
+  color: #f8f7f2;
+  box-shadow: 0 18px 40px rgba(31, 93, 82, 0.18);
+}
+
+.secondaryAction {
+  border: 1px solid rgba(31, 93, 82, 0.18);
+  background: rgba(255, 255, 255, 0.8);
+  color: #1f5d52;
+}
+
+.tertiaryAction {
+  color: #6b4d16;
+}
+
+.primaryAction:hover,
+.secondaryAction:hover,
+.tertiaryAction:hover {
+  color: inherit;
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+.section,
+.sectionAlt {
+  padding: 3.5rem 0;
+}
+
+.section {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.sectionAlt {
+  background: rgba(241, 251, 247, 0.9);
+  border-top: 1px solid rgba(0, 170, 138, 0.08);
+  border-bottom: 1px solid rgba(0, 170, 138, 0.08);
+}
+
+.sectionHeader {
+  display: grid;
+  gap: 0.65rem;
+  margin-bottom: 1.5rem;
+}
+
+.sectionHeader h2 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3rem);
+  letter-spacing: -0.04em;
+}
+
+.sectionLabel {
+  margin: 0;
+  color: #7b6840;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.sectionLead {
+  margin: 0;
+  max-width: 720px;
+  color: #4f625d;
+  font-size: 1rem;
+}
+
+.copyBlock {
+  max-width: 760px;
+  color: #30423d;
+  font-size: 1.04rem;
+  line-height: 1.8;
+}
+
+.copyBlock p {
+  margin: 0 0 1rem;
+}
+
+.subheading {
+  margin: 2rem 0 0.8rem;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.bulletList {
+  margin: 1.1rem 0 1.2rem;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.bulletList li {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+}
+
+.bulletList li::before {
+  content: '';
+  width: 0.7rem;
+  height: 0.7rem;
+  margin-top: 0.45rem;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #1f5d52 0%, #c4964d 100%);
+}
+
+.cardGrid,
+.resourceGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.card,
+.resourceCard {
+  min-height: 100%;
+  padding: 1.4rem;
+  border: 1px solid rgba(0, 170, 138, 0.14);
+  border-radius: 1.25rem;
+  background: rgba(242, 252, 248, 0.94);
+  box-shadow: 0 16px 36px rgba(29, 42, 38, 0.06);
+}
+
+.card h3,
+.resourceTitle {
+  margin: 0 0 0.7rem;
+  color: #163831;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.card p,
+.resourceMeta {
+  margin: 0;
+  color: #566963;
+  line-height: 1.7;
+}
+
+.resourceCard {
+  text-decoration: none;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+
+.resourceCard:hover {
+  color: inherit;
+  text-decoration: none;
+  transform: translateY(-2px);
+  border-color: rgba(0, 170, 138, 0.26);
+  box-shadow: 0 20px 42px rgba(29, 42, 38, 0.1);
+}
+
+.exampleBlock {
+  margin-top: 1.5rem;
+}
+
+.exampleBlock :global(.theme-code-block) {
+  margin-bottom: 0;
+  border: 1px solid rgba(0, 170, 138, 0.16);
+  border-radius: 1.25rem;
+  box-shadow: 0 16px 36px rgba(29, 42, 38, 0.06);
 }
 
 @media screen and (max-width: 996px) {
-  .heroBanner {
-    padding: 2rem;
+  .hero {
+    padding: 4.5rem 0 3rem;
+  }
+
+  .section,
+  .sectionAlt {
+    padding: 3rem 0;
+  }
+
+  .cardGrid,
+  .resourceGrid {
+    grid-template-columns: 1fr;
   }
 }
 
-.buttons {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+@media screen and (max-width: 640px) {
+  .heroTitle {
+    font-size: 3.25rem;
+  }
+
+  .heroSubtitle {
+    font-size: 1.2rem;
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .primaryAction,
+  .secondaryAction,
+  .tertiaryAction {
+    width: 100%;
+  }
 }

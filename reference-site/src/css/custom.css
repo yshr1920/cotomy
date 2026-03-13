@@ -14,6 +14,7 @@
   --ifm-color-primary-lighter: #359962;
   --ifm-color-primary-lightest: #3cad6e;
   --ifm-code-font-size: 95%;
+  --cotomy-navbar-sidebar-width: min(420px, 86vw);
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
 }
 
@@ -91,4 +92,46 @@
   max-width: 720px;
   margin-inline: auto;
   text-align: right;
+}
+
+@media screen and (max-width: 1540px) {
+  .navbar__toggle {
+    display: inline-flex;
+  }
+
+  .navbar-sidebar {
+    width: var(--cotomy-navbar-sidebar-width);
+    max-width: var(--cotomy-navbar-sidebar-width);
+  }
+
+}
+
+@media screen and (max-width: 1440px) {
+  .navbar__items:not(.navbar__items--right) > .navbar__item {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 997px) and (max-width: 1540px) {
+  .docs-doc-page .navbar__toggle,
+  .docs-tags-list-page .navbar__toggle,
+  .docs-tag-doc-list-page .navbar__toggle {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 996px) {
+  .navbar__items--right {
+    display: none;
+  }
+
+  .navbar__toggle {
+    margin-right: 0.5rem;
+  }
+}
+
+.navbar-sidebar__group {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 170, 138, 0.12);
 }

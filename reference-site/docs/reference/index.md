@@ -4,8 +4,17 @@ title: Class Index
 description: Browse all Cotomy classes across View, Forms, Page, API, Debug, and Errors with direct links.
 ---
 
+Cotomy is a structured runtime, not a component-rendering SPA framework.
+It is designed for admin systems, internal tools, and form-heavy business screens where the DOM remains the primary UI model.
+
 This page lists all available classes in the Cotomy reference.
 For design and architectural context behind these APIs, visit the [Cotomy Blog](https://blog.cotomy.net/).
+
+## Before You Browse the API
+
+- Cotomy keeps the DOM as the primary UI state instead of introducing a separate render model
+- It adds lifecycle, event, and form structure around ordinary browser behavior
+- It works best when page boundaries and business responsibilities stay explicit
 
 ## View
 - [CotomyScrollOptions](/reference/classes/view/cotomy-scroll-options/)
@@ -51,3 +60,10 @@ For design and architectural context behind these APIs, visit the [Cotomy Blog](
 - [CotomyResponseJsonParseException](/reference/classes/errors/cotomy-response-json-parse-exception/)
 - [CotomyTooManyRequestsException](/reference/classes/errors/cotomy-too-many-requests-exception/)
 - [CotomyUnauthorizedException](/reference/classes/errors/cotomy-unauthorized-exception/)
+
+## Related Pages
+
+- [Architecture](/architecture/)
+- [Design Philosophy](/design-philosophy/)
+- [Getting Started](/reference/getting-started/)
+- [Release Notes](/reference/release-notes/)

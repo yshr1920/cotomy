@@ -1,5 +1,4 @@
 ---
-slug: /
 title: Overview
 description: Cotomy overview for DOM-centric business UI, runtime guarantees, lifecycle safety, and form-first architecture.
 ---

@@ -69,6 +69,22 @@ predictable page modules.
 2. Build a minimal UI with CotomyElement.
 3. Learn event handling, the DOM-state model, and forms.
 
+## Smallest Useful Mental Model
+
+This is the smallest useful flow to keep in mind when starting with Cotomy:
+
+```ts
+const form = new CotomyForm({
+  html: /* html */`<form><input name="code" /><button type="submit">Save</button></form>`
+});
+
+form.initialize();
+```
+
+- `CotomyForm` standardizes form and API interaction
+- Lifecycle and event cleanup are tracked by the runtime
+- The DOM remains the primary UI state
+
 ## Architecture Map
 
 ```mermaid
