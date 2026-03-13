@@ -10,7 +10,7 @@ For design essays and implementation notes around these topics, see the [Cotomy 
 
 ## Cotomy's Design Model
 
-Cotomy is a page-oriented UI layer, not a global application framework.
+Cotomy is a DOM-first UI runtime, not a global application framework.
 The basic unit is the page, and each page should:
 
 - Have its own entry file

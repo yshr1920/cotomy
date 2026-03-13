@@ -80,24 +80,23 @@ export default function Home(): ReactElement {
   return (
     <Layout
       title="Cotomy"
-      description="Cotomy is a runtime-oriented UI architecture for long-lived internal business screens."
+      description="Cotomy is a DOM-first UI runtime for long-lived internal business screens."
     >
       <main className={styles.page}>
         <section className={styles.hero}>
           <div className="container">
             <div className={styles.heroInner}>
-              <p className={styles.eyebrow}>Runtime-oriented UI architecture</p>
+              <p className={styles.eyebrow}>DOM-first UI runtime</p>
               <h1 className={styles.heroTitle}>Cotomy</h1>
               <p className={styles.heroSummary}>
-                Cotomy is a lightweight UI runtime for long-lived business
-                screens.
+                Cotomy is a DOM-first UI runtime for long-lived business screens.
               </p>
               <p className={styles.heroSubtitle}>
-                A runtime-oriented architecture for internal business systems.
+                A DOM-first UI runtime for internal business systems.
               </p>
               <p className={styles.heroDescription}>
-                Cotomy is a runtime-oriented UI architecture for internal business
-                systems.
+                It keeps the DOM as the primary UI model for long-lived business
+                screens.
               </p>
               <p className={styles.heroDescription}>
                 It structures DOM behavior, form workflows, and screen lifecycle
