@@ -11,7 +11,7 @@ Cotomy is a DOM-first runtime for building form-driven business web applications
 
 Cotomy is a runtime layer for business UI. It keeps the browser as the center of the system, while adding structure around DOM updates, forms, and API calls.
 
-The goal is simple: make long-lived screens easier to change and debug without committing to a heavy SPA stack.
+The goal is simple: make screen-oriented UI easier to change and debug without committing to a heavy SPA stack.
 
 Cotomy does not add a separate app state store. UI state stays in the DOM, and business state stays in your application logic.
 
@@ -101,7 +101,7 @@ Cotomy focuses on the issues that usually make business UI expensive to maintain
 
 - Changes ripple across screens due to shared CSS or hidden conventions  
 - UI behavior becomes hard to trace when framework layers grow  
-- Framework lock-in makes long-lived systems harder to evolve  
+- Framework lock-in makes systems maintained over time harder to evolve  
 - Debugging slows down because DOM structure and UI state diverge  
 
 It provides enough structure to keep code organized while staying close to standard HTML and JavaScript.
@@ -115,7 +115,7 @@ Cotomy is designed for applications such as:
 - Internal business tools
 - CRUD-heavy management screens
 - Form-driven workflows
-- Long-lived enterprise systems
+- Enterprise systems maintained over time
 
 It favors stability, maintainability, and operational clarity over SPA-style rendering complexity.
 

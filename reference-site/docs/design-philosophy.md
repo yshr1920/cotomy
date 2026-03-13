@@ -1,7 +1,7 @@
 ---
 slug: /design-philosophy
 title: Design Philosophy
-description: The principles behind Cotomy, including DOM-first architecture, minimal runtime design, transparency, and long-lived maintainability.
+description: The principles behind Cotomy, including DOM-first architecture, minimal runtime design, transparency, and maintainability over time.
 ---
 
 # Design Philosophy
@@ -39,7 +39,7 @@ Cotomy aims to be easy to reason about.
 
 The point is not cleverness. The point is traceability.
 
-## Maintainable Long-Lived Systems
+## Systems Designed to Stay Maintainable
 
 Cotomy is designed for systems that must remain operable over time.
 
@@ -66,4 +66,3 @@ This makes Cotomy a practical fit for teams that want progressive enhancement wi
 - [Architecture](/architecture/)
 - [Use Cases](/use-cases/)
 - [Getting Started](/reference/getting-started/)
-

@@ -49,7 +49,7 @@ const useCases: string[] = [
   'line-of-business systems',
   'operational dashboards',
   'CRUD-heavy back-office tools',
-  'long-lived administrative interfaces',
+  'screen-oriented administrative interfaces',
 ];
 
 const cotomyElementExample = `CotomyElement.first("header")!.append(new CotomyElement({
@@ -80,7 +80,7 @@ export default function Home(): ReactElement {
   return (
     <Layout
       title="Cotomy"
-      description="Cotomy is a DOM-first UI runtime for long-lived internal business screens."
+      description="Cotomy is a DOM-first UI runtime for screen-oriented internal business systems."
     >
       <main className={styles.page}>
         <section className={styles.hero}>
@@ -92,7 +92,7 @@ export default function Home(): ReactElement {
                 DOM-first UI runtime for internal business systems.
               </p>
               <p className={styles.heroDescription}>
-                A TypeScript-first runtime for long-lived screens, form workflows, and page lifecycle control.
+                A TypeScript-first runtime for screen-oriented UI, form workflows, and page lifecycle control.
               </p>
               <div className={styles.installBlock}>
                 <p className={styles.installLabel}>Install from npm</p>

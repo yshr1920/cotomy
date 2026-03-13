@@ -46,7 +46,7 @@ Cotomy adds lifecycle structure around ordinary DOM behavior.
 - DOM moves are handled explicitly so runtime state stays consistent
 - Page-level lifecycle can be coordinated without building a large SPA shell
 
-This is especially useful on long-lived business screens where leaks and duplicate handlers accumulate over time.
+This is especially useful in screen-level business workflows where leaks and duplicate handlers accumulate over time.
 
 ## Runtime Guarantees
 

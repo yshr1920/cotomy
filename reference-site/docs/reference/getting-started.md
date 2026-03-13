@@ -60,7 +60,7 @@ Cotomy is especially effective for systems where:
 - Business flows are document-driven
 - Server and client responsibilities are clearly separated
 
-Instead of building a large, long-lived client application, you build a set of
+Instead of building a large, always-on client application, you build a set of
 predictable page modules.
 
 ## How to Use This Guide
