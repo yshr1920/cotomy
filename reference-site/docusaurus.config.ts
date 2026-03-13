@@ -6,7 +6,7 @@ import { themes as prismThemes } from 'prism-react-renderer';
 
 const config: Config = {
   title: 'Cotomy',
-  tagline: 'A runtime-oriented UI architecture for long-lived business screens.',
+  tagline: 'A DOM-first UI runtime for long-lived business screens.',
   favicon: 'img/logo.svg',
   trailingSlash: true,
 
@@ -74,7 +74,7 @@ const config: Config = {
         '@type': 'WebSite',
         name: 'Cotomy',
         url: 'https://cotomy.net/',
-        description: 'A runtime-oriented UI architecture for long-lived internal business screens.',
+        description: 'A DOM-first UI runtime for long-lived internal business screens.',
       }),
     },
     {
@@ -97,11 +97,11 @@ const config: Config = {
     metadata: [
       {
         name: 'description',
-        content: 'Cotomy is a runtime-oriented UI architecture for long-lived business screens and internal systems.',
+        content: 'Cotomy is a DOM-first UI runtime for long-lived business screens and internal systems.',
       },
       {
         name: 'keywords',
-        content: 'Cotomy, UI architecture, internal systems, DOM-centered UI, business screens, TypeScript',
+        content: 'Cotomy, UI runtime, DOM-first, internal systems, business screens, TypeScript',
       },
       {
         name: 'robots',
