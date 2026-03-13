@@ -95,7 +95,7 @@ This is a structural safety rule, not a technical limitation:
 | --- | --- |
 | Global app root | Independent page modules |
 | Virtual state | DOM = state |
-| Long-lived app | Page lifecycle |
+| Single client app | Page lifecycle |
 
 It keeps behavior isolated and helps avoid cross-page leaks.
 

@@ -26,7 +26,7 @@ Cotomy is useful here because:
 
 - Each page can stay isolated and page-scoped
 - API interactions can be standardized through forms
-- Long-lived operational screens benefit from lifecycle and event cleanup
+- Screen-level operational workflows benefit from lifecycle and event cleanup
 
 ## Form-Heavy Enterprise Screens
 
@@ -38,7 +38,7 @@ Cotomy helps because:
 - Existing HTML can remain central
 - Teams can evolve screens incrementally without moving to a full SPA architecture
 
-## Long-Lived Internal Tools
+## Internal Tools Maintained Over Time
 
 Some systems are not flashy products. They are operational tools that need to remain predictable for many years.
 
@@ -62,4 +62,3 @@ Cotomy is usually not the right tool when:
 - [Architecture](/architecture/)
 - [Design Philosophy](/design-philosophy/)
 - [Comparison](/comparison/)
-

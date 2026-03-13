@@ -53,7 +53,7 @@ In Cotomy, business logic updates the DOM through runtime APIs so lifecycle and 
 “Initial HTML” here simply means the HTML that exists before the client runtime
 starts. It could be server-rendered HTML, static HTML, or HTML produced by a build step.
 
-Use Cotomy when you want HTML/DOM to stay central and need runtime safety for forms and long-lived pages.
+Use Cotomy when you want HTML/DOM to stay central and need runtime safety for forms and screen-level workflows.
 Use a component framework when you want a centralized render model and a JS state tree as the source of truth.
 For design rationale and practical usage notes, see the [Cotomy Blog](https://blog.cotomy.net/).
 
@@ -85,7 +85,7 @@ For design rationale and practical usage notes, see the [Cotomy Blog](https://bl
 | Fit | Why |
 | --- | --- |
 | Business systems | Forms and APIs are central |
-| Long-lived screens | Runtime safety reduces UI risk |
+| Screen-level workflows | Runtime safety reduces UI risk |
 | Server HTML with dynamic behavior | Works alongside SSR |
 | Admin and management tools | Input and process heavy |
 

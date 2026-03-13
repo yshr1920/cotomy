@@ -4,7 +4,7 @@ title: Class Index
 description: Browse all Cotomy classes across View, Forms, Page, API, Debug, and Errors with direct links.
 ---
 
-Cotomy is a DOM-first UI runtime for long-lived business screens.
+Cotomy is a DOM-first UI runtime for screen-oriented business systems.
 It is designed for admin systems, internal tools, and form-heavy business screens where the DOM remains the primary UI model.
 
 This page lists all available classes in the Cotomy reference.
