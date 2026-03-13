@@ -48,6 +48,20 @@ Cotomy adds lifecycle structure around ordinary DOM behavior.
 
 This is especially useful on long-lived business screens where leaks and duplicate handlers accumulate over time.
 
+## Runtime Guarantees
+
+Cotomy includes runtime guardrails that are often left to team discipline.
+
+| Guarantee | What It Means in Practice |
+| --- | --- |
+| **Element identity tracking** | Each `CotomyElement` has a persistent instance ID used to manage lifecycle and events safely |
+| **Automatic event cleanup** | Handlers registered through Cotomy are tracked and removed when elements leave the DOM |
+| **Scoped CSS lifecycle** | Styles attached to elements are disposed when the last scoped element is removed |
+| **DOM move awareness** | Internal transit handling prevents state corruption during DOM reparenting |
+| **DOM-state unification** | The DOM remains the source of truth, reducing hidden state divergence |
+
+These guarantees reduce common long-term failures such as memory leaks, orphaned handlers, style leakage, and state drift between runtime code and the visible UI.
+
 ## Scoped CSS
 
 CotomyElement can attach scoped CSS together with markup.
@@ -66,8 +80,6 @@ The architectural goal is not "more abstraction." It is better boundaries.
 
 ## Where to Go Next
 
-- [Overview](/)
 - [Use Cases](/use-cases/)
 - [Design Philosophy](/design-philosophy/)
 - [Reference](/reference/)
-

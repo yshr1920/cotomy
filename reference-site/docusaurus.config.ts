@@ -5,8 +5,8 @@ import { themes as prismThemes } from 'prism-react-renderer';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: 'Cotomy - Structured UI Runtime',
-  tagline: 'Structured UI runtime and API reference for business web UI',
+  title: 'Cotomy',
+  tagline: 'A runtime-oriented UI architecture for long-lived business screens.',
   favicon: 'img/logo.svg',
   trailingSlash: true,
 
@@ -74,7 +74,7 @@ const config: Config = {
         '@type': 'WebSite',
         name: 'Cotomy',
         url: 'https://cotomy.net/',
-        description: 'Structured UI runtime and API reference for DOM-centric business web applications.',
+        description: 'A runtime-oriented UI architecture for long-lived internal business screens.',
       }),
     },
     {
@@ -97,11 +97,11 @@ const config: Config = {
     metadata: [
       {
         name: 'description',
-        content: 'Cotomy reference documentation for classes, forms, API integration, and page-scoped UI architecture.',
+        content: 'Cotomy is a runtime-oriented UI architecture for long-lived business screens and internal systems.',
       },
       {
         name: 'keywords',
-        content: 'Cotomy, TypeScript, DOM, UI runtime, API forms, reference documentation',
+        content: 'Cotomy, UI architecture, internal systems, DOM-centered UI, business screens, TypeScript',
       },
       {
         name: 'robots',
@@ -122,12 +122,6 @@ const config: Config = {
         src: 'img/logo.svg',
       },
       items: [
-        {
-          to: '/',
-          position: 'left',
-          label: 'Overview',
-          activeBaseRegex: '^/$',
-        },
         {
           to: '/architecture/',
           position: 'left',
@@ -162,7 +156,13 @@ const config: Config = {
           to: '/reference/',
           position: 'left',
           label: 'Reference',
-          activeBaseRegex: '^/reference(?:/(?!getting-started(?:/|$)).*)?/?$',
+          activeBaseRegex: '^/reference(?:/(?!getting-started(?:/|$)|release-notes(?:/|$)).*)?/?$',
+        },
+        {
+          to: '/reference/release-notes/',
+          position: 'left',
+          label: 'Release Notes',
+          activeBaseRegex: '^/reference/release-notes/?$',
         },
         {
           to: '/contact/',
@@ -181,44 +181,16 @@ const config: Config = {
           position: 'right',
           label: 'Blog',
         },
+        {
+          href: 'https://github.com/yshr1920/cotomy',
+          position: 'right',
+          label: 'GitHub',
+        },
       ],
     },
     footer: {
       style: 'dark',
       links: [
-        {
-          title: 'Reference',
-          items: [
-            {
-              label: 'Overview',
-              to: '/',
-            },
-            {
-              label: 'Architecture',
-              to: '/architecture',
-            },
-            {
-              label: 'Use Cases',
-              to: '/use-cases',
-            },
-            {
-              label: 'Design Philosophy',
-              to: '/design-philosophy',
-            },
-            {
-              label: 'Comparison',
-              to: '/comparison',
-            },
-            {
-              label: 'Getting Started',
-              to: '/reference/getting-started',
-            },
-            {
-              label: 'Reference',
-              to: '/reference/',
-            },
-          ],
-        },
         {
           title: 'Blog',
           items: [
@@ -229,19 +201,20 @@ const config: Config = {
           ],
         },
         {
-          title: 'Contact',
+          title: 'GitHub',
           items: [
             {
-              label: 'Contact Form',
-              to: '/contact/',
+              label: 'Repository',
+              href: 'https://github.com/yshr1920/cotomy',
             },
+          ],
+        },
+        {
+          title: 'License',
+          items: [
             {
-              label: 'Privacy Policy',
-              to: '/privacy-policy/',
-            },
-            {
-              label: 'yshr1920@gmail.com',
-              href: 'mailto:yshr1920@gmail.com',
+              label: 'MIT License',
+              href: 'https://github.com/yshr1920/cotomy/blob/main/LICENSE',
             },
           ],
         },
