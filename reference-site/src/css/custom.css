@@ -4,6 +4,8 @@
  * work well for content-centric websites.
  */
 
+@import url('https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400&display=swap');
+
 /* You can override the default Infima variables here. */
 :root {
   --ifm-color-primary: #2e8555;
@@ -13,6 +15,13 @@
   --ifm-color-primary-light: #33925d;
   --ifm-color-primary-lighter: #359962;
   --ifm-color-primary-lightest: #3cad6e;
+  --ifm-font-family-base: 'Fira Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ifm-heading-font-family: 'Fira Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ifm-font-weight-light: 400;
+  --ifm-font-weight-normal: 400;
+  --ifm-font-weight-semibold: 400;
+  --ifm-font-weight-bold: 400;
+  --ifm-font-weight-base: 400;
   --ifm-code-font-size: 95%;
   --cotomy-navbar-sidebar-width: min(420px, 86vw);
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
