@@ -243,26 +243,26 @@ export default function Home(): ReactElement {
             <div className={styles.resourceGrid}>
               <Link className={styles.resourceCard} to="/reference/getting-started/">
                 <span className={styles.resourceTitle}>Getting Started guide</span>
-                <span className={styles.resourceMeta}>cotomy.net/reference/getting-started/</span>
+                <span className={styles.resourceMeta}>https://cotomy.net/reference/getting-started/</span>
               </Link>
               <Link className={styles.resourceCard} to="/reference/">
                 <span className={styles.resourceTitle}>Reference Documentation</span>
-                <span className={styles.resourceMeta}>cotomy.net/reference/</span>
+                <span className={styles.resourceMeta}>https://cotomy.net/reference/</span>
               </Link>
               <Link
                 className={styles.resourceCard}
                 href="https://github.com/yshr1920/cotomy"
               >
                 <span className={styles.resourceTitle}>GitHub Repository</span>
-                <span className={styles.resourceMeta}>github.com/yshr1920/cotomy</span>
+                <span className={styles.resourceMeta}>https://github.com/yshr1920/cotomy</span>
               </Link>
               <Link className={styles.resourceCard} href="https://blog.cotomy.net/series/design/">
                 <span className={styles.resourceTitle}>Design Philosophy Articles</span>
-                <span className={styles.resourceMeta}>blog.cotomy.net/series/design/</span>
+                <span className={styles.resourceMeta}>https://blog.cotomy.net/series/design/</span>
               </Link>
               <Link className={styles.resourceCard} href="https://blog.cotomy.net/series/usage/">
                 <span className={styles.resourceTitle}>Technical Articles</span>
-                <span className={styles.resourceMeta}>blog.cotomy.net/series/usage/</span>
+                <span className={styles.resourceMeta}>https://blog.cotomy.net/series/usage/</span>
               </Link>
             </div>
           </div>
