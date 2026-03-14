@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@500&display=swap');
+
 .page {
   background:
     radial-gradient(circle at top, rgba(0, 170, 138, 0.09), transparent 38%),
@@ -27,9 +29,11 @@
 
 .heroTitle {
   margin: 0;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
   font-size: clamp(3rem, 8vw, 5.8rem);
   line-height: 0.94;
-  letter-spacing: -0.06em;
+  letter-spacing: -0.035em;
 }
 
 .heroSubtitle {
