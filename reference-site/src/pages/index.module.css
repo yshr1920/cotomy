@@ -241,10 +241,15 @@
 .resourceMeta {
   margin: 0;
   color: #566963;
+  font-size: 0.92rem;
   line-height: 1.7;
+  word-break: break-all;
 }
 
 .resourceCard {
+  display: grid;
+  gap: 0.3rem;
+  align-content: start;
   text-decoration: none;
   transition:
     transform 180ms ease,
