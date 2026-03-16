@@ -113,6 +113,7 @@ const config: Config = {
       },
     ],
     colorMode: {
+      disableSwitch: true,
       respectPrefersColorScheme: true,
     },
     navbar: {
