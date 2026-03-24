@@ -1,7 +1,7 @@
-import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
 import CodeBlock from '@theme/CodeBlock';
-import type {ReactElement} from 'react';
+import Layout from '@theme/Layout';
+import type { ReactElement } from 'react';
 
 import styles from './index.module.css';
 
@@ -230,6 +230,40 @@ export default function Home(): ReactElement {
             </div>
             <div className={styles.exampleBlock}>
               <CodeBlock language="ts">{cotomyElementExample}</CodeBlock>
+            </div>
+          </div>
+        </section>
+
+        <section className={styles.sectionAlt}>
+          <div className="container">
+            <div className={styles.sectionHeader}>
+              <p className={styles.sectionLabel}>Project Templates</p>
+              <h2>Cotomy Razor Pages Templates</h2>
+              <p className={styles.sectionLead}>
+                Project templates that give you a ready-to-go Razor Pages + TypeScript foundation.
+                Available in two plans: Standard for UI-only projects, and Professional with authentication, CRUD, and EF Core included.
+              </p>
+            </div>
+            <div className={styles.cardGrid}>
+              <article className={styles.card} style={{background: '#fff'}}>
+                <h3>Standard — $39</h3>
+                <p>
+                  UI Framework (Form / Dialog / SidePanel) + TypeScript integration + authentication hook.
+                  Best for projects that add UI to an existing backend, or when you want to design your own auth layer.
+                </p>
+              </article>
+              <article className={styles.card} style={{background: '#fff'}}>
+                <h3>Professional — $89</h3>
+                <p>
+                  Everything in Standard, plus Cookie authentication, CRUD templates (Product / Order / User), EF Core, and SQL Server.
+                  Start with a production-ready structure for business applications.
+                </p>
+              </article>
+            </div>
+            <div className={styles.actions} style={{marginTop: '1.5rem'}}>
+              <Link className={styles.primaryAction} to="/razorpages/">
+                See plans and features
+              </Link>
             </div>
           </div>
         </section>
