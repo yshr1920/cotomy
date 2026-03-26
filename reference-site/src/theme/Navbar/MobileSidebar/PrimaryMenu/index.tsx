@@ -1,4 +1,5 @@
 import NavbarItem from '@theme/NavbarItem';
+import IconExternalLink from '@theme/Icon/ExternalLink';
 import {useThemeConfig} from '@docusaurus/theme-common';
 import {useNavbarMobileSidebar} from '@docusaurus/theme-common/internal';
 import styles from './styles.module.css';
@@ -11,17 +12,6 @@ type NavbarItemConfig = {
 
 function useNavbarItems(): NavbarItemConfig[] {
   return useThemeConfig().navbar.items as NavbarItemConfig[];
-}
-
-function ExternalLinkIcon(): React.JSX.Element {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" className={styles.externalIcon}>
-      <path
-        fill="currentColor"
-        d="M14 5h5v5h-2V8.41l-6.29 6.3-1.42-1.42 6.3-6.29H14V5Zm3 14H7V7h5V5H7C5.9 5 5 5.9 5 7v12c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2v-5h-2v5Z"
-      />
-    </svg>
-  );
 }
 
 export default function NavbarMobilePrimaryMenu(): React.JSX.Element {
@@ -37,7 +27,7 @@ export default function NavbarMobilePrimaryMenu(): React.JSX.Element {
             label: (
               <span className={styles.externalLabel}>
                 <span>{String(item.label ?? '')}</span>
-                <ExternalLinkIcon />
+                <IconExternalLink />
               </span>
             ),
           }

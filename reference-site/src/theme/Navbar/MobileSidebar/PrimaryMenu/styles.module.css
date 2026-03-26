@@ -3,9 +3,3 @@
   align-items: center;
   gap: 0.35rem;
 }
-
-.externalIcon {
-  width: 0.9rem;
-  height: 0.9rem;
-  flex: 0 0 auto;
-}
