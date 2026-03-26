@@ -82,8 +82,8 @@ const config: Config = {
       attributes: {type: 'application/ld+json'},
       innerHTML: JSON.stringify({
         '@context': 'https://schema.org',
-        '@type': 'Organization',
-        name: 'labo1920',
+        '@type': 'Person',
+        name: 'Y. Arakawa',
         url: 'https://cotomy.net/',
         email: 'yshr1920@gmail.com',
         sameAs: ['https://blog.cotomy.net/', 'https://github.com/yshr1920/cotomy'],
@@ -235,7 +235,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `© ${new Date().getFullYear()} labo1920. All rights reserved.`,
+      copyright: `© ${new Date().getFullYear()} Y. Arakawa. All rights reserved.`,
     },
     prism: {
       theme: prismThemes.github,
