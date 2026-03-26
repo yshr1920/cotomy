@@ -5,7 +5,7 @@ description: Privacy policy for cotomy.net covering collected data, usage, reten
 ---
 
 ## 1. Operator Information
-- **Operator name:** labo1920
+- **Operator name:** Y. Arakawa
 - **Location:** Nagoya, Aichi, Japan
 - **Contact email:** yshr1920@gmail.com
 
