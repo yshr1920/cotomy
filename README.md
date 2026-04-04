@@ -6,6 +6,10 @@
 **Cotomy** is a lightweight framework for managing form behavior and page controllers in web applications.  
 It is suitable for both SPAs (Single Page Applications) and traditional web apps requiring dynamic form operations.
 
+## Requirements
+
+- Node.js 20.19.0 or later
+
 To install Cotomy in your project, run the following command:
 
 ```bash
@@ -17,6 +21,13 @@ npm i cotomy
 Cotomy will continue to expand with more detailed usage instructions and code examples added to the README in the future.  
 For the latest updates, please check the official documentation or repository regularly.  
 Reference: https://cotomy.net/
+
+## Version Notes
+
+### v2
+
+- Updated core development dependencies including TypeScript 6 and Vitest 4
+- Internal ID generation was migrated from `cuid` to `@paralleldrive/cuid2`
 
 ## View Reference
 
