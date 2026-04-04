@@ -1,4 +1,4 @@
-import cuid from "cuid";
+import { createId } from "@paralleldrive/cuid2";
 import { CotomyDebugFeature, CotomyDebugSettings } from "./debug";
 
 
@@ -337,7 +337,7 @@ export class CotomyElement implements IEventTarget {
 
     private setInstanceId() {
         if (!this.hasAttribute("data-cotomy-instance")) {
-            this.attribute("data-cotomy-instance", cuid());
+            this.attribute("data-cotomy-instance", createId());
             this.removed(() => {
                 this._element = CotomyElement.createHTMLElement(/* html */ `<div data-cotomy-invalidated style="display: none;"></div>`);
                 EventRegistry.instance.clear(this);
@@ -359,7 +359,7 @@ export class CotomyElement implements IEventTarget {
 
     public get scopeId(): string {
         if (!this.hasAttribute("data-cotomy-scopeid")) {
-            this.attribute("data-cotomy-scopeid", cuid());
+            this.attribute("data-cotomy-scopeid", createId());
         }
         return this.attribute("data-cotomy-scopeid")!;
     }
@@ -437,7 +437,7 @@ export class CotomyElement implements IEventTarget {
 
     public generateId(prefix: string = "__cotomy_elem__"): this {
         if (!this.id) {
-            this.attribute("id", `${prefix}${cuid()}`);
+            this.attribute("id", `${prefix}${createId()}`);
         }
         return this;
     }
