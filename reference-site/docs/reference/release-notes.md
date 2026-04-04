@@ -7,6 +7,20 @@ description: Cotomy version history and architectural milestones.
 
 Cotomy version history and architectural milestones.
 
+### v2.0.1 (2026-04-04 12:48 UTC)
+
+Downloads: [ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v2.0.1.zip) | [TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v2.0.1.tar.gz)
+
+- Updated README with Node.js 20.19.0+ requirements and v2 release notes.
+
+### v2.0.0 (2026-04-04 12:43 UTC)
+
+Downloads: [ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v2.0.0.zip) | [TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v2.0.0.tar.gz)
+
+- Updated core development dependencies, including TypeScript 6, Vitest 4, jsdom 29, and webpack-cli 7.
+- Switched internal DOM identity generation from `cuid` to `@paralleldrive/cuid2`.
+- Added explicit `rootDir` settings for TypeScript 6 build compatibility.
+
 ### v1.0.5 (2026-02-21 14:54 UTC)
 
 Downloads: [ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.5.zip) | [TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.5.tar.gz)

@@ -7,7 +7,7 @@ sidebar_position: 1
 
 This page covers the minimum setup for using Cotomy and the page-based structure it assumes.
 
-Download source code: [Cotomy v1.0.5 ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.5.zip) | [Cotomy v1.0.5 TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v1.0.5.tar.gz)
+Download source code: [Cotomy v2.0.1 ZIP](https://github.com/yshr1920/cotomy/archive/refs/tags/v2.0.1.zip) | [Cotomy v2.0.1 TAR.GZ](https://github.com/yshr1920/cotomy/archive/refs/tags/v2.0.1.tar.gz)
 
 ## Goals
 
