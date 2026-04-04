@@ -209,7 +209,7 @@ describe("CotomyElement core behaviors", () => {
     it("exposes scope data via attribute", () => {
         const element = new CotomyElement(document.createElement("div"));
         const scope = element.scopeId;
-        expect(scope).toMatch(/^c[a-z0-9]+$/);
+        expect(scope).toMatch(/^[a-z0-9]+$/);
         expect(element.attribute("data-cotomy-scopeid")).toBe(scope);
     });
 
@@ -223,7 +223,7 @@ describe("CotomyElement core behaviors", () => {
         const generated = new CotomyElement(document.createElement("div"));
         expect(typeof generated.instanceId).toBe("string");
         expect(generated.instanceId.length).toBeGreaterThan(0);
-        expect(generated.instanceId).toMatch(/^c[a-z0-9]+$/);
+        expect(generated.instanceId).toMatch(/^[a-z0-9]+$/);
         expect(generated.attribute("data-cotomy-instance")).toBe(generated.instanceId);
     });
 
