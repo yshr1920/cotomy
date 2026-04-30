@@ -282,7 +282,7 @@ export class CotomyViewRenderer {
 
     private _renderers: { [key: string]: (element: CotomyElement, value: any) => void } = {};
     public renderer(type: string, callback: (element: CotomyElement, value: any) => void): this {
-        this._renderers[type] = callback;
+        this._renderers[type.trim().toLowerCase()] = callback;
         return this;
     }
     protected get renderers(): { [key: string]: (element: CotomyElement, value: any) => void } {
@@ -381,7 +381,7 @@ export class CotomyViewRenderer {
             if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Bind)) {
                 console.debug(`Binding data to element [data-cotomy-bind="${propertyName}"]:`, value);
             }
-            const type = element.attribute("data-cotomy-bindtype")?.toLowerCase();
+            const type = element.attribute("data-cotomy-bindtype")?.trim().toLowerCase();
             if (type && this.renderers[type]) {
                 this.renderers[type](element, value);
             } else {

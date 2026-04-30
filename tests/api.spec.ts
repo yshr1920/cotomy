@@ -243,6 +243,21 @@ describe("CotomyViewRenderer date bind type", () => {
     });
 });
 
+describe("CotomyViewRenderer bind type lookup", () => {
+    it("normalizes renderer registrations and data-cotomy-bindtype values", () => {
+        const root = new CotomyElement(`<div><span data-cotomy-bind="status" data-cotomy-bindtype=" CustomType "></span></div>`);
+        const renderer = new CotomyViewRenderer(root, new CotomyBracketBindNameGenerator());
+        renderer.renderer("CustomType", (element, value) => {
+            element.text = `custom:${value}`;
+        });
+
+        (renderer as any).bindPrimitiveValue("status", "ready");
+
+        const target = root.first(`[data-cotomy-bind="status"]`)!;
+        expect(target.text).toBe("custom:ready");
+    });
+});
+
 describe("CotomyViewRenderer utc bind type", () => {
     const createRenderer = (html: string = `<div><span data-cotomy-bind="eventAt" data-cotomy-bindtype="utc" data-cotomy-format="x"></span></div>`) => {
         const root = new CotomyElement(html);

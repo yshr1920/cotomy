@@ -271,6 +271,8 @@ The Form layer builds on `CotomyElement` for common form flows.
 - `utc` — Treats the value as UTC (or appends `Z` when missing) and formats with `data-cotomy-format` (default `YYYY/MM/DD HH:mm`). By default it renders in local time; set `data-cotomy-timezone` (element or ancestor) to render in a specific IANA timezone.
 - `date` — Renders local dates with `data-cotomy-format` (default `YYYY/MM/DD`) when the input is a valid `Date` value. By default it renders in local time; set `data-cotomy-timezone` (element or ancestor) to render in a specific IANA timezone.
 
+`data-cotomy-bindtype` values are matched case-insensitively and surrounding whitespace is ignored. Custom renderers registered through `renderer(type, callback)` are stored with lowercase keys. If you override the protected `renderers` map directly, return lowercase keys such as `date` or `customtype`.
+
 ### UTC Renderer
 
 - Supports ISO 8601 offsets (`+09:00`, `-05:00`)
