@@ -377,16 +377,22 @@ export class CotomyViewRenderer {
     }
 
     protected bindPrimitiveValue(propertyName: string, value: any): void {
+        let renderers: { [key: string]: (element: CotomyElement, value: any) => void } | undefined;
         this.element.find(`[data-cotomy-bind="${propertyName}" i]`).forEach(element => {
             if (CotomyDebugSettings.isEnabled(CotomyDebugFeature.Bind)) {
                 console.debug(`Binding data to element [data-cotomy-bind="${propertyName}"]:`, value);
             }
             const type = element.attribute("data-cotomy-bindtype")?.trim().toLowerCase();
-            if (type && this.renderers[type]) {
-                this.renderers[type](element, value);
-            } else {
-                element.text = String(value ?? "");
+            if (type) {
+                renderers ??= Object.fromEntries(
+                    Object.entries(this.renderers).map(([key, renderer]) => [key.toLowerCase(), renderer])
+                );
+                if (renderers[type]) {
+                    renderers[type](element, value);
+                    return;
+                }
             }
+            element.text = String(value ?? "");
         });
     }
 

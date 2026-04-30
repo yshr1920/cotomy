@@ -256,6 +256,56 @@ describe("CotomyViewRenderer bind type lookup", () => {
         const target = root.first(`[data-cotomy-bind="status"]`)!;
         expect(target.text).toBe("custom:ready");
     });
+
+    it("matches overridden renderer map keys case-insensitively", () => {
+        class CustomRenderer extends CotomyViewRenderer {
+            protected get renderers(): { [key: string]: (element: CotomyElement, value: any) => void } {
+                return {
+                    CustomType: (element, value) => {
+                        element.text = `custom:${value}`;
+                    }
+                };
+            }
+        }
+
+        const root = new CotomyElement(`<div><span data-cotomy-bind="status" data-cotomy-bindtype="customtype"></span></div>`);
+        const renderer = new CustomRenderer(root, new CotomyBracketBindNameGenerator());
+
+        (renderer as any).bindPrimitiveValue("status", "ready");
+
+        const target = root.first(`[data-cotomy-bind="status"]`)!;
+        expect(target.text).toBe("custom:ready");
+    });
+
+    it("normalizes renderer map keys once per primitive binding", () => {
+        class CustomRenderer extends CotomyViewRenderer {
+            public rendererAccessCount = 0;
+
+            protected get renderers(): { [key: string]: (element: CotomyElement, value: any) => void } {
+                this.rendererAccessCount++;
+                return {
+                    CustomType: (element, value) => {
+                        element.text = `custom:${value}`;
+                    }
+                };
+            }
+        }
+
+        const root = new CotomyElement(/* html */`
+            <div>
+                <span data-cotomy-bind="status" data-cotomy-bindtype="customtype"></span>
+                <span data-cotomy-bind="status" data-cotomy-bindtype="CustomType"></span>
+            </div>
+        `);
+        const renderer = new CustomRenderer(root, new CotomyBracketBindNameGenerator());
+
+        (renderer as any).bindPrimitiveValue("status", "ready");
+
+        expect(renderer.rendererAccessCount).toBe(1);
+        root.find(`[data-cotomy-bind="status"]`).forEach(element => {
+            expect(element.text).toBe("custom:ready");
+        });
+    });
 });
 
 describe("CotomyViewRenderer utc bind type", () => {
