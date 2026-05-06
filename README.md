@@ -149,6 +149,9 @@ Scoped CSS sharing/re-hydrationとインスタンス単位のイベント管理�
 
 ```bash
 npm test -- --run tests/view.spec.ts -t "constructs from multiple sources and applies scoped css"
+npm test -- --run tests/view.spec.ts -t "auto-prefixes [root] when no scope placeholder is present"
+npm test -- --run tests/view.spec.ts -t "auto-prefixes every selector without a scope placeholder"
+npm test -- --run tests/view.spec.ts -t "scopes nested rules while preserving non-style at-rules"
 npm test -- --run tests/view.spec.ts -t "preserves scope ids when cloning, including descendants"
 npm test -- --run tests/view.spec.ts -t "regenerates instance ids and lifecycle hooks when cloning"
 npm test -- --run tests/view.spec.ts -t "keeps event handlers isolated by instance even when sharing scope"
