@@ -206,6 +206,35 @@ describe("CotomyElement core behaviors", () => {
         expect(styleElement?.textContent).toContain(`[data-cotomy-scopeid="${scope}"] .styled { color: green; }`);
     });
 
+    it("auto-prefixes every selector without a scope placeholder", () => {
+        const styled = new CotomyElement({
+            html: `<div class="styled"></div>`,
+            css: `.styled { color: green; } .accent, button:is(.primary, .secondary) { color: blue; }`
+        });
+        const scope = styled.scopeId;
+        const styleElement = document.head.querySelector(`#css-${scope}`) as HTMLStyleElement | null;
+
+        expect(styleElement).not.toBeNull();
+        expect(styleElement?.textContent).toContain(`[data-cotomy-scopeid="${scope}"] .styled { color: green; }`);
+        expect(styleElement?.textContent).toContain(`[data-cotomy-scopeid="${scope}"] .accent`);
+        expect(styleElement?.textContent).toContain(`[data-cotomy-scopeid="${scope}"] button:is(.primary, .secondary)`);
+    });
+
+    it("scopes nested rules while preserving non-style at-rules", () => {
+        const styled = new CotomyElement({
+            html: `<div class="styled"></div>`,
+            css: `@layer base; @media (min-width: 600px) { .styled { color: green; } [root] > .accent { color: blue; } } @keyframes pulse { from { opacity: 0; } to { opacity: 1; } } .outside { display: block; }`
+        });
+        const scope = styled.scopeId;
+        const styleElement = document.head.querySelector(`#css-${scope}`) as HTMLStyleElement | null;
+
+        expect(styleElement).not.toBeNull();
+        expect(styleElement?.textContent).toContain(`@layer base;`);
+        expect(styleElement?.textContent).toContain(`@media (min-width: 600px) { [data-cotomy-scopeid="${scope}"] .styled { color: green; } [data-cotomy-scopeid="${scope}"] > .accent { color: blue; } }`);
+        expect(styleElement?.textContent).toContain(`@keyframes pulse { from { opacity: 0; } to { opacity: 1; } }`);
+        expect(styleElement?.textContent).toContain(`[data-cotomy-scopeid="${scope}"] .outside { display: block; }`);
+    });
+
     it("exposes scope data via attribute", () => {
         const element = new CotomyElement(document.createElement("div"));
         const scope = element.scopeId;

@@ -384,9 +384,7 @@ export class CotomyElement implements IEventTarget {
             const cssid = this.scopedCssElementId;
             CotomyElement.find(`#${cssid}`).forEach(e => e.remove());
             const element = document.createElement("style");
-            const hasRoot = /\[root\]/.test(css);
-            const normalizedCss = hasRoot ? css : `[root] ${css}`;
-            const writeCss = normalizedCss.replace(/\[root\]/g, `[data-cotomy-scopeid="${this.scopeId}"]`);
+            const writeCss = this.createScopedCss(css);
             const node = document.createTextNode(writeCss);
             element.appendChild(node);
             element.id = cssid;
@@ -402,6 +400,233 @@ export class CotomyElement implements IEventTarget {
             });
         }
         return this;
+    }
+
+    private createScopedCss(css: string): string {
+        return this.scopeCssRules(css);
+    }
+
+    private scopeCssRules(css: string): string {
+        let scoped = "";
+        let cursor = 0;
+
+        while (cursor < css.length) {
+            const open = this.findNextCssBlockStart(css, cursor);
+            if (open < 0) {
+                scoped += css.slice(cursor);
+                break;
+            }
+
+            const prelude = css.slice(cursor, open);
+            const statementEnd = this.findCssStatementEnd(prelude);
+            if (prelude.trimStart().startsWith("@") && statementEnd >= 0) {
+                scoped += css.slice(cursor, cursor + statementEnd + 1);
+                cursor += statementEnd + 1;
+                continue;
+            }
+
+            const close = this.findCssBlockEnd(css, open);
+            if (close < 0) {
+                scoped += css.slice(cursor);
+                break;
+            }
+
+            const body = css.slice(open + 1, close);
+            scoped += this.scopeCssPrelude(prelude) + "{";
+            scoped += this.shouldScopeNestedCss(prelude) ? this.scopeCssRules(body) : body;
+            scoped += "}";
+            cursor = close + 1;
+        }
+
+        return scoped;
+    }
+
+    private scopeCssPrelude(prelude: string): string {
+        const trimmed = prelude.trimStart();
+        if (trimmed.startsWith("@")) return prelude;
+        return this.scopeSelectorList(prelude);
+    }
+
+    private shouldScopeNestedCss(prelude: string): boolean {
+        const atRule = prelude.trimStart().match(/^@([a-z-]+)/i)?.[1].toLowerCase();
+        return atRule === "media"
+            || atRule === "supports"
+            || atRule === "container"
+            || atRule === "layer"
+            || atRule === "document";
+    }
+
+    private scopeSelectorList(selectors: string): string {
+        return this.splitCssSelectorList(selectors).map(selector => {
+            if (!selector.trim()) return selector;
+
+            const leading = selector.match(/^\s*/)?.[0] ?? "";
+            const trailing = selector.match(/\s*$/)?.[0] ?? "";
+            const body = selector.slice(leading.length, selector.length - trailing.length);
+            if (/\[root\]/.test(body)) {
+                return leading + body.replace(/\[root\]/g, this.scopedRootSelector) + trailing;
+            }
+            return `${leading}${this.scopedRootSelector} ${body}${trailing}`;
+        }).join(",");
+    }
+
+    private splitCssSelectorList(selectors: string): string[] {
+        const result: string[] = [];
+        let start = 0;
+        let stringQuote: string | null = null;
+        let bracketDepth = 0;
+        let parenthesisDepth = 0;
+
+        for (let i = 0; i < selectors.length; i++) {
+            const char = selectors[i];
+            const next = selectors[i + 1];
+
+            if (stringQuote) {
+                if (char === "\\") {
+                    i++;
+                } else if (char === stringQuote) {
+                    stringQuote = null;
+                }
+                continue;
+            }
+
+            if (char === "/" && next === "*") {
+                i = selectors.indexOf("*/", i + 2);
+                if (i < 0) break;
+                i++;
+                continue;
+            }
+
+            if (char === "\"" || char === "'") {
+                stringQuote = char;
+            } else if (char === "[") {
+                bracketDepth++;
+            } else if (char === "]") {
+                bracketDepth = Math.max(0, bracketDepth - 1);
+            } else if (char === "(") {
+                parenthesisDepth++;
+            } else if (char === ")") {
+                parenthesisDepth = Math.max(0, parenthesisDepth - 1);
+            } else if (char === "," && bracketDepth === 0 && parenthesisDepth === 0) {
+                result.push(selectors.slice(start, i));
+                start = i + 1;
+            }
+        }
+
+        result.push(selectors.slice(start));
+        return result;
+    }
+
+    private findCssStatementEnd(css: string): number {
+        let stringQuote: string | null = null;
+        let parenthesisDepth = 0;
+
+        for (let i = 0; i < css.length; i++) {
+            const char = css[i];
+            const next = css[i + 1];
+
+            if (stringQuote) {
+                if (char === "\\") {
+                    i++;
+                } else if (char === stringQuote) {
+                    stringQuote = null;
+                }
+                continue;
+            }
+
+            if (char === "/" && next === "*") {
+                i = css.indexOf("*/", i + 2);
+                if (i < 0) return -1;
+                i++;
+                continue;
+            }
+
+            if (char === "\"" || char === "'") {
+                stringQuote = char;
+            } else if (char === "(") {
+                parenthesisDepth++;
+            } else if (char === ")") {
+                parenthesisDepth = Math.max(0, parenthesisDepth - 1);
+            } else if (char === ";" && parenthesisDepth === 0) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    private findNextCssBlockStart(css: string, start: number): number {
+        let stringQuote: string | null = null;
+
+        for (let i = start; i < css.length; i++) {
+            const char = css[i];
+            const next = css[i + 1];
+
+            if (stringQuote) {
+                if (char === "\\") {
+                    i++;
+                } else if (char === stringQuote) {
+                    stringQuote = null;
+                }
+                continue;
+            }
+
+            if (char === "/" && next === "*") {
+                i = css.indexOf("*/", i + 2);
+                if (i < 0) return -1;
+                i++;
+                continue;
+            }
+
+            if (char === "\"" || char === "'") {
+                stringQuote = char;
+            } else if (char === "{") {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    private findCssBlockEnd(css: string, open: number): number {
+        let depth = 0;
+        let stringQuote: string | null = null;
+
+        for (let i = open; i < css.length; i++) {
+            const char = css[i];
+            const next = css[i + 1];
+
+            if (stringQuote) {
+                if (char === "\\") {
+                    i++;
+                } else if (char === stringQuote) {
+                    stringQuote = null;
+                }
+                continue;
+            }
+
+            if (char === "/" && next === "*") {
+                i = css.indexOf("*/", i + 2);
+                if (i < 0) return -1;
+                i++;
+                continue;
+            }
+
+            if (char === "\"" || char === "'") {
+                stringQuote = char;
+            } else if (char === "{") {
+                depth++;
+            } else if (char === "}") {
+                depth--;
+                if (depth === 0) return i;
+            }
+        }
+
+        return -1;
+    }
+
+    private get scopedRootSelector(): string {
+        return `[data-cotomy-scopeid="${this.scopeId}"]`;
     }
 
     private ensureScopedCss(): void {
