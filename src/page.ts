@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
-import { ICotomyBindNameGenerator, CotomyViewRenderer } from "./api";
+import { CotomyViewRenderer, ICotomyBindNameGenerator } from "./api";
 import { CotomyDebugFeature, CotomyDebugSettings } from "./debug";
 import { CotomyForm } from "./form";
 import { CotomyElement, CotomyWindow } from "./view";
@@ -157,7 +157,8 @@ export class CotomyPageController {
         this.initializeDateTimeElements();
 
         CotomyWindow.instance.pageshow(async e => {
-            if (e.persisted) {
+            const navType = (performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined)?.type;
+            if (e.persisted || navType === "back_forward") {
                 await this.restoreAsync();
                 if (CotomyWindow.instance.reloading) {
                     e.stopImmediatePropagation();

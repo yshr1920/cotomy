@@ -4,6 +4,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { CotomyBracketBindNameGenerator, CotomyDotBindNameGenerator, CotomyViewRenderer } from "../src/api";
 import { CotomyPageController, CotomyUrl } from "../src/page";
+import { CotomyWindow } from "../src/view";
 
 describe("CotomyUrl", () => {
     beforeEach(() => {
@@ -114,5 +115,85 @@ describe("CotomyPageController default bind name generator", () => {
 
         expect(controller.getDefaultGenerator()).toBe(dot);
         expect(CotomyViewRenderer.defaultBindNameGenerator).toBe(dot);
+    });
+});
+
+describe("CotomyPageController initializeAsync pageshow restore", () => {
+    class TestPageController extends CotomyPageController {
+        public restored = false;
+
+        public async callInitializeAsync() {
+            return this.initializeAsync();
+        }
+
+        protected override async restoreAsync(): Promise<void> {
+            this.restored = true;
+        }
+    }
+
+    let capturedHandler: ((e: PageTransitionEvent) => void | Promise<void>) | null = null;
+
+    beforeEach(() => {
+        capturedHandler = null;
+        CotomyWindow.instance.initialize();
+        vi.spyOn(CotomyWindow.instance, "pageshow").mockImplementation(function (handler?: any) {
+            if (typeof handler === "function") capturedHandler = handler;
+            return CotomyWindow.instance;
+        });
+    });
+
+    afterEach(() => {
+        vi.restoreAllMocks();
+        vi.unstubAllGlobals();
+    });
+
+    it("calls restoreAsync when event.persisted is true", async () => {
+        const controller = new TestPageController();
+        await controller.callInitializeAsync();
+
+        const event = new PageTransitionEvent("pageshow", { persisted: true });
+        await capturedHandler!(event);
+
+        expect(controller.restored).toBe(true);
+    });
+
+    it("calls restoreAsync when navigation type is back_forward", async () => {
+        const controller = new TestPageController();
+        await controller.callInitializeAsync();
+
+        vi.spyOn(performance, "getEntriesByType").mockReturnValue([
+            { type: "back_forward" } as unknown as PerformanceEntry,
+        ]);
+
+        const event = new PageTransitionEvent("pageshow", { persisted: false });
+        await capturedHandler!(event);
+
+        expect(controller.restored).toBe(true);
+    });
+
+    it("does not call restoreAsync when persisted is false and navigation type is navigate", async () => {
+        const controller = new TestPageController();
+        await controller.callInitializeAsync();
+
+        vi.spyOn(performance, "getEntriesByType").mockReturnValue([
+            { type: "navigate" } as unknown as PerformanceEntry,
+        ]);
+
+        const event = new PageTransitionEvent("pageshow", { persisted: false });
+        await capturedHandler!(event);
+
+        expect(controller.restored).toBe(false);
+    });
+
+    it("does not call restoreAsync when persisted is false and navigation entries are empty", async () => {
+        const controller = new TestPageController();
+        await controller.callInitializeAsync();
+
+        vi.spyOn(performance, "getEntriesByType").mockReturnValue([]);
+
+        const event = new PageTransitionEvent("pageshow", { persisted: false });
+        await capturedHandler!(event);
+
+        expect(controller.restored).toBe(false);
     });
 });

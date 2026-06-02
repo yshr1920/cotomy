@@ -290,10 +290,12 @@ const view = new CotomyViewRenderer(
   new CotomyElement(document.querySelector("#profile")!)
 );
 
-await view.applyAsync(apiResponse); // apiResponse is CotomyApiResponse from CotomyApi
+await view.applyAsync(apiResponse); // CotomyApiResponse from CotomyApi, or a plain object payload
 // <span data-cotomy-bind="user.birthday" data-cotomy-bindtype="date" data-cotomy-format="MMM D, YYYY"></span>
 // → renders localized date text if the API payload contains user.birthday
 ```
+
+`applyAsync` accepts either a `CotomyApiResponse` from `CotomyApi` or a plain object payload.
 
 #### Array binding
 
