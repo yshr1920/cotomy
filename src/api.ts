@@ -430,12 +430,15 @@ export class CotomyViewRenderer {
         }
     }
 
-    public async applyAsync(respose: CotomyApiResponse): Promise<this> {
-        if (!respose.available) {
-            throw new Error("Response is not available.");
+    public async applyAsync(respose: CotomyApiResponse | any): Promise<this> {
+        if (respose instanceof CotomyApiResponse) {
+            if (!respose.available) {
+                throw new Error("Response is not available.");
+            }
+            await this.applyObjectAsync(await respose.objectAsync());
+        } else {
+            await this.applyObjectAsync(respose);
         }
-
-        await this.applyObjectAsync(await respose.objectAsync());
         return this;
     }
 }
