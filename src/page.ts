@@ -101,9 +101,12 @@ export class CotomyPageController {
         if (!form.id) {
             form.generateId();
         }
-        this._forms[form.id!] = form;
+        const id = form.id!;
+        this._forms[id] = form;
         form.removed(() => {
-            delete this._forms[form.id!];
+            if (this._forms[id] === form) {
+                delete this._forms[id];
+            }
         });
         return form.initialize();
     }

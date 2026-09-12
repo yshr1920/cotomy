@@ -2019,15 +2019,21 @@ export class CotomyWindow {
 
             // DOM要素の削除をトラップして、removedイベントを発生させる
             this._mutationObserver = new MutationObserver(mutations => {
+                const removedElements = new Set<HTMLElement>();
                 mutations.forEach(mutation => {
                     mutation.removedNodes.forEach(node => {
                         if (typeof HTMLElement !== "undefined" && node instanceof HTMLElement) {
-                            const element = new CotomyElement(node);
-                            if (!element.hasAttribute("data-cotomy-moving") && !element.attached) {
-                                element.trigger("removed");
-                            }
+                            removedElements.add(node);
+                            node.querySelectorAll<HTMLElement>("[data-cotomy-instance]").forEach(child => removedElements.add(child));
                         }
                     });
+                });
+                removedElements.forEach(node => {
+                    const element = new CotomyElement(node);
+                    if (!element.hasAttribute("data-cotomy-moving") && !element.attached) {
+                        // 子の削除通知で親のハンドラーが再実行されないようにする。
+                        element.trigger(new Event("removed", { bubbles: false }));
+                    }
                 });
             });
             this._mutationObserver.observe(this.body.element, { childList: true, subtree: true });
